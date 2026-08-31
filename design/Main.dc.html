@@ -1,0 +1,775 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Literata:opsz,wght@7..72,400;7..72,600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; font-family: 'Hanken Grotesk', system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #0064E0; text-decoration: none; }
+    a:hover { color: #0052BA; }
+    .row:not(.on):hover { background: #EDF1F4 !important; }
+    .seg:hover { color: #1C2B33 !important; }
+    .ghost:hover { background: #E4EAEF !important; }
+    .btn:hover { filter: brightness(0.93); }
+    .card:hover { border-color: #C3D0DA !important; }
+    .tr:hover { background: #F7F9FB !important; }
+    ::-webkit-scrollbar { width: 11px; height: 11px; }
+    ::-webkit-scrollbar-thumb { background: #D3DCE3; border-radius: 8px; border: 3px solid transparent; background-clip: content-box; }
+    ::-webkit-scrollbar-thumb:hover { background: #B9C6D0; background-clip: content-box; border: 3px solid transparent; }
+    ::-webkit-scrollbar-track { background: transparent; }
+  </style>
+</helmet>
+
+<div style="width: 1440px; height: 900px; display: flex; flex-direction: column; background: #FFFFFF; color: #1C2B33; overflow: hidden;">
+
+  <!-- Title bar -->
+  <div style="height: 40px; flex-shrink: 0; display: flex; align-items: center; gap: 14px; padding: 0 12px; background: #F5F7F9; border-bottom: 1px solid #DCE3E9;">
+    <div style="display: flex; align-items: center; gap: 8px; padding-left: 2px;">
+      <div style="width: 12px; height: 12px; border-radius: 50%; background: #FF5F57;"></div>
+      <div style="width: 12px; height: 12px; border-radius: 50%; background: #FEBC2E;"></div>
+      <div style="width: 12px; height: 12px; border-radius: 50%; background: #28C840;"></div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 9px; padding-left: 8px;">
+      <div style="width: 18px; height: 18px; border-radius: 5px; background: linear-gradient(135deg, #0082FB 0%, #0064E0 55%, #A033FF 100%);"></div>
+      <span style="font-size: 13px; font-weight: 600; letter-spacing: -0.005em;">The Salt Road</span>
+      <span style="font-size: 12px; color: #93A2AE;">novel · 61,480 words</span>
+    </div>
+
+    <div style="flex-grow: 1;"></div>
+
+    <div style="display: flex; gap: 2px; padding: 3px; background: #E4EAEF; border-radius: 9px;">
+      <div class="seg" onClick="{{ goEditor }}" style="display: flex; align-items: center; gap: 6px; height: 26px; padding: 0 13px; border-radius: 6px; font-size: 12.5px; font-weight: 600; cursor: pointer; background: {{ seg.editor.bg }}; color: {{ seg.editor.fg }}; box-shadow: {{ seg.editor.sh }};">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16M4 10h16M4 15h11M4 20h7"/></svg>
+        Editor
+      </div>
+      <div class="seg" onClick="{{ goCork }}" style="display: flex; align-items: center; gap: 6px; height: 26px; padding: 0 13px; border-radius: 6px; font-size: 12.5px; font-weight: 600; cursor: pointer; background: {{ seg.cork.bg }}; color: {{ seg.cork.fg }}; box-shadow: {{ seg.cork.sh }};">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        Corkboard
+      </div>
+      <div class="seg" onClick="{{ goOutline }}" style="display: flex; align-items: center; gap: 6px; height: 26px; padding: 0 13px; border-radius: 6px; font-size: 12.5px; font-weight: 600; cursor: pointer; background: {{ seg.outline.bg }}; color: {{ seg.outline.fg }}; box-shadow: {{ seg.outline.sh }};">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg>
+        Outliner
+      </div>
+    </div>
+
+    <div style="flex-grow: 1;"></div>
+
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <div class="ghost" onClick="{{ toggleBinder }}" style="width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: {{ paneBtn.binder }};">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M9 4v16"/></svg>
+      </div>
+      <div class="ghost" onClick="{{ toggleInspector }}" style="width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: {{ paneBtn.inspector }};">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M15 4v16"/></svg>
+      </div>
+      <div style="width: 1px; height: 18px; background: #DCE3E9;"></div>
+      <div class="ghost" style="display: flex; align-items: center; gap: 7px; height: 28px; padding: 0 10px 0 9px; border-radius: 7px; cursor: pointer; color: #465A69; font-size: 12.5px; font-weight: 500;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v6M12 15v6M5.6 5.6l4.2 4.2M14.2 14.2l4.2 4.2M3 12h6M15 12h6M5.6 18.4l4.2-4.2M14.2 9.8l4.2-4.2"/></svg>
+        Ask
+        <span style="font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 11px; color: #93A2AE; border: 1px solid #DCE3E9; border-radius: 4px; padding: 1px 4px;">⌘K</span>
+      </div>
+      <div class="btn" style="display: flex; align-items: center; gap: 6px; height: 28px; padding: 0 13px; border-radius: 7px; cursor: pointer; font-size: 12.5px; font-weight: 600; color: #FFFFFF; background: {{ accent }};">
+        Compile
+      </div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div style="flex-grow: 1; display: flex; min-height: 0;">
+
+    <!-- Binder -->
+    <sc-if value="{{ showBinder }}" hint-placeholder-val="{{ true }}">
+    <div style="width: 254px; flex-shrink: 0; display: flex; flex-direction: column; background: #F5F7F9; border-right: 1px solid #DCE3E9;">
+      <div style="height: 36px; flex-shrink: 0; display: flex; align-items: center; padding: 0 8px 0 14px; gap: 8px;">
+        <span style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #93A2AE;">BINDER</span>
+        <div style="flex-grow: 1;"></div>
+        <div class="ghost" style="width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #7B8B98;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        </div>
+        <div class="ghost" style="width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #7B8B98;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h.01M12 12h.01M19 12h.01"/></svg>
+        </div>
+      </div>
+
+      <div style="flex-grow: 1; overflow-y: auto; padding: 0 8px 16px 8px;">
+
+        <div style="padding: 8px 6px 4px 6px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">MANUSCRIPT</div>
+
+        <div style="display: flex; align-items: center; gap: 7px; height: 27px; padding: 0 8px; border-radius: 6px; color: #465A69; font-size: 12.5px; font-weight: 600;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#93A2AE" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7B8B98" stroke-width="1.8" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          Act I — Ember
+        </div>
+
+        <div class="row {{ sel.ch1.cls }}" onClick="{{ pick.ch1 }}" style="display: flex; align-items: center; gap: 7px; height: 27px; padding: 0 8px 0 27px; border-radius: 6px; cursor: pointer; font-size: 12.5px; background: {{ sel.ch1.bg }}; color: {{ sel.ch1.fg }}; font-weight: {{ sel.ch1.w }};">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" opacity="0.65"><path d="M6 3h8l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/></svg>
+          <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">1. The Well at Kharsa</span>
+        </div>
+        <div class="row {{ sel.ch2.cls }}" onClick="{{ pick.ch2 }}" style="display: flex; align-items: center; gap: 7px; height: 27px; padding: 0 8px 0 27px; border-radius: 6px; cursor: pointer; font-size: 12.5px; background: {{ sel.ch2.bg }}; color: {{ sel.ch2.fg }}; font-weight: {{ sel.ch2.w }};">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" opacity="0.65"><path d="M6 3h8l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/></svg>
+          <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">2. What the Cartographer Kept</span>
+        </div>
+        <div class="row {{ sel.ch3.cls }}" onClick="{{ pick.ch3 }}" style="display: flex; align-items: center; gap: 7px; height: 27px; padding: 0 8px 0 27px; border-radius: 6px; cursor: pointer; font-size: 12.5px; background: {{ sel.ch3.bg }}; color: {{ sel.ch3.fg }}; font-weight: {{ sel.ch3.w }};">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" opacity="0.65"><path d="M6 3h8l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/></svg>
+          <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">3. Salt and Debt</span>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 7px; height: 27px; padding: 0 8px; border-radius: 6px; color: #465A69; font-size: 12.5px; font-weight: 600;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#93A2AE" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7B8B98" stroke-width="1.8" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          Act II — The Crossing
+        </div>
+
+        <div class="row {{ sel.ch4.cls }}" onClick="{{ pick.ch4 }}" style="display: flex; align-items: center; gap: 7px; height: 27px; padding: 0 8px 0 27px; border-radius: 6px; cursor: pointer; font-size: 12.5px; background: {{ sel.ch4.bg }}; color: {{ sel.ch4.fg }}; font-weight: {{ sel.ch4.w }};">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" opacity="0.65"><path d="M6 3h8l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/></svg>
+          <span style="flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">4. Nightfall at the Rim</span>
+          <span style="width: 6px; height: 6px; border-radius: 50%; background: #FF5C01; flex-shrink: 0;"></span>
+        </div>
+        <div class="row {{ sel.ch5.cls }}" onClick="{{ pick.ch5 }}" style="display: flex; align-items: center; gap: 7px; height: 27px; padding: 0 8px 0 27px; border-radius: 6px; cursor: pointer; font-size: 12.5px; background: {{ sel.ch5.bg }}; color: {{ sel.ch5.fg }}; font-weight: {{ sel.ch5.w }};">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" opacity="0.65"><path d="M6 3h8l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/></svg>
+          <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">5. The Wind Takes a Name</span>
+        </div>
+        <div class="row {{ sel.ch6.cls }}" onClick="{{ pick.ch6 }}" style="display: flex; align-items: center; gap: 7px; height: 27px; padding: 0 8px 0 27px; border-radius: 6px; cursor: pointer; font-size: 12.5px; background: {{ sel.ch6.bg }}; color: {{ sel.ch6.fg }}; font-weight: {{ sel.ch6.w }};">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" opacity="0.4"><path d="M6 3h8l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/></svg>
+          <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">6. Untitled scene</span>
+        </div>
+
+        <div style="padding: 14px 6px 4px 6px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">CHARACTERS</div>
+
+        <div class="row {{ sel.tamsin.cls }}" onClick="{{ pick.tamsin }}" style="display: flex; align-items: center; gap: 7px; height: 27px; padding: 0 8px 0 12px; border-radius: 6px; cursor: pointer; font-size: 12.5px; background: {{ sel.tamsin.bg }}; color: {{ sel.tamsin.fg }}; font-weight: {{ sel.tamsin.w }};">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity="0.65"><circle cx="12" cy="8" r="3.4"/><path d="M4.6 20a7.4 7.4 0 0 1 14.8 0"/></svg>
+          <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Tamsin Reyes</span>
+        </div>
+        <div class="row {{ sel.carto.cls }}" onClick="{{ pick.carto }}" style="display: flex; align-items: center; gap: 7px; height: 27px; padding: 0 8px 0 12px; border-radius: 6px; cursor: pointer; font-size: 12.5px; background: {{ sel.carto.bg }}; color: {{ sel.carto.fg }}; font-weight: {{ sel.carto.w }};">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity="0.65"><circle cx="12" cy="8" r="3.4"/><path d="M4.6 20a7.4 7.4 0 0 1 14.8 0"/></svg>
+          <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">The Cartographer</span>
+        </div>
+
+        <div style="padding: 14px 6px 4px 6px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">WORLDBUILDING</div>
+
+        <div class="row {{ sel.basin.cls }}" onClick="{{ pick.basin }}" style="display: flex; align-items: center; gap: 7px; height: 27px; padding: 0 8px 0 12px; border-radius: 6px; cursor: pointer; font-size: 12.5px; background: {{ sel.basin.bg }}; color: {{ sel.basin.fg }}; font-weight: {{ sel.basin.w }};">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" opacity="0.65"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.5 2.4 14.5 0 17M12 3.5c-2.4 2.5-2.4 14.5 0 17"/></svg>
+          <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">The Kharsa Basin</span>
+        </div>
+        <div class="row {{ sel.salt.cls }}" onClick="{{ pick.salt }}" style="display: flex; align-items: center; gap: 7px; height: 27px; padding: 0 8px 0 12px; border-radius: 6px; cursor: pointer; font-size: 12.5px; background: {{ sel.salt.bg }}; color: {{ sel.salt.fg }}; font-weight: {{ sel.salt.w }};">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" opacity="0.65"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.5 2.4 14.5 0 17M12 3.5c-2.4 2.5-2.4 14.5 0 17"/></svg>
+          <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Salt Roads and Tariffs</span>
+        </div>
+
+        <div style="padding: 14px 6px 4px 6px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">RESEARCH</div>
+
+        <div class="row {{ sel.notes.cls }}" onClick="{{ pick.notes }}" style="display: flex; align-items: center; gap: 7px; height: 27px; padding: 0 8px 0 12px; border-radius: 6px; cursor: pointer; font-size: 12.5px; background: {{ sel.notes.bg }}; color: {{ sel.notes.fg }}; font-weight: {{ sel.notes.w }};">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" opacity="0.65"><path d="M6 3h8l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/></svg>
+          <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Evaporite geology (clippings)</span>
+        </div>
+      </div>
+
+      <div style="height: 34px; flex-shrink: 0; border-top: 1px solid #E4EAEF; display: flex; align-items: center; padding: 0 14px; gap: 8px; font-size: 11.5px; color: #93A2AE;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V5a2 2 0 0 1 2-2h13v18H6a2 2 0 0 1-2-1.5z"/></svg>
+        14 documents · 6 scenes
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- Center -->
+    <div style="flex-grow: 1; display: flex; flex-direction: column; min-width: 0; background: #FFFFFF;">
+
+      <div style="height: 44px; flex-shrink: 0; display: flex; align-items: center; gap: 10px; padding: 0 18px; border-bottom: 1px solid #EDF1F4;">
+        <span style="font-size: 12.5px; color: #93A2AE;">{{ doc.crumb }}</span>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#C3D0DA" stroke-width="2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg>
+        <span style="font-size: 12.5px; font-weight: 600; color: #1C2B33;">{{ doc.title }}</span>
+        <div style="width: 6px; height: 6px; border-radius: 50%; background: #FFC800; margin-left: 2px;" title="Unsaved changes"></div>
+        <div style="flex-grow: 1;"></div>
+        <span style="font-size: 12px; color: #7B8B98;">{{ doc.words }} / {{ doc.target }} words</span>
+        <div style="width: 84px; height: 5px; border-radius: 3px; background: #E4EAEF; overflow: hidden;">
+          <div style="height: 5px; border-radius: 3px; width: {{ doc.pct }}%; background: {{ accent }};"></div>
+        </div>
+        <div style="width: 1px; height: 18px; background: #E4EAEF; margin: 0 4px;"></div>
+        <div class="ghost" style="width: 27px; height: 27px; border-radius: 7px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #7B8B98;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+        </div>
+        <div class="ghost" style="width: 27px; height: 27px; border-radius: 7px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #7B8B98;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h.01M12 12h.01M19 12h.01"/></svg>
+        </div>
+      </div>
+
+      <!-- Editor view -->
+      <sc-if value="{{ isEditor }}" hint-placeholder-val="{{ true }}">
+      <div style="flex-grow: 1; overflow-y: auto; display: flex; justify-content: center;">
+        <div style="width: {{ colw }}px; padding: 54px 0 220px 0;">
+
+          <sc-if value="{{ isScene }}" hint-placeholder-val="{{ true }}">
+          <div>
+            <h1 style="margin: 0 0 6px 0; font-family: Literata, Georgia, serif; font-size: 33px; font-weight: 600; letter-spacing: -0.015em; line-height: 1.2; color: #1C2B33;">{{ doc.title }}</h1>
+            <div style="font-size: 12px; color: #A3B0BB; margin-bottom: 34px; letter-spacing: 0.02em;">{{ doc.stamp }}</div>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ isCh4 }}" hint-placeholder-val="{{ true }}">
+          <div style="font-family: Literata, Georgia, serif; font-size: 18.5px; line-height: 1.78; color: #22323B;">
+            <p style="margin: 0 0 22px 0;">The rim of the basin held the last of the heat the way a kiln holds it, grudgingly and all at once. Tamsin counted forty paces out to the marker stone and stopped counting when the wind erased her fortieth footprint before she had finished making it.</p>
+            <p style="margin: 0 0 22px 0;">Below them the salt went on being white in the dark. Not glowing — she wanted to be exact about that later, when the cartographer asked her to write it down — just refusing to be black like everything else.</p>
+            <p style="margin: 0 0 22px 0;">“We cross at moonrise or we do not cross,” he said. He had said it four times since noon, each time as though the thought had only that moment arrived and surprised him.</p>
+            <p style="margin: 0 0 22px 0;"><span style="background: #FFF1D6; border-bottom: 2px solid #FFC800; padding: 1px 0; border-radius: 2px;">He sprinted for the marker stone the moment the light failed, favouring nothing</span><span style="display: inline-block; transform: translateY(-6px); margin-left: 2px; font-family: 'Hanken Grotesk', sans-serif; font-size: 10px; font-weight: 700; color: #B26A00; background: #FFF1D6; border-radius: 4px; padding: 1px 4px;">1</span>, and Tamsin let him go. The wind took the sound of him in three strides. She stayed where she was and did the arithmetic she had been avoiding since Kharsa: two skins of water, nine days of tariff owed, one man who lied about maps for a living.</p>
+            <p style="margin: 0 0 22px 0;">When the moon came up it came up wrong — too far south, too thin, the colour of a coin left out in weather. She had crossed the basin twice before and both times the moon had risen over the shoulder of the Rim. She checked the marker stone. She checked it again.</p>
+            <p style="margin: 0 0 22px 0; color: #93A2AE;">The stone had been moved.</p>
+          </div>
+          </sc-if>
+
+
+          <sc-if value="{{ isCh1 }}" hint-placeholder-val="{{ false }}">
+          <div style="font-family: Literata, Georgia, serif; font-size: 18.5px; line-height: 1.78; color: #22323B;">
+            <p style="margin: 0 0 22px 0;">The well at Kharsa was the only honest thing in the town and it was going dry, which the town had decided to treat as a rumour rather than a measurement.</p>
+            <p style="margin: 0 0 22px 0;">Tamsin bought two skins of water with money she did not have, and while the factor was counting what she had given him she watched a man on the far side of the courtyard lower a knotted cord into the well and write down what came back up.</p>
+            <p style="margin: 0 0 22px 0;">Nobody else in Kharsa was writing anything down. That was how she knew he was not from here, and that he would be leaving.</p>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ isCh2 }}" hint-placeholder-val="{{ false }}">
+          <div style="font-family: Literata, Georgia, serif; font-size: 18.5px; line-height: 1.78; color: #22323B;">
+            <p style="margin: 0 0 22px 0;">The descent took the leg in the second hour, on ground that had held six men before him and would hold six after, which he seemed to find more insulting than the break itself.</p>
+            <p style="margin: 0 0 22px 0;">The surgeon splinted it badly, apologised for the splint, and said four weeks at best, and he is not a patient man.</p>
+            <p style="margin: 0 0 22px 0;">He would not say who had set it the first time. He would not say there had been a first time. Tamsin looked at the old ridge in the bone through the skin and did not ask again.</p>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ isCh3 }}" hint-placeholder-val="{{ false }}">
+          <div style="font-family: Literata, Georgia, serif; font-size: 18.5px; line-height: 1.78; color: #22323B;">
+            <p style="margin: 0 0 22px 0;">A tariff in the basin is not a price. It is a number of days, and the days are counted by someone who is not you.</p>
+            <p style="margin: 0 0 22px 0;">Nine, the factor said, and wrote it on the back of her own receipt so that she would have to carry the proof of it herself. Nine days to cross and clear, and after that the wind turns and the crossing is closed and the debt does not close with it.</p>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ isCh5 }}" hint-placeholder-val="{{ false }}">
+          <div style="font-family: Literata, Georgia, serif; font-size: 18.5px; line-height: 1.78; color: #22323B;">
+            <p style="margin: 0 0 22px 0;">Nobody in the basin gave the wind a name until it took something from them, and then everybody had a different one for it, and the cartographer wrote all of them down as though the disagreement were the useful part.</p>
+            <p style="margin: 0 0 22px 0;">Tamsin waited until he had finished the page before she told him about the stone.</p>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ isSheet }}" hint-placeholder-val="{{ false }}">
+          <div>
+            <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 26px;">
+              <div style="width: 56px; height: 56px; border-radius: 14px; background: #E7F0FD; display: flex; align-items: center; justify-content: center; color: #0064E0;">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="8" r="3.6"/><path d="M4.4 20.2a7.6 7.6 0 0 1 15.2 0"/></svg>
+              </div>
+              <div>
+                <h1 style="margin: 0 0 3px 0; font-family: Literata, Georgia, serif; font-size: 27px; font-weight: 600; letter-spacing: -0.01em; color: #1C2B33;">{{ doc.title }}</h1>
+                <div style="font-size: 12.5px; color: #7B8B98;">{{ doc.stamp }}</div>
+              </div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px;">
+              <div style="border: 1px solid #DCE3E9; border-radius: 10px; padding: 14px 15px;">
+                <div style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB; margin-bottom: 7px;">ROLE</div>
+                <div style="font-size: 14px; color: #22323B;">Protagonist · salt-factor, formerly bonded</div>
+              </div>
+              <div style="border: 1px solid #DCE3E9; border-radius: 10px; padding: 14px 15px;">
+                <div style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB; margin-bottom: 7px;">WANTS</div>
+                <div style="font-size: 14px; color: #22323B;">To clear the tariff before the crossing closes</div>
+              </div>
+              <div style="border: 1px solid #DCE3E9; border-radius: 10px; padding: 14px 15px; grid-column: span 2;">
+                <div style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB; margin-bottom: 7px;">CONTINUITY FACTS (INDEXED)</div>
+                <div style="font-size: 14px; line-height: 1.7; color: #22323B;">Left-handed. Scar across the right palm from ch. 1. Cannot swim. Refers to the cartographer only by trade, never by name, until ch. 9.</div>
+              </div>
+            </div>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+          <div style="padding-top: 6px;">
+            <div style="font-family: Literata, Georgia, serif; font-size: 18.5px; line-height: 1.78; color: #C3D0DA;">Start writing, or press Control-Space to continue from the last scene.</div>
+            <div style="margin-top: 26px; display: flex; gap: 10px;">
+              <div class="btn" style="display: flex; align-items: center; gap: 7px; height: 34px; padding: 0 14px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; color: #FFFFFF; background: {{ accent }};">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v6M12 15v6M5.6 5.6l4.2 4.2M14.2 14.2l4.2 4.2M3 12h6M15 12h6M5.6 18.4l4.2-4.2M14.2 9.8l4.2-4.2"/></svg>
+                Continue scene
+              </div>
+              <div class="ghost" style="display: flex; align-items: center; height: 34px; padding: 0 14px; border: 1px solid #DCE3E9; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; color: #465A69;">Import Markdown</div>
+            </div>
+          </div>
+          </sc-if>
+
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- Corkboard view -->
+      <sc-if value="{{ isCork }}" hint-placeholder-val="{{ false }}">
+      <div style="flex-grow: 1; overflow-y: auto; background: #F5F7F9;">
+        <div style="display: flex; align-items: center; gap: 10px; padding: 14px 26px 4px 26px;">
+          <span style="font-size: 12px; color: #7B8B98;">Act II — The Crossing · 6 cards</span>
+          <div style="flex-grow: 1;"></div>
+          <div style="display: flex; align-items: center; gap: 7px; font-size: 12px; color: #7B8B98;">
+            <span style="width: 9px; height: 9px; border-radius: 3px; background: #0064E0;"></span>Plot
+            <span style="width: 9px; height: 9px; border-radius: 3px; background: #A033FF; margin-left: 8px;"></span>Character
+            <span style="width: 9px; height: 9px; border-radius: 3px; background: #FF5C01; margin-left: 8px;"></span>Setup
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; padding: 16px 26px 40px 26px;">
+
+          <div class="card" style="background: #FFFFFF; border: 1px solid #DCE3E9; border-radius: 11px; overflow: hidden; box-shadow: 0 1px 2px rgba(28,43,51,0.05);">
+            <div style="height: 4px; background: #0064E0;"></div>
+            <div style="padding: 14px 15px 12px 15px;">
+              <div style="font-size: 13.5px; font-weight: 600; margin-bottom: 8px; color: #1C2B33;">1. The Well at Kharsa</div>
+              <div style="font-size: 12.5px; line-height: 1.6; color: #465A69; height: 82px; overflow: hidden;">Tamsin buys water she cannot pay for and meets the cartographer, who is measuring a well that everyone else is drinking from.</div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-top: 12px; padding-top: 11px; border-top: 1px solid #EDF1F4;">
+                <span style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.05em; color: #1D8A3C; background: #E4F5E9; border-radius: 5px; padding: 3px 7px;">DONE</span>
+                <div style="flex-grow: 1;"></div>
+                <span style="font-size: 11.5px; color: #93A2AE;">2,940 w</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="background: #FFFFFF; border: 1px solid #DCE3E9; border-radius: 11px; overflow: hidden; box-shadow: 0 1px 2px rgba(28,43,51,0.05);">
+            <div style="height: 4px; background: #A033FF;"></div>
+            <div style="padding: 14px 15px 12px 15px;">
+              <div style="font-size: 13.5px; font-weight: 600; margin-bottom: 8px; color: #1C2B33;">2. What the Cartographer Kept</div>
+              <div style="font-size: 12.5px; line-height: 1.6; color: #465A69; height: 82px; overflow: hidden;">His leg is broken on the descent and splinted badly. He refuses to name the man who set it. Four weeks at best, the surgeon says.</div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-top: 12px; padding-top: 11px; border-top: 1px solid #EDF1F4;">
+                <span style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.05em; color: #1D8A3C; background: #E4F5E9; border-radius: 5px; padding: 3px 7px;">DONE</span>
+                <div style="flex-grow: 1;"></div>
+                <span style="font-size: 11.5px; color: #93A2AE;">3,110 w</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="background: #FFFFFF; border: 1px solid #DCE3E9; border-radius: 11px; overflow: hidden; box-shadow: 0 1px 2px rgba(28,43,51,0.05);">
+            <div style="height: 4px; background: #FF5C01;"></div>
+            <div style="padding: 14px 15px 12px 15px;">
+              <div style="font-size: 13.5px; font-weight: 600; margin-bottom: 8px; color: #1C2B33;">3. Salt and Debt</div>
+              <div style="font-size: 12.5px; line-height: 1.6; color: #465A69; height: 82px; overflow: hidden;">The tariff is explained. Nine days. The crossing closes when the wind turns, and the wind is already turning.</div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-top: 12px; padding-top: 11px; border-top: 1px solid #EDF1F4;">
+                <span style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.05em; color: #1D8A3C; background: #E4F5E9; border-radius: 5px; padding: 3px 7px;">DONE</span>
+                <div style="flex-grow: 1;"></div>
+                <span style="font-size: 11.5px; color: #93A2AE;">2,480 w</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="background: #FFFFFF; border: 2px solid {{ accent }}; border-radius: 11px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,100,224,0.13);">
+            <div style="height: 4px; background: #0064E0;"></div>
+            <div style="padding: 13px 14px 11px 14px;">
+              <div style="font-size: 13.5px; font-weight: 600; margin-bottom: 8px; color: #1C2B33;">4. Nightfall at the Rim</div>
+              <div style="font-size: 12.5px; line-height: 1.6; color: #465A69; height: 82px; overflow: hidden;">They wait out the heat on the rim. The moon rises in the wrong place. Tamsin discovers the marker stone has been moved.</div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-top: 12px; padding-top: 11px; border-top: 1px solid #EDF1F4;">
+                <span style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.05em; color: #B26A00; background: #FFF1D6; border-radius: 5px; padding: 3px 7px;">DRAFT</span>
+                <span style="display: flex; align-items: center; gap: 4px; font-size: 10.5px; font-weight: 700; color: #B26A00;">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 8v5M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>1
+                </span>
+                <div style="flex-grow: 1;"></div>
+                <span style="font-size: 11.5px; color: #93A2AE;">1,214 w</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="background: #FFFFFF; border: 1px solid #DCE3E9; border-radius: 11px; overflow: hidden; box-shadow: 0 1px 2px rgba(28,43,51,0.05);">
+            <div style="height: 4px; background: #0064E0;"></div>
+            <div style="padding: 14px 15px 12px 15px;">
+              <div style="font-size: 13.5px; font-weight: 600; margin-bottom: 8px; color: #1C2B33;">5. The Wind Takes a Name</div>
+              <div style="font-size: 12.5px; line-height: 1.6; color: #465A69; height: 82px; overflow: hidden;">The cartographer collects every name the basin has for the wind. Tamsin tells him about the stone and he does not look surprised.</div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-top: 12px; padding-top: 11px; border-top: 1px solid #EDF1F4;">
+                <span style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.05em; color: #B26A00; background: #FFF1D6; border-radius: 5px; padding: 3px 7px;">DRAFT</span>
+                <div style="flex-grow: 1;"></div>
+                <span style="font-size: 11.5px; color: #93A2AE;">640 w</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="background: #FBFCFD; border: 1px dashed #C3D0DA; border-radius: 11px; overflow: hidden;">
+            <div style="height: 4px; background: #E4EAEF;"></div>
+            <div style="padding: 14px 15px 12px 15px;">
+              <div style="font-size: 13.5px; font-weight: 600; margin-bottom: 8px; color: #A3B0BB;">6. Untitled scene</div>
+              <div style="font-size: 12.5px; line-height: 1.6; color: #C3D0DA; height: 82px; overflow: hidden;">No synopsis yet.</div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-top: 12px; padding-top: 11px; border-top: 1px solid #EDF1F4;">
+                <span style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.05em; color: #7B8B98; background: #EDF1F4; border-radius: 5px; padding: 3px 7px;">EMPTY</span>
+                <div style="flex-grow: 1;"></div>
+                <span style="font-size: 11.5px; color: #C3D0DA;">0 w</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- Outliner view -->
+      <sc-if value="{{ isOutline }}" hint-placeholder-val="{{ false }}">
+      <div style="flex-grow: 1; overflow: auto;">
+        <div style="display: grid; grid-template-columns: 268px minmax(0, 1fr) 108px 100px 78px; align-items: center; height: 34px; background: #F5F7F9; border-bottom: 1px solid #DCE3E9; padding: 0 20px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em; color: #93A2AE; position: sticky; top: 0;">
+          <div style="display: flex; align-items: center; gap: 5px; color: #465A69;">TITLE
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+          <div>SYNOPSIS</div>
+          <div>LABEL</div>
+          <div>STATUS</div>
+          <div style="text-align: right;">WORDS</div>
+        </div>
+
+        <div class="tr" style="display: grid; grid-template-columns: 268px minmax(0, 1fr) 108px 100px 78px; align-items: center; min-height: 46px; padding: 0 20px; border-bottom: 1px solid #EDF1F4; cursor: pointer;">
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #1C2B33;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#93A2AE" stroke-width="1.7" stroke-linejoin="round"><path d="M6 3h8l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/></svg>
+            1. The Well at Kharsa
+          </div>
+          <div style="font-size: 12.5px; color: #7B8B98; padding-right: 20px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Tamsin buys water she cannot pay for and meets the cartographer.</div>
+          <div><span style="font-size: 11px; font-weight: 600; color: #0064E0; background: #E7F0FD; border-radius: 5px; padding: 3px 8px;">Plot</span></div>
+          <div style="font-size: 12px; color: #1D8A3C; font-weight: 600;">Done</div>
+          <div style="text-align: right; font-size: 12.5px; color: #465A69; font-variant-numeric: tabular-nums;">2,940</div>
+        </div>
+
+        <div class="tr" style="display: grid; grid-template-columns: 268px minmax(0, 1fr) 108px 100px 78px; align-items: center; min-height: 46px; padding: 0 20px; border-bottom: 1px solid #EDF1F4; cursor: pointer;">
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #1C2B33;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#93A2AE" stroke-width="1.7" stroke-linejoin="round"><path d="M6 3h8l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/></svg>
+            2. What the Cartographer Kept
+          </div>
+          <div style="font-size: 12.5px; color: #7B8B98; padding-right: 20px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">His leg is broken on the descent and splinted badly. Four weeks at best.</div>
+          <div><span style="font-size: 11px; font-weight: 600; color: #8B24E0; background: #F3E8FF; border-radius: 5px; padding: 3px 8px;">Character</span></div>
+          <div style="font-size: 12px; color: #1D8A3C; font-weight: 600;">Done</div>
+          <div style="text-align: right; font-size: 12.5px; color: #465A69; font-variant-numeric: tabular-nums;">3,110</div>
+        </div>
+
+        <div class="tr" style="display: grid; grid-template-columns: 268px minmax(0, 1fr) 108px 100px 78px; align-items: center; min-height: 46px; padding: 0 20px; border-bottom: 1px solid #EDF1F4; cursor: pointer;">
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #1C2B33;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#93A2AE" stroke-width="1.7" stroke-linejoin="round"><path d="M6 3h8l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/></svg>
+            3. Salt and Debt
+          </div>
+          <div style="font-size: 12.5px; color: #7B8B98; padding-right: 20px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">The tariff is explained. Nine days until the crossing closes.</div>
+          <div><span style="font-size: 11px; font-weight: 600; color: #C24A00; background: #FFEDE0; border-radius: 5px; padding: 3px 8px;">Setup</span></div>
+          <div style="font-size: 12px; color: #1D8A3C; font-weight: 600;">Done</div>
+          <div style="text-align: right; font-size: 12.5px; color: #465A69; font-variant-numeric: tabular-nums;">2,480</div>
+        </div>
+
+        <div class="tr" style="display: grid; grid-template-columns: 268px minmax(0, 1fr) 108px 100px 78px; align-items: center; min-height: 46px; padding: 0 20px; border-bottom: 1px solid #EDF1F4; cursor: pointer; background: {{ accentSoft }};">
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: {{ accent }};">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M6 3h8l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/></svg>
+            4. Nightfall at the Rim
+          </div>
+          <div style="font-size: 12.5px; color: #465A69; padding-right: 20px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">The moon rises in the wrong place. The marker stone has been moved.</div>
+          <div><span style="font-size: 11px; font-weight: 600; color: #0064E0; background: #E7F0FD; border-radius: 5px; padding: 3px 8px;">Plot</span></div>
+          <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #B26A00; font-weight: 600;">Draft
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 8v5M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>
+          </div>
+          <div style="text-align: right; font-size: 12.5px; color: #465A69; font-variant-numeric: tabular-nums;">1,214</div>
+        </div>
+
+        <div class="tr" style="display: grid; grid-template-columns: 268px minmax(0, 1fr) 108px 100px 78px; align-items: center; min-height: 46px; padding: 0 20px; border-bottom: 1px solid #EDF1F4; cursor: pointer;">
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #1C2B33;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#93A2AE" stroke-width="1.7" stroke-linejoin="round"><path d="M6 3h8l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/></svg>
+            5. The Wind Takes a Name
+          </div>
+          <div style="font-size: 12.5px; color: #7B8B98; padding-right: 20px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Every name the basin has for the wind, written down in one column.</div>
+          <div><span style="font-size: 11px; font-weight: 600; color: #0064E0; background: #E7F0FD; border-radius: 5px; padding: 3px 8px;">Plot</span></div>
+          <div style="font-size: 12px; color: #B26A00; font-weight: 600;">Draft</div>
+          <div style="text-align: right; font-size: 12.5px; color: #465A69; font-variant-numeric: tabular-nums;">640</div>
+        </div>
+
+        <div class="tr" style="display: grid; grid-template-columns: 268px minmax(0, 1fr) 108px 100px 78px; align-items: center; min-height: 46px; padding: 0 20px; border-bottom: 1px solid #EDF1F4; cursor: pointer;">
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #A3B0BB;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#C3D0DA" stroke-width="1.7" stroke-linejoin="round"><path d="M6 3h8l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/></svg>
+            6. Untitled scene
+          </div>
+          <div style="font-size: 12.5px; color: #C3D0DA; padding-right: 20px;">No synopsis yet.</div>
+          <div><span style="font-size: 11px; font-weight: 600; color: #7B8B98; background: #EDF1F4; border-radius: 5px; padding: 3px 8px;">None</span></div>
+          <div style="font-size: 12px; color: #A3B0BB; font-weight: 600;">Empty</div>
+          <div style="text-align: right; font-size: 12.5px; color: #C3D0DA; font-variant-numeric: tabular-nums;">0</div>
+        </div>
+      </div>
+      </sc-if>
+
+    </div>
+
+    <!-- Inspector -->
+    <sc-if value="{{ showInspector }}" hint-placeholder-val="{{ true }}">
+    <div style="width: 322px; flex-shrink: 0; display: flex; flex-direction: column; background: #FFFFFF; border-left: 1px solid #DCE3E9;">
+      <div style="height: 44px; flex-shrink: 0; display: flex; align-items: stretch; gap: 2px; padding: 0 12px; border-bottom: 1px solid #EDF1F4;">
+        <div class="seg" onClick="{{ goSyn }}" style="display: flex; align-items: center; padding: 0 11px; font-size: 12.5px; font-weight: 600; cursor: pointer; color: {{ tab.syn.fg }}; box-shadow: {{ tab.syn.line }};">Synopsis</div>
+        <div class="seg" onClick="{{ goNotes }}" style="display: flex; align-items: center; padding: 0 11px; font-size: 12.5px; font-weight: 600; cursor: pointer; color: {{ tab.notes.fg }}; box-shadow: {{ tab.notes.line }};">Notes</div>
+        <div class="seg" onClick="{{ goAgent }}" style="display: flex; align-items: center; gap: 6px; padding: 0 11px; font-size: 12.5px; font-weight: 600; cursor: pointer; color: {{ tab.agent.fg }}; box-shadow: {{ tab.agent.line }};">
+          Agent
+          <span style="font-size: 10px; font-weight: 700; color: #FFFFFF; background: #FF5C01; border-radius: 9px; padding: 1px 5px;">1</span>
+        </div>
+      </div>
+
+      <div style="flex-grow: 1; overflow-y: auto; padding: 16px 16px 24px 16px;">
+
+        <sc-if value="{{ isSyn }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB; margin-bottom: 8px;">SYNOPSIS</div>
+          <div style="border: 1px solid #DCE3E9; border-radius: 9px; padding: 11px 12px; font-size: 13px; line-height: 1.62; color: #22323B; min-height: 96px; background: #FBFCFD;">They wait out the heat on the rim. The moon rises in the wrong place. Tamsin discovers the marker stone has been moved.</div>
+
+          <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 18px;">
+            <div>
+              <div style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB; margin-bottom: 7px;">LABEL</div>
+              <div style="display: flex; align-items: center; gap: 7px; height: 32px; padding: 0 10px; border: 1px solid #DCE3E9; border-radius: 8px; font-size: 13px; color: #22323B; cursor: pointer;">
+                <span style="width: 9px; height: 9px; border-radius: 3px; background: #0064E0;"></span>Plot
+                <div style="flex-grow: 1;"></div>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#93A2AE" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+              </div>
+            </div>
+            <div>
+              <div style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB; margin-bottom: 7px;">STATUS</div>
+              <div style="display: flex; align-items: center; gap: 7px; height: 32px; padding: 0 10px; border: 1px solid #DCE3E9; border-radius: 8px; font-size: 13px; color: #22323B; cursor: pointer;">
+                Draft
+                <div style="flex-grow: 1;"></div>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#93A2AE" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: 18px;">
+            <div style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB; margin-bottom: 8px;">KEYWORDS</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+              <span style="font-size: 11.5px; font-weight: 500; color: #465A69; background: #EDF1F4; border-radius: 6px; padding: 4px 9px;">tamsin</span>
+              <span style="font-size: 11.5px; font-weight: 500; color: #465A69; background: #EDF1F4; border-radius: 6px; padding: 4px 9px;">cartographer</span>
+              <span style="font-size: 11.5px; font-weight: 500; color: #465A69; background: #EDF1F4; border-radius: 6px; padding: 4px 9px;">the rim</span>
+              <span style="font-size: 11.5px; font-weight: 500; color: #465A69; background: #EDF1F4; border-radius: 6px; padding: 4px 9px;">marker stone</span>
+              <span style="display: flex; align-items: center; gap: 3px; font-size: 11.5px; font-weight: 600; color: #93A2AE; border: 1px dashed #C3D0DA; border-radius: 6px; padding: 3px 9px; cursor: pointer;">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Add
+              </span>
+            </div>
+          </div>
+
+          <div style="margin-top: 20px; padding-top: 18px; border-top: 1px solid #EDF1F4;">
+            <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 9px;">
+              <span style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">SESSION TARGET</span>
+              <div style="flex-grow: 1;"></div>
+              <span style="font-size: 12px; color: #465A69; font-variant-numeric: tabular-nums;">1,214 / 2,000</span>
+            </div>
+            <div style="height: 7px; border-radius: 4px; background: #EDF1F4; overflow: hidden;">
+              <div style="height: 7px; border-radius: 4px; width: 61%; background: {{ accent }};"></div>
+            </div>
+          </div>
+
+          <div style="margin-top: 20px; padding-top: 18px; border-top: 1px solid #EDF1F4;">
+            <div style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB; margin-bottom: 9px;">SNAPSHOTS</div>
+            <div style="display: flex; align-items: center; gap: 9px; font-size: 12.5px; color: #465A69; padding: 5px 0;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#93A2AE" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 7.4V12l3 1.8"/></svg>
+              12 minutes ago <span style="color: #A3B0BB;">· before agent write</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 9px; font-size: 12.5px; color: #465A69; padding: 5px 0;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#93A2AE" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 7.4V12l3 1.8"/></svg>
+              Yesterday, 21:40 <span style="color: #A3B0BB;">· manual</span>
+            </div>
+          </div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ isNotes }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB; margin-bottom: 8px;">DOCUMENT NOTES</div>
+          <div style="font-size: 13px; line-height: 1.72; color: #22323B;">
+            <p style="margin: 0 0 14px 0;">The moon detail has to be verifiable — a reader who checks the earlier crossings should be able to catch it before Tamsin does.</p>
+            <p style="margin: 0 0 14px 0;">Do not name the wind in this chapter. That belongs to 5.</p>
+            <p style="margin: 0;">Cut the arithmetic paragraph if the chapter runs long. It repeats work chapter 3 already did.</p>
+          </div>
+          <div style="margin-top: 22px; padding-top: 18px; border-top: 1px solid #EDF1F4;">
+            <div style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB; margin-bottom: 8px;">PROJECT NOTES</div>
+            <div style="font-size: 13px; line-height: 1.72; color: #7B8B98;">Nine-day tariff clock starts in ch. 3. Every scene after it should be datable.</div>
+          </div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ isAgent }}" hint-placeholder-val="{{ true }}">
+        <div>
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+            <span style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">LAST RUN</span>
+            <div style="flex-grow: 1;"></div>
+            <span style="display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; color: #1D8A3C; background: #E4F5E9; border-radius: 6px; padding: 3px 8px;">
+              <span style="width: 6px; height: 6px; border-radius: 50%; background: #31A24C;"></span>Local
+            </span>
+          </div>
+
+          <div style="border: 1px solid #DCE3E9; border-radius: 10px; overflow: hidden;">
+            <div style="display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: #F5F7F9; border-bottom: 1px solid #DCE3E9;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#465A69" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v6M12 15v6M5.6 5.6l4.2 4.2M14.2 14.2l4.2 4.2M3 12h6M15 12h6M5.6 18.4l4.2-4.2M14.2 9.8l4.2-4.2"/></svg>
+              <span style="font-size: 12.5px; font-weight: 600; color: #1C2B33;">Deep Continuity</span>
+              <div style="flex-grow: 1;"></div>
+              <span style="font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 10.5px; color: #7B8B98;">hermes3:8b</span>
+            </div>
+            <div style="padding: 11px 12px; font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 11px; line-height: 1.85; color: #465A69;">
+              <div style="display: flex; gap: 8px;"><span style="color: #31A24C;">✓</span><span>extract_entities(scene=4)</span></div>
+              <div style="display: flex; gap: 8px;"><span style="color: #31A24C;">✓</span><span>search_binder("cartographer leg")</span></div>
+              <div style="display: flex; gap: 8px;"><span style="color: #31A24C;">✓</span><span>search_binder("tariff day count")</span></div>
+              <div style="display: flex; gap: 8px;"><span style="color: #31A24C;">✓</span><span>highlight_text_in_editor(1)</span></div>
+              <div style="display: flex; gap: 8px; color: #93A2AE; padding-top: 4px;"><span>·</span><span>4 hops · 6.2s · 0 network calls</span></div>
+            </div>
+          </div>
+
+          <div style="margin-top: 16px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB; margin-bottom: 9px;">ISSUES FOUND</div>
+
+          <div style="border: 1px solid #F2D9A4; background: #FFFAF0; border-radius: 10px; padding: 12px 13px;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+              <span style="display: flex; align-items: center; justify-content: center; width: 17px; height: 17px; border-radius: 50%; background: #FFC800; color: #6B4A00; font-size: 10px; font-weight: 700;">1</span>
+              <span style="font-size: 12.5px; font-weight: 700; color: #7A5200;">Timeline conflict</span>
+              <div style="flex-grow: 1;"></div>
+              <span style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.05em; color: #B26A00;">HIGH</span>
+            </div>
+            <div style="font-size: 12.5px; line-height: 1.62; color: #5C4300;">He “sprinted, favouring nothing” — but ch. 2 splints a fractured left tibia and gives it four weeks. This scene is dated day nine.</div>
+            <div style="margin-top: 10px; padding: 8px 10px; background: #FFFFFF; border: 1px solid #F2E3C4; border-radius: 7px;">
+              <div style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; color: #B08A4A; margin-bottom: 4px;">EVIDENCE</div>
+              <div style="font-size: 12px; line-height: 1.55; color: #6B5533;">Manuscript / Act I / 2. What the Cartographer Kept — “four weeks at best, and he is not a patient man.”</div>
+            </div>
+            <div style="display: flex; gap: 7px; margin-top: 11px;">
+              <div class="btn" style="display: flex; align-items: center; height: 29px; padding: 0 12px; border-radius: 7px; cursor: pointer; font-size: 12px; font-weight: 600; color: #FFFFFF; background: {{ accent }};">Rewrite passage</div>
+              <div class="ghost" style="display: flex; align-items: center; height: 29px; padding: 0 12px; border: 1px solid #E4D6B4; border-radius: 7px; cursor: pointer; font-size: 12px; font-weight: 600; color: #7A5200;">Dismiss</div>
+            </div>
+          </div>
+
+          <div style="margin-top: 14px; display: flex; align-items: center; justify-content: center; gap: 7px; height: 34px; border: 1px dashed #C3D0DA; border-radius: 8px; cursor: pointer; font-size: 12.5px; font-weight: 600; color: #465A69;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 1 2.6 5.9"/><path d="M4 20v-5h5"/></svg>
+            Re-run on this scene
+          </div>
+        </div>
+        </sc-if>
+
+      </div>
+    </div>
+    </sc-if>
+
+  </div>
+
+  <!-- Status bar -->
+  <div style="height: 28px; flex-shrink: 0; display: flex; align-items: center; gap: 16px; padding: 0 14px; background: #F5F7F9; border-top: 1px solid #DCE3E9; font-size: 11.5px; color: #7B8B98;">
+    <span style="display: flex; align-items: center; gap: 6px;">
+      <span style="width: 7px; height: 7px; border-radius: 50%; background: #31A24C;"></span>
+      Ollama · hermes3:8b
+    </span>
+    <span style="display: flex; align-items: center; gap: 6px;">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 7c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3z"/><path d="M4 7v10c0 1.7 3.6 3 8 3s8-1.3 8-3V7"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>
+      Index up to date · 1,842 chunks
+    </span>
+    <span style="display: flex; align-items: center; gap: 6px;">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18.4 6.2A9 9 0 1 0 21 12"/><path d="M12 12l4-4"/><path d="M3 3l18 18"/></svg>
+      Offline — no network calls this session
+    </span>
+    <div style="flex-grow: 1;"></div>
+    <span>Snapshot 12m ago</span>
+    <span style="font-variant-numeric: tabular-nums;">1,214 words today</span>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#0064E0","options":["#0064E0","#0082FB","#A033FF","#1C2B33"],"section":"Theme"},"zen":{"editor":"boolean","default":false,"section":"Layout"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { doc: 'ch4', view: 'editor', tab: 'agent', binder: true, inspector: true };
+  }
+
+  tint(hex, a) {
+    var h = String(hex || '#0064E0').replace('#', '');
+    if (h.length === 3) { h = h.charAt(0) + h.charAt(0) + h.charAt(1) + h.charAt(1) + h.charAt(2) + h.charAt(2); }
+    var n = parseInt(h, 16);
+    if (isNaN(n)) { n = 0x0064E0; }
+    return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+  }
+
+  renderVals() {
+    var self = this;
+    var st = this.state;
+    var accent = this.props.accent || '#0064E0';
+    var zen = this.props.zen === true;
+
+    var DOCS = {
+      ch1:    { title: '1. The Well at Kharsa',        crumb: 'Manuscript / Act I',        words: '2,940', target: '3,000', pct: 98,  stamp: 'Scene · last edited 6 days ago',  kind: 'ch1' },
+      ch2:    { title: '2. What the Cartographer Kept', crumb: 'Manuscript / Act I',       words: '3,110', target: '3,000', pct: 100, stamp: 'Scene · last edited 5 days ago',  kind: 'ch2' },
+      ch3:    { title: '3. Salt and Debt',              crumb: 'Manuscript / Act I',       words: '2,480', target: '3,000', pct: 82,  stamp: 'Scene · last edited 4 days ago',  kind: 'ch3' },
+      ch4:    { title: '4. Nightfall at the Rim',       crumb: 'Manuscript / Act II',      words: '1,214', target: '2,000', pct: 61,  stamp: 'Scene · draft · edited 2 minutes ago', kind: 'ch4' },
+      ch5:    { title: '5. The Wind Takes a Name',      crumb: 'Manuscript / Act II',      words: '640',   target: '2,000', pct: 32,  stamp: 'Scene · draft · edited yesterday', kind: 'ch5' },
+      ch6:    { title: '6. Untitled scene',             crumb: 'Manuscript / Act II',      words: '0',     target: '2,000', pct: 0,   stamp: 'Scene · empty',                   kind: 'empty' },
+      tamsin: { title: 'Tamsin Reyes',                  crumb: 'Characters',               words: '410',   target: '600',   pct: 68,  stamp: 'Character sheet · 9 indexed facts', kind: 'sheet' },
+      carto:  { title: 'The Cartographer',              crumb: 'Characters',               words: '0',     target: '600',   pct: 0,   stamp: 'Character sheet · empty',          kind: 'empty' },
+      basin:  { title: 'The Kharsa Basin',              crumb: 'Worldbuilding',            words: '0',     target: '800',   pct: 0,   stamp: 'Lore document · empty',            kind: 'empty' },
+      salt:   { title: 'Salt Roads and Tariffs',        crumb: 'Worldbuilding',            words: '0',     target: '800',   pct: 0,   stamp: 'Lore document · empty',            kind: 'empty' },
+      notes:  { title: 'Evaporite geology (clippings)', crumb: 'Research',                 words: '0',     target: '0',     pct: 0,   stamp: 'Research · empty',                 kind: 'empty' }
+    };
+
+    var soft = this.tint(accent, 0.10);
+    var pick = {}, sel = {};
+    Object.keys(DOCS).forEach(function (id) {
+      pick[id] = function () { self.setState({ doc: id }); };
+      var on = st.doc === id;
+      sel[id] = {
+        bg: on ? soft : 'transparent',
+        fg: on ? accent : '#465A69',
+        w: on ? '600' : '450',
+        cls: on ? 'on' : 'off'
+      };
+    });
+
+    function segStyle(on) {
+      return {
+        bg: on ? '#FFFFFF' : 'transparent',
+        fg: on ? accent : '#7B8B98',
+        sh: on ? '0 1px 2px rgba(28,43,51,0.12)' : 'none'
+      };
+    }
+    function tabStyle(on) {
+      return {
+        fg: on ? accent : '#7B8B98',
+        line: on ? ('inset 0 -2px 0 0 ' + accent) : 'none'
+      };
+    }
+
+    var doc = DOCS[st.doc] || DOCS.ch4;
+
+    return {
+      accent: accent,
+      accentSoft: soft,
+      zen: zen,
+      doc: doc,
+      colw: zen ? 740 : 680,
+
+      showBinder: !zen && st.binder,
+      showInspector: !zen && st.inspector,
+      paneBtn: {
+        binder: (!zen && st.binder) ? accent : '#93A2AE',
+        inspector: (!zen && st.inspector) ? accent : '#93A2AE'
+      },
+      toggleBinder: function () { self.setState({ binder: !st.binder }); },
+      toggleInspector: function () { self.setState({ inspector: !st.inspector }); },
+
+      isEditor: st.view === 'editor',
+      isCork: st.view === 'cork',
+      isOutline: st.view === 'outline',
+      goEditor: function () { self.setState({ view: 'editor' }); },
+      goCork: function () { self.setState({ view: 'cork' }); },
+      goOutline: function () { self.setState({ view: 'outline' }); },
+      seg: {
+        editor: segStyle(st.view === 'editor'),
+        cork: segStyle(st.view === 'cork'),
+        outline: segStyle(st.view === 'outline')
+      },
+
+      isCh1: doc.kind === 'ch1',
+      isCh2: doc.kind === 'ch2',
+      isCh3: doc.kind === 'ch3',
+      isCh4: doc.kind === 'ch4',
+      isCh5: doc.kind === 'ch5',
+      isSheet: doc.kind === 'sheet',
+      isEmpty: doc.kind === 'empty',
+      isScene: doc.kind !== 'sheet',
+
+      isSyn: st.tab === 'synopsis',
+      isNotes: st.tab === 'notes',
+      isAgent: st.tab === 'agent',
+      goSyn: function () { self.setState({ tab: 'synopsis' }); },
+      goNotes: function () { self.setState({ tab: 'notes' }); },
+      goAgent: function () { self.setState({ tab: 'agent' }); },
+      tab: {
+        syn: tabStyle(st.tab === 'synopsis'),
+        notes: tabStyle(st.tab === 'notes'),
+        agent: tabStyle(st.tab === 'agent')
+      },
+
+      pick: pick,
+      sel: sel
+    };
+  }
+}
+</script>
+</body>
+</html>

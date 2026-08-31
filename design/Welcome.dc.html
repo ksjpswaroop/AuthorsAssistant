@@ -1,0 +1,189 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Literata:opsz,wght@7..72,400;7..72,600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; font-family: 'Hanken Grotesk', system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #0064E0; text-decoration: none; }
+    a:hover { color: #0052BA; }
+    .row:not(.on):hover { background: #F5F7F9 !important; }
+    .btn:hover { filter: brightness(0.93); }
+    .ghost:hover { background: #EDF1F4 !important; }
+  </style>
+</helmet>
+
+<div style="width: 1000px; height: 680px; display: flex; background: #FFFFFF; color: #1C2B33; overflow: hidden;">
+
+  <!-- Brand rail -->
+  <div style="width: 344px; flex-shrink: 0; display: flex; flex-direction: column; padding: 34px 32px; background: #1C2B33; color: #FFFFFF; position: relative; overflow: hidden;">
+    <div style="position: absolute; top: -120px; right: -140px; width: 340px; height: 340px; border-radius: 50%; background: radial-gradient(circle, rgba(0,130,251,0.42) 0%, rgba(160,51,255,0.16) 48%, rgba(28,43,51,0) 72%);"></div>
+
+    <div style="position: relative; display: flex; align-items: center; gap: 11px;">
+      <div style="width: 30px; height: 30px; border-radius: 9px; background: linear-gradient(135deg, #0082FB 0%, #0064E0 55%, #A033FF 100%);"></div>
+      <span style="font-size: 17px; font-weight: 700; letter-spacing: -0.015em;">AegisDraft</span>
+    </div>
+
+    <div style="position: relative; margin-top: 46px;">
+      <div style="font-family: Literata, Georgia, serif; font-size: 27px; line-height: 1.32; font-weight: 400; letter-spacing: -0.012em;">A book studio that keeps the book on your machine.</div>
+      <div style="margin-top: 16px; font-size: 13.5px; line-height: 1.68; color: #A9BAC6;">Binder, corkboard, outliner and compile — with Hermes 3 agents that write into the project instead of talking about it.</div>
+    </div>
+
+    <div style="flex-grow: 1;"></div>
+
+    <div style="position: relative; display: flex; flex-direction: column; gap: 11px;">
+      <div style="display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: #C6D3DC;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#31A24C" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7.5 3v6c0 4.6-3.1 8.1-7.5 9.4C7.6 20.1 4.5 16.6 4.5 12V6z"/><path d="M9.2 12.2l2 2 3.6-4"/></svg>
+        Models run locally through Ollama
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: #C6D3DC;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#31A24C" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18.4 6.2A9 9 0 1 0 21 12"/><path d="M3 3l18 18"/></svg>
+        No cloud account, no manuscript upload
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: #C6D3DC;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#31A24C" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h8l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/></svg>
+        Scenes stay readable Markdown on disk
+      </div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div style="flex-grow: 1; display: flex; flex-direction: column; min-width: 0;">
+
+    <div style="display: flex; align-items: center; gap: 10px; padding: 26px 30px 0 30px;">
+      <span style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">RECENT PROJECTS</span>
+      <div style="flex-grow: 1;"></div>
+      <span style="font-size: 12.5px; font-weight: 600; color: {{ accent }}; cursor: pointer;">Show all</span>
+    </div>
+
+    <div style="flex-grow: 1; overflow-y: auto; padding: 12px 22px 8px 22px; display: flex; flex-direction: column; gap: 4px;">
+
+      <div class="row {{ sel.salt.cls }}" onClick="{{ pick.salt }}" style="display: flex; align-items: center; gap: 13px; padding: 11px 12px; border-radius: 10px; cursor: pointer; background: {{ sel.salt.bg }}; box-shadow: {{ sel.salt.ring }};">
+        <div style="width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #E7F0FD; color: #0064E0;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V5a2 2 0 0 1 2-2h13v18H6a2 2 0 0 1-2-1.5z"/><path d="M8 7h7"/></svg>
+        </div>
+        <div style="min-width: 0; flex-grow: 1;">
+          <div style="font-size: 14px; font-weight: 600; color: #1C2B33;">The Salt Road</div>
+          <div style="font-size: 12px; color: #93A2AE; margin-top: 2px;">novel · 61,480 words · ~/Books/TheSaltRoad.aegis</div>
+        </div>
+        <div style="font-size: 12px; color: #A3B0BB; flex-shrink: 0;">2 minutes ago</div>
+      </div>
+
+      <div class="row {{ sel.field.cls }}" onClick="{{ pick.field }}" style="display: flex; align-items: center; gap: 13px; padding: 11px 12px; border-radius: 10px; cursor: pointer; background: {{ sel.field.bg }}; box-shadow: {{ sel.field.ring }};">
+        <div style="width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #FFEDE0; color: #C24A00;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V5a2 2 0 0 1 2-2h13v18H6a2 2 0 0 1-2-1.5z"/><path d="M8 7h7"/></svg>
+        </div>
+        <div style="min-width: 0; flex-grow: 1;">
+          <div style="font-size: 14px; font-weight: 600; color: #1C2B33;">Field Notes on Evaporites</div>
+          <div style="font-size: 12px; color: #93A2AE; margin-top: 2px;">nonfiction · 18,220 words · ~/Books/FieldNotes.aegis</div>
+        </div>
+        <div style="font-size: 12px; color: #A3B0BB; flex-shrink: 0;">Yesterday</div>
+      </div>
+
+      <div class="row {{ sel.thesis.cls }}" onClick="{{ pick.thesis }}" style="display: flex; align-items: center; gap: 13px; padding: 11px 12px; border-radius: 10px; cursor: pointer; background: {{ sel.thesis.bg }}; box-shadow: {{ sel.thesis.ring }};">
+        <div style="width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #F3E8FF; color: #8B24E0;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V5a2 2 0 0 1 2-2h13v18H6a2 2 0 0 1-2-1.5z"/><path d="M8 7h7"/></svg>
+        </div>
+        <div style="min-width: 0; flex-grow: 1;">
+          <div style="font-size: 14px; font-weight: 600; color: #1C2B33;">Attention Economies (thesis)</div>
+          <div style="font-size: 12px; color: #93A2AE; margin-top: 2px;">academic · 34,760 words · ~/Uni/Attention.aegis</div>
+        </div>
+        <div style="font-size: 12px; color: #A3B0BB; flex-shrink: 0;">3 days ago</div>
+      </div>
+
+      <div class="row {{ sel.untitled.cls }}" onClick="{{ pick.untitled }}" style="display: flex; align-items: center; gap: 13px; padding: 11px 12px; border-radius: 10px; cursor: pointer; background: {{ sel.untitled.bg }}; box-shadow: {{ sel.untitled.ring }};">
+        <div style="width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #EDF1F4; color: #93A2AE;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V5a2 2 0 0 1 2-2h13v18H6a2 2 0 0 1-2-1.5z"/><path d="M8 7h7"/></svg>
+        </div>
+        <div style="min-width: 0; flex-grow: 1;">
+          <div style="font-size: 14px; font-weight: 600; color: #1C2B33;">Untitled Draft</div>
+          <div style="font-size: 12px; color: #93A2AE; margin-top: 2px;">no words yet · ~/Desktop/Untitled.aegis</div>
+        </div>
+        <div style="font-size: 12px; color: #A3B0BB; flex-shrink: 0;">Last week</div>
+      </div>
+
+    </div>
+
+    <div style="padding: 12px 30px 0 30px; display: flex; gap: 10px;">
+      <div class="btn" style="display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 17px; border-radius: 9px; cursor: pointer; font-size: 13.5px; font-weight: 600; color: #FFFFFF; background: {{ accent }};">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg>
+        Open {{ chosen }}
+      </div>
+      <div class="ghost" style="display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 15px; border: 1px solid #DCE3E9; border-radius: 9px; cursor: pointer; font-size: 13.5px; font-weight: 600; color: #465A69;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        New project
+      </div>
+      <div class="ghost" style="display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 15px; border: 1px solid #DCE3E9; border-radius: 9px; cursor: pointer; font-size: 13.5px; font-weight: 600; color: #465A69;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        Open folder…
+      </div>
+    </div>
+
+    <div style="margin: 20px 22px 22px 22px; padding: 13px 15px; background: #F5F7F9; border: 1px solid #E4EAEF; border-radius: 11px; display: flex; align-items: center; gap: 12px;">
+      <span style="width: 8px; height: 8px; border-radius: 50%; background: #31A24C; flex-shrink: 0;"></span>
+      <div style="min-width: 0; flex-grow: 1;">
+        <div style="font-size: 13px; font-weight: 600; color: #1C2B33;">Ollama running on localhost:11434</div>
+        <div style="font-size: 12px; color: #7B8B98; margin-top: 2px; font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace;">hermes3:8b · nomic-embed-text · 4 more installed</div>
+      </div>
+      <span style="font-size: 12.5px; font-weight: 600; color: {{ accent }}; cursor: pointer; flex-shrink: 0;">Manage models</span>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#0064E0","options":["#0064E0","#0082FB","#A033FF","#1C2B33"],"section":"Theme"},"$preview":{"width":1000,"height":680}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { project: 'salt' };
+  }
+
+  tint(hex, a) {
+    var h = String(hex || '#0064E0').replace('#', '');
+    if (h.length === 3) { h = h.charAt(0) + h.charAt(0) + h.charAt(1) + h.charAt(1) + h.charAt(2) + h.charAt(2); }
+    var n = parseInt(h, 16);
+    if (isNaN(n)) { n = 0x0064E0; }
+    return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+  }
+
+  renderVals() {
+    var self = this;
+    var st = this.state;
+    var accent = this.props.accent || '#0064E0';
+    var soft = this.tint(accent, 0.09);
+
+    var NAMES = {
+      salt: 'The Salt Road',
+      field: 'Field Notes',
+      thesis: 'Attention Economies',
+      untitled: 'Untitled Draft'
+    };
+
+    var pick = {}, sel = {};
+    Object.keys(NAMES).forEach(function (id) {
+      pick[id] = function () { self.setState({ project: id }); };
+      var on = st.project === id;
+      sel[id] = {
+        bg: on ? soft : 'transparent',
+        ring: on ? ('inset 0 0 0 1px ' + accent) : 'none',
+        cls: on ? 'on' : 'off'
+      };
+    });
+
+    return {
+      accent: accent,
+      chosen: NAMES[st.project] || NAMES.salt,
+      pick: pick,
+      sel: sel
+    };
+  }
+}
+</script>
+</body>
+</html>

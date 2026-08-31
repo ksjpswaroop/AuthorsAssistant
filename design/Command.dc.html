@@ -1,0 +1,276 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Literata:opsz,wght@7..72,400;7..72,600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; font-family: 'Hanken Grotesk', system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #0064E0; text-decoration: none; }
+    a:hover { color: #0052BA; }
+    .btn:hover { filter: brightness(0.93); }
+    .ghost:hover { background: #EDF1F4 !important; }
+    .sug:hover { background: #F5F7F9 !important; }
+  </style>
+</helmet>
+
+<div style="width: 1440px; height: 900px; position: relative; background: #FFFFFF; color: #1C2B33; overflow: hidden;">
+
+  <!-- Dimmed studio behind -->
+  <div style="position: absolute; inset: 0; display: flex; flex-direction: column;">
+    <div style="height: 40px; flex-shrink: 0; display: flex; align-items: center; gap: 14px; padding: 0 12px; background: #F5F7F9; border-bottom: 1px solid #DCE3E9;">
+      <div style="display: flex; gap: 8px; padding-left: 2px;">
+        <div style="width: 12px; height: 12px; border-radius: 50%; background: #FF5F57;"></div>
+        <div style="width: 12px; height: 12px; border-radius: 50%; background: #FEBC2E;"></div>
+        <div style="width: 12px; height: 12px; border-radius: 50%; background: #28C840;"></div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 9px; padding-left: 8px;">
+        <div style="width: 18px; height: 18px; border-radius: 5px; background: linear-gradient(135deg, #0082FB 0%, #0064E0 55%, #A033FF 100%);"></div>
+        <span style="font-size: 13px; font-weight: 600;">The Salt Road</span>
+      </div>
+    </div>
+    <div style="flex-grow: 1; display: flex;">
+      <div style="width: 254px; flex-shrink: 0; background: #F5F7F9; border-right: 1px solid #DCE3E9; padding: 16px 16px; display: flex; flex-direction: column; gap: 13px;">
+        <div style="height: 8px; width: 78px; border-radius: 4px; background: #DDE4EA;"></div>
+        <div style="height: 9px; width: 150px; border-radius: 4px; background: #E4EAEF;"></div>
+        <div style="height: 9px; width: 128px; border-radius: 4px; background: #E4EAEF; margin-left: 16px;"></div>
+        <div style="height: 9px; width: 168px; border-radius: 4px; background: #E4EAEF; margin-left: 16px;"></div>
+        <div style="height: 9px; width: 112px; border-radius: 4px; background: #E4EAEF; margin-left: 16px;"></div>
+        <div style="height: 9px; width: 146px; border-radius: 4px; background: #E4EAEF;"></div>
+        <div style="height: 9px; width: 160px; border-radius: 4px; background: #E4EAEF; margin-left: 16px;"></div>
+      </div>
+      <div style="flex-grow: 1; display: flex; justify-content: center; padding-top: 54px;">
+        <div style="width: 680px; font-family: Literata, Georgia, serif; font-size: 18.5px; line-height: 1.78; color: #C3D0DA;">
+          <div style="font-size: 33px; font-weight: 600; color: #B7C4CE; margin-bottom: 30px;">4. Nightfall at the Rim</div>
+          <p style="margin: 0 0 22px 0;">The rim of the basin held the last of the heat the way a kiln holds it, grudgingly and all at once. Tamsin counted forty paces out to the marker stone and stopped counting when the wind erased her fortieth footprint before she had finished making it.</p>
+          <p style="margin: 0 0 22px 0;">Below them the salt went on being white in the dark. Not glowing — she wanted to be exact about that later, when the cartographer asked her to write it down — just refusing to be black like everything else.</p>
+        </div>
+      </div>
+      <div style="width: 322px; flex-shrink: 0; background: #FFFFFF; border-left: 1px solid #DCE3E9; padding: 18px 16px; display: flex; flex-direction: column; gap: 13px;">
+        <div style="height: 8px; width: 92px; border-radius: 4px; background: #E4EAEF;"></div>
+        <div style="height: 76px; border-radius: 9px; background: #F5F7F9;"></div>
+        <div style="height: 8px; width: 64px; border-radius: 4px; background: #E4EAEF;"></div>
+        <div style="height: 34px; border-radius: 8px; background: #F5F7F9;"></div>
+      </div>
+    </div>
+    <div style="height: 28px; flex-shrink: 0; background: #F5F7F9; border-top: 1px solid #DCE3E9;"></div>
+  </div>
+
+  <div style="position: absolute; inset: 0; background: rgba(21,33,40,0.44);"></div>
+
+  <!-- Command palette -->
+  <div style="position: absolute; top: 112px; left: 360px; width: 720px; background: #FFFFFF; border-radius: 16px; box-shadow: 0 28px 70px rgba(15,25,32,0.34), 0 2px 8px rgba(15,25,32,0.16); overflow: hidden;">
+
+    <div style="display: flex; align-items: center; gap: 13px; padding: 17px 19px; border-bottom: 1px solid #EDF1F4;">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="{{ accent }}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v6M12 15v6M5.6 5.6l4.2 4.2M14.2 14.2l4.2 4.2M3 12h6M15 12h6M5.6 18.4l4.2-4.2M14.2 9.8l4.2-4.2"/></svg>
+      <div style="flex-grow: 1; font-size: 16.5px; color: #1C2B33; letter-spacing: -0.005em;">Create a folder for Act III, add three empty chapters inside it, and start a character sheet for the antagonist<span style="display: inline-block; width: 1.5px; height: 19px; background: {{ accent }}; margin-left: 2px; transform: translateY(3px);"></span></div>
+      <span style="flex-shrink: 0; font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 11px; color: #93A2AE; border: 1px solid #DCE3E9; border-radius: 5px; padding: 2px 6px;">esc</span>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 9px; padding: 9px 19px; background: #F5F7F9; border-bottom: 1px solid #EDF1F4;">
+      <span style="display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; color: #465A69; background: #FFFFFF; border: 1px solid #DCE3E9; border-radius: 7px; padding: 3px 9px;">
+        <span style="width: 6px; height: 6px; border-radius: 50%; background: {{ accent }};"></span>App Controller
+      </span>
+      <span style="font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 11px; color: #7B8B98;">hermes3:8b</span>
+      <div style="flex-grow: 1;"></div>
+      <span style="display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: #7B8B98;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#31A24C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.4 6.2A9 9 0 1 0 21 12"/><path d="M3 3l18 18"/></svg>
+        runs offline
+      </span>
+    </div>
+
+    <!-- Step 0: suggestions -->
+    <sc-if value="{{ isIdle }}" hint-placeholder-val="{{ true }}">
+    <div style="padding: 10px 10px 12px 10px;">
+      <div style="padding: 5px 10px 8px 10px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">INTERPRETED AS</div>
+      <div class="sug" style="display: flex; align-items: center; gap: 12px; padding: 11px 11px; border-radius: 10px; background: {{ accentSoft }}; cursor: pointer;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="{{ accent }}" stroke-width="1.8" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        <div style="flex-grow: 1;">
+          <div style="font-size: 13.5px; font-weight: 600; color: #1C2B33;">Multi-step binder change · 4 tool calls</div>
+          <div style="font-size: 12px; color: #7B8B98; margin-top: 2px;">create_folder · create_chapter ×3 · create_character_sheet</div>
+        </div>
+        <span style="font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 11px; color: #7B8B98; border: 1px solid #DCE3E9; border-radius: 5px; padding: 2px 6px; background: #FFFFFF;">↵</span>
+      </div>
+
+      <div style="padding: 14px 10px 8px 10px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">RECENT</div>
+      <div class="sug" style="display: flex; align-items: center; gap: 12px; padding: 9px 11px; border-radius: 10px; cursor: pointer;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#93A2AE" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 7.4V12l3 1.8"/></svg>
+        <span style="flex-grow: 1; font-size: 13px; color: #465A69;">Check chapter 4 against the rest of the book for continuity</span>
+        <span style="font-size: 11.5px; color: #A3B0BB;">Deep Continuity</span>
+      </div>
+      <div class="sug" style="display: flex; align-items: center; gap: 12px; padding: 9px 11px; border-radius: 10px; cursor: pointer;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#93A2AE" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 7.4V12l3 1.8"/></svg>
+        <span style="flex-grow: 1; font-size: 13px; color: #465A69;">Write the lore for the Kharsa Basin and file it under Worldbuilding</span>
+        <span style="font-size: 11.5px; color: #A3B0BB;">World-Builder</span>
+      </div>
+
+      <div style="margin-top: 12px; padding: 10px 11px 2px 11px; display: flex; justify-content: flex-end;">
+        <div class="btn" onClick="{{ next }}" style="display: flex; align-items: center; gap: 7px; height: 34px; padding: 0 16px; border-radius: 9px; cursor: pointer; font-size: 13px; font-weight: 600; color: #FFFFFF; background: {{ accent }};">Plan it</div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- Step 1: plan proposed -->
+    <sc-if value="{{ isPlan }}" hint-placeholder-val="{{ false }}">
+    <div style="padding: 16px 19px 18px 19px;">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 13px;">
+        <span style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">PROPOSED PLAN · 4 STEPS</span>
+        <div style="flex-grow: 1;"></div>
+        <span style="font-size: 11.5px; color: #7B8B98;">max 8 hops</span>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 2px;">
+        <div style="display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 9px; background: #F7F9FB;">
+          <span style="width: 20px; height: 20px; border-radius: 50%; background: #E4EAEF; color: #465A69; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">1</span>
+          <span style="font-size: 13.5px; color: #22323B; flex-grow: 1;">Create the folder <b style="font-weight: 600;">Act III</b> under Manuscript</span>
+          <span style="font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 11px; color: #7B8B98;">create_folder</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 9px; background: #F7F9FB;">
+          <span style="width: 20px; height: 20px; border-radius: 50%; background: #E4EAEF; color: #465A69; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">2</span>
+          <span style="font-size: 13.5px; color: #22323B; flex-grow: 1;">Add <b style="font-weight: 600;">3 empty chapters</b> inside it</span>
+          <span style="font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 11px; color: #7B8B98;">create_chapter ×3</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 9px; background: #F7F9FB;">
+          <span style="width: 20px; height: 20px; border-radius: 50%; background: #E4EAEF; color: #465A69; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">3</span>
+          <span style="font-size: 13.5px; color: #22323B; flex-grow: 1;">Create a character sheet named <b style="font-weight: 600;">Antagonist</b> under Characters</span>
+          <span style="font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 11px; color: #7B8B98;">create_character_sheet</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 9px; background: #F7F9FB;">
+          <span style="width: 20px; height: 20px; border-radius: 50%; background: #E4EAEF; color: #465A69; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">4</span>
+          <span style="font-size: 13.5px; color: #22323B; flex-grow: 1;">Refresh the binder and select Act III</span>
+          <span style="font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 11px; color: #7B8B98;">binder_changed</span>
+        </div>
+      </div>
+
+      <div style="margin-top: 14px; display: flex; align-items: center; gap: 11px; padding: 11px 13px; background: #F0F6FF; border: 1px solid #CFE1FA; border-radius: 10px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0064E0" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 7.4V12l3 1.8"/></svg>
+        <span style="flex-grow: 1; font-size: 12.5px; color: #1F4F8F;">A snapshot will be taken before these writes so the whole run can be reverted.</span>
+        <span style="width: 34px; height: 20px; border-radius: 11px; background: #0064E0; position: relative; flex-shrink: 0; cursor: pointer;"><span style="position: absolute; top: 2px; left: 16px; width: 16px; height: 16px; border-radius: 50%; background: #FFFFFF;"></span></span>
+      </div>
+
+      <div style="margin-top: 15px; display: flex; align-items: center; gap: 9px;">
+        <div class="ghost" onClick="{{ reset }}" style="display: flex; align-items: center; height: 34px; padding: 0 15px; border: 1px solid #DCE3E9; border-radius: 9px; cursor: pointer; font-size: 13px; font-weight: 600; color: #465A69;">Cancel</div>
+        <div style="flex-grow: 1;"></div>
+        <div class="btn" onClick="{{ next }}" style="display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 17px; border-radius: 9px; cursor: pointer; font-size: 13px; font-weight: 600; color: #FFFFFF; background: {{ accent }};">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l13 8-13 8z"/></svg>
+          Run 4 steps
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- Step 2: running -->
+    <sc-if value="{{ isRun }}" hint-placeholder-val="{{ false }}">
+    <div style="padding: 16px 19px 18px 19px;">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px;">
+        <span style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">RUNNING</span>
+        <div style="flex-grow: 1; height: 4px; border-radius: 3px; background: #EDF1F4; overflow: hidden;">
+          <div style="height: 4px; width: 62%; border-radius: 3px; background: {{ accent }};"></div>
+        </div>
+        <span style="font-size: 11.5px; color: #7B8B98; font-variant-numeric: tabular-nums;">step 3 of 4</span>
+      </div>
+
+      <div style="font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 12px; line-height: 2.05; color: #465A69; background: #F7F9FB; border: 1px solid #E4EAEF; border-radius: 10px; padding: 12px 14px;">
+        <div style="display: flex; gap: 10px;"><span style="color: #31A24C;">✓</span><span>create_folder(name="Act III", parent="Manuscript")</span></div>
+        <div style="display: flex; gap: 10px;"><span style="color: #31A24C;">✓</span><span>create_chapter(parent="Act III", count=3)</span></div>
+        <div style="display: flex; gap: 10px; color: #1C2B33;"><span style="color: #FF5C01;">●</span><span>create_character_sheet(name="Antagonist", parent="Characters")</span></div>
+        <div style="display: flex; gap: 10px; color: #A3B0BB;"><span>○</span><span>emit binder_changed</span></div>
+      </div>
+
+      <div style="margin-top: 13px; display: flex; align-items: center; gap: 9px;">
+        <span style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #7B8B98;">
+          <span style="width: 6px; height: 6px; border-radius: 50%; background: #31A24C;"></span>Snapshot taken · 4.1s elapsed · 0 network calls
+        </span>
+        <div style="flex-grow: 1;"></div>
+        <div class="ghost" style="display: flex; align-items: center; height: 32px; padding: 0 14px; border: 1px solid #DCE3E9; border-radius: 9px; cursor: pointer; font-size: 12.5px; font-weight: 600; color: #465A69;">Stop</div>
+        <div class="btn" onClick="{{ next }}" style="display: flex; align-items: center; height: 32px; padding: 0 15px; border-radius: 9px; cursor: pointer; font-size: 12.5px; font-weight: 600; color: #FFFFFF; background: {{ accent }};">Continue</div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- Step 3: done -->
+    <sc-if value="{{ isDone }}" hint-placeholder-val="{{ false }}">
+    <div style="padding: 16px 19px 18px 19px;">
+      <div style="display: flex; align-items: center; gap: 11px; padding: 13px 14px; background: #EEF9F1; border: 1px solid #C9E9D3; border-radius: 11px;">
+        <span style="width: 26px; height: 26px; border-radius: 50%; background: #31A24C; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+        </span>
+        <div style="flex-grow: 1;">
+          <div style="font-size: 13.5px; font-weight: 600; color: #14502A;">4 steps completed · binder updated</div>
+          <div style="font-size: 12px; color: #3B7A50; margin-top: 2px;">Act III · 3 chapters · 1 character sheet — 6.4s, entirely on this machine</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 13px; border: 1px solid #DCE3E9; border-radius: 11px; overflow: hidden;">
+        <div style="padding: 9px 13px; background: #F5F7F9; border-bottom: 1px solid #DCE3E9; font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #93A2AE;">WHAT CHANGED</div>
+        <div style="padding: 5px 0;">
+          <div style="display: flex; align-items: center; gap: 10px; padding: 7px 14px; font-size: 13px; color: #22323B;">
+            <span style="color: #31A24C; font-weight: 700; width: 12px;">+</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7B8B98" stroke-width="1.8" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+            Manuscript / Act III
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px; padding: 7px 14px 7px 34px; font-size: 13px; color: #465A69;">
+            <span style="color: #31A24C; font-weight: 700; width: 12px;">+</span>
+            <span>Chapter 10, Chapter 11, Chapter 12 <span style="color: #A3B0BB;">— empty scenes</span></span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px; padding: 7px 14px; font-size: 13px; color: #22323B;">
+            <span style="color: #31A24C; font-weight: 700; width: 12px;">+</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7B8B98" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.4"/><path d="M4.6 20a7.4 7.4 0 0 1 14.8 0"/></svg>
+            Characters / Antagonist <span style="color: #A3B0BB;">— sheet, 0 facts</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 15px; display: flex; align-items: center; gap: 9px;">
+        <div class="ghost" onClick="{{ reset }}" style="display: flex; align-items: center; gap: 7px; height: 34px; padding: 0 14px; border: 1px solid #DCE3E9; border-radius: 9px; cursor: pointer; font-size: 13px; font-weight: 600; color: #465A69;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 1 2.6 5.9"/><path d="M4 20v-5h5"/></svg>
+          Revert to snapshot
+        </div>
+        <div style="flex-grow: 1;"></div>
+        <div class="btn" style="display: flex; align-items: center; height: 34px; padding: 0 17px; border-radius: 9px; cursor: pointer; font-size: 13px; font-weight: 600; color: #FFFFFF; background: {{ accent }};">Open Act III</div>
+      </div>
+    </div>
+    </sc-if>
+
+  </div>
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#0064E0","options":["#0064E0","#0082FB","#A033FF","#1C2B33"],"section":"Theme"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { step: 0 };
+  }
+
+  tint(hex, a) {
+    var h = String(hex || '#0064E0').replace('#', '');
+    if (h.length === 3) { h = h.charAt(0) + h.charAt(0) + h.charAt(1) + h.charAt(1) + h.charAt(2) + h.charAt(2); }
+    var n = parseInt(h, 16);
+    if (isNaN(n)) { n = 0x0064E0; }
+    return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+  }
+
+  renderVals() {
+    var self = this;
+    var step = this.state.step;
+    var accent = this.props.accent || '#0064E0';
+    return {
+      accent: accent,
+      accentSoft: this.tint(accent, 0.09),
+      isIdle: step === 0,
+      isPlan: step === 1,
+      isRun: step === 2,
+      isDone: step === 3,
+      next: function () { self.setState({ step: Math.min(3, step + 1) }); },
+      reset: function () { self.setState({ step: 0 }); }
+    };
+  }
+}
+</script>
+</body>
+</html>
