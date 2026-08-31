@@ -1,0 +1,419 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Literata:opsz,wght@7..72,400;7..72,600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; font-family: 'Hanken Grotesk', system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #0064E0; text-decoration: none; }
+    a:hover { color: #0052BA; }
+    .btn:hover { filter: brightness(0.93); }
+    .ghost:hover { background: #EDF1F4 !important; }
+    .match:not(.on):hover { background: #F5F7F9 !important; }
+    .flag:hover { filter: brightness(0.97); }
+    ::-webkit-scrollbar { width: 11px; height: 11px; }
+    ::-webkit-scrollbar-thumb { background: #D3DCE3; border-radius: 8px; border: 3px solid transparent; background-clip: content-box; }
+    ::-webkit-scrollbar-track { background: transparent; }
+  </style>
+</helmet>
+
+<div style="width: 1440px; height: 900px; display: flex; flex-direction: column; background: #FFFFFF; color: #1C2B33; overflow: hidden;">
+
+  <!-- Title bar -->
+  <div style="height: 40px; flex-shrink: 0; display: flex; align-items: center; gap: 14px; padding: 0 12px; background: #F5F7F9; border-bottom: 1px solid #DCE3E9;">
+    <div style="display: flex; gap: 8px; padding-left: 2px;">
+      <div style="width: 12px; height: 12px; border-radius: 50%; background: #FF5F57;"></div>
+      <div style="width: 12px; height: 12px; border-radius: 50%; background: #FEBC2E;"></div>
+      <div style="width: 12px; height: 12px; border-radius: 50%; background: #28C840;"></div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 9px; padding-left: 8px;">
+      <div style="width: 18px; height: 18px; border-radius: 5px; background: linear-gradient(135deg, #0082FB 0%, #0064E0 55%, #A033FF 100%);"></div>
+      <span style="font-size: 13px; font-weight: 600;">The Salt Road</span>
+      <span style="font-size: 12px; color: #93A2AE;">Integrity</span>
+    </div>
+    <div style="flex-grow: 1;"></div>
+    <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #7B8B98;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#31A24C" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18.4 6.2A9 9 0 1 0 21 12"/><path d="M3 3l18 18"/></svg>
+      All checks ran on this machine
+    </div>
+  </div>
+
+  <!-- Report header -->
+  <div style="height: 62px; flex-shrink: 0; display: flex; align-items: center; gap: 26px; padding: 0 22px; border-bottom: 1px solid #DCE3E9;">
+    <div>
+      <div style="font-size: 15px; font-weight: 700; letter-spacing: -0.01em;">Integrity report</div>
+      <div style="font-size: 12px; color: #93A2AE; margin-top: 1px;">Chapter 4 · Nightfall at the Rim · run 3 minutes ago</div>
+    </div>
+
+    <div style="width: 1px; height: 34px; background: #E4EAEF;"></div>
+
+    <div style="display: flex; align-items: center; gap: 11px;">
+      <div style="width: 38px; height: 38px; border-radius: 50%; background: conic-gradient(#0064E0 0% 14%, #E4EAEF 14% 100%); display: flex; align-items: center; justify-content: center;">
+        <span style="width: 29px; height: 29px; border-radius: 50%; background: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 11.5px; font-weight: 700; color: #0064E0;">14%</span>
+      </div>
+      <div>
+        <div style="font-size: 12.5px; font-weight: 600; color: #1C2B33;">Similarity</div>
+        <div style="font-size: 11.5px; color: #93A2AE;">2 internal · 1 unchecked</div>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 11px;">
+      <div style="width: 38px; height: 38px; border-radius: 50%; background: conic-gradient(#A033FF 0% 31%, #E4EAEF 31% 100%); display: flex; align-items: center; justify-content: center;">
+        <span style="width: 29px; height: 29px; border-radius: 50%; background: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 11.5px; font-weight: 700; color: #8B24E0;">31%</span>
+      </div>
+      <div>
+        <div style="font-size: 12.5px; font-weight: 600; color: #1C2B33;">AI writing</div>
+        <div style="font-size: 11.5px; color: #93A2AE;">1 paragraph flagged</div>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 11px;">
+      <div style="width: 38px; height: 38px; border-radius: 50%; background: conic-gradient(#31A24C 0% 78%, #E4EAEF 78% 100%); display: flex; align-items: center; justify-content: center;">
+        <span style="width: 29px; height: 29px; border-radius: 50%; background: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 11.5px; font-weight: 700; color: #1D8A3C;">78</span>
+      </div>
+      <div>
+        <div style="font-size: 12.5px; font-weight: 600; color: #1C2B33;">Rubric</div>
+        <div style="font-size: 11.5px; color: #93A2AE;">4 criteria scored</div>
+      </div>
+    </div>
+
+    <div style="flex-grow: 1;"></div>
+
+    <div class="ghost" style="display: flex; align-items: center; gap: 7px; height: 34px; padding: 0 14px; border: 1px solid #DCE3E9; border-radius: 9px; cursor: pointer; font-size: 13px; font-weight: 600; color: #465A69;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 1 2.6 5.9"/><path d="M4 20v-5h5"/></svg>
+      Re-run
+    </div>
+    <div class="btn" style="display: flex; align-items: center; gap: 7px; height: 34px; padding: 0 16px; border-radius: 9px; cursor: pointer; font-size: 13px; font-weight: 600; color: #FFFFFF; background: {{ accent }};">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11M8 10.5l4 4 4-4"/><path d="M4 20h16"/></svg>
+      Export packet
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div style="flex-grow: 1; display: flex; min-height: 0;">
+
+    <!-- Document with flags -->
+    <div style="flex-grow: 1; min-width: 0; overflow-y: auto; display: flex; justify-content: center; background: #FBFCFD;">
+      <div style="width: 640px; padding: 40px 0 120px 0;">
+        <div style="display: flex; align-items: center; gap: 9px; margin-bottom: 22px;">
+          <span style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">SOURCE TEXT</span>
+          <div style="flex-grow: 1; height: 1px; background: #E4EAEF;"></div>
+          <span style="display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: #7B8B98;"><span style="width: 9px; height: 9px; border-radius: 3px; background: #C9DEFB;"></span>internal</span>
+          <span style="display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: #7B8B98;"><span style="width: 9px; height: 9px; border-radius: 3px; background: #FFDCC2;"></span>web</span>
+          <span style="display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: #7B8B98;"><span style="width: 9px; height: 9px; border-radius: 3px; background: #EBD8FF;"></span>AI writing</span>
+        </div>
+
+        <h1 style="margin: 0 0 26px 0; font-family: Literata, Georgia, serif; font-size: 28px; font-weight: 600; letter-spacing: -0.012em; color: #1C2B33;">4. Nightfall at the Rim</h1>
+
+        <div style="font-family: Literata, Georgia, serif; font-size: 17.5px; line-height: 1.82; color: #22323B;">
+          <p style="margin: 0 0 20px 0;">The rim of the basin held the last of the heat the way a kiln holds it, grudgingly and all at once. Tamsin counted forty paces out to the marker stone and stopped counting when the wind erased her fortieth footprint before she had finished making it.</p>
+
+          <p style="margin: 0 0 20px 0;">Below them <span class="flag" onClick="{{ pick.m1 }}" style="background: {{ mk.m1.bg }}; box-shadow: {{ mk.m1.ring }}; border-radius: 3px; padding: 1px 2px; cursor: pointer;">the salt went on being white in the dark, refusing to be black like everything else</span><span onClick="{{ pick.m1 }}" style="display: inline-block; transform: translateY(-7px); margin-left: 2px; font-family: 'Hanken Grotesk', sans-serif; font-size: 10px; font-weight: 700; color: #0052BA; background: #C9DEFB; border-radius: 4px; padding: 1px 4px; cursor: pointer;">1</span> — she wanted to be exact about that later, when the cartographer asked her to write it down.</p>
+
+          <p style="margin: 0 0 20px 0;">“We cross at moonrise or we do not cross,” he said. He had said it four times since noon, each time as though the thought had only that moment arrived and surprised him.</p>
+
+          <p style="margin: 0 0 20px 0;"><span class="flag" onClick="{{ pick.m2 }}" style="background: {{ mk.m2.bg }}; box-shadow: {{ mk.m2.ring }}; border-radius: 3px; padding: 1px 2px; cursor: pointer;">Evaporite basins of this kind form where inflow is exceeded by evaporation over geological timescales, leaving a crust of halite several metres deep</span><span onClick="{{ pick.m2 }}" style="display: inline-block; transform: translateY(-7px); margin-left: 2px; font-family: 'Hanken Grotesk', sans-serif; font-size: 10px; font-weight: 700; color: #A34500; background: #FFDCC2; border-radius: 4px; padding: 1px 4px; cursor: pointer;">2</span>. Tamsin had read that somewhere and repeated it to herself like a prayer she did not believe.</p>
+
+          <p style="margin: 0 0 20px 0;"><span class="flag" onClick="{{ pick.m3 }}" style="background: {{ mk.m3.bg }}; box-shadow: {{ mk.m3.ring }}; border-radius: 3px; padding: 1px 2px; cursor: pointer;">The vast expanse of the salt flats stretched endlessly before them, a testament to the relentless power of nature and the passage of time. It was a moment that would stay with her forever, a reminder of both the beauty and the danger of the world she had chosen.</span><span onClick="{{ pick.m3 }}" style="display: inline-block; transform: translateY(-7px); margin-left: 2px; font-family: 'Hanken Grotesk', sans-serif; font-size: 10px; font-weight: 700; color: #6B12A8; background: #EBD8FF; border-radius: 4px; padding: 1px 4px; cursor: pointer;">3</span></p>
+
+          <p style="margin: 0 0 20px 0;">When the moon came up it came up wrong — too far south, too thin, the colour of a coin left out in weather. She checked the marker stone. She checked it again.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Report panel -->
+    <div style="width: 434px; flex-shrink: 0; display: flex; flex-direction: column; background: #FFFFFF; border-left: 1px solid #DCE3E9;">
+
+      <div style="height: 44px; flex-shrink: 0; display: flex; align-items: stretch; gap: 2px; padding: 0 14px; border-bottom: 1px solid #EDF1F4;">
+        <div onClick="{{ goSim }}" style="display: flex; align-items: center; padding: 0 12px; font-size: 12.5px; font-weight: 600; cursor: pointer; color: {{ tab.sim.fg }}; box-shadow: {{ tab.sim.line }};">Similarity</div>
+        <div onClick="{{ goAi }}" style="display: flex; align-items: center; padding: 0 12px; font-size: 12.5px; font-weight: 600; cursor: pointer; color: {{ tab.ai.fg }}; box-shadow: {{ tab.ai.line }};">AI writing</div>
+        <div onClick="{{ goRubric }}" style="display: flex; align-items: center; padding: 0 12px; font-size: 12.5px; font-weight: 600; cursor: pointer; color: {{ tab.rubric.fg }}; box-shadow: {{ tab.rubric.line }};">Rubric</div>
+      </div>
+
+      <div style="flex-grow: 1; overflow-y: auto; padding: 16px 16px 26px 16px;">
+
+        <!-- Similarity -->
+        <sc-if value="{{ isSim }}" hint-placeholder-val="{{ true }}">
+        <div>
+          <div style="display: flex; align-items: center; gap: 10px; padding: 11px 13px; background: #FFF6EE; border: 1px solid #FAD9BE; border-radius: 10px;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C24A00" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18.4 6.2A9 9 0 1 0 21 12"/><path d="M3 3l18 18"/></svg>
+            <div style="flex-grow: 1;">
+              <div style="font-size: 12.5px; font-weight: 600; color: #7A3B00;">Web check not run</div>
+              <div style="font-size: 11.5px; color: #A05A1E; margin-top: 1px;">3 phrases (48 words) would leave this machine.</div>
+            </div>
+            <div class="btn" style="display: flex; align-items: center; height: 28px; padding: 0 11px; border-radius: 7px; cursor: pointer; font-size: 12px; font-weight: 600; color: #FFFFFF; background: #C24A00; flex-shrink: 0;">Review</div>
+          </div>
+
+          <div style="margin: 18px 0 9px 0; font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">MATCHES · 3</div>
+
+          <div class="match {{ mk.m1.cls }}" onClick="{{ pick.m1 }}" style="display: flex; gap: 11px; padding: 11px 12px; border-radius: 10px; cursor: pointer; background: {{ mk.m1.rowBg }}; box-shadow: {{ mk.m1.rowRing }};">
+            <span style="width: 19px; height: 19px; border-radius: 5px; background: #C9DEFB; color: #0052BA; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">1</span>
+            <div style="min-width: 0; flex-grow: 1;">
+              <div style="font-size: 13px; font-weight: 600; color: #1C2B33;">Your own draft · Kharsa v2</div>
+              <div style="font-size: 12px; color: #7B8B98; margin-top: 2px;">18 words · internal similarity</div>
+            </div>
+            <span style="font-size: 13px; font-weight: 700; color: #0064E0; flex-shrink: 0;">91%</span>
+          </div>
+
+          <div class="match {{ mk.m2.cls }}" onClick="{{ pick.m2 }}" style="display: flex; gap: 11px; padding: 11px 12px; border-radius: 10px; cursor: pointer; background: {{ mk.m2.rowBg }}; box-shadow: {{ mk.m2.rowRing }}; margin-top: 3px;">
+            <span style="width: 19px; height: 19px; border-radius: 5px; background: #FFDCC2; color: #A34500; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">2</span>
+            <div style="min-width: 0; flex-grow: 1;">
+              <div style="font-size: 13px; font-weight: 600; color: #1C2B33;">Research clipping · evaporites.md</div>
+              <div style="font-size: 12px; color: #7B8B98; margin-top: 2px;">24 words · pasted, uncited</div>
+            </div>
+            <span style="font-size: 13px; font-weight: 700; color: #C24A00; flex-shrink: 0;">100%</span>
+          </div>
+
+          <div class="match {{ mk.m3.cls }}" onClick="{{ pick.m3 }}" style="display: flex; gap: 11px; padding: 11px 12px; border-radius: 10px; cursor: pointer; background: {{ mk.m3.rowBg }}; box-shadow: {{ mk.m3.rowRing }}; margin-top: 3px;">
+            <span style="width: 19px; height: 19px; border-radius: 5px; background: #EBD8FF; color: #6B12A8; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">3</span>
+            <div style="min-width: 0; flex-grow: 1;">
+              <div style="font-size: 13px; font-weight: 600; color: #1C2B33;">No source match</div>
+              <div style="font-size: 12px; color: #7B8B98; margin-top: 2px;">42 words · flagged by AI detection instead</div>
+            </div>
+            <span style="font-size: 13px; font-weight: 700; color: #A3B0BB; flex-shrink: 0;">—</span>
+          </div>
+
+          <div style="margin: 20px 0 9px 0; font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">SELECTED MATCH</div>
+
+          <sc-if value="{{ isM1 }}" hint-placeholder-val="{{ true }}">
+          <div style="border: 1px solid #DCE3E9; border-radius: 11px; overflow: hidden;">
+            <div style="padding: 11px 13px; border-bottom: 1px solid #EDF1F4;">
+              <div style="font-size: 12.5px; font-weight: 600; color: #1C2B33;">Manuscript / Drafts / Kharsa v2</div>
+              <div style="font-size: 11.5px; color: #93A2AE; margin-top: 2px;">Same project · archived 12 March</div>
+            </div>
+            <div style="padding: 12px 13px; background: #FBFCFD;">
+              <div style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; color: #A3B0BB; margin-bottom: 5px;">THEIR TEXT</div>
+              <div style="font-family: Literata, Georgia, serif; font-size: 13.5px; line-height: 1.6; color: #465A69;">“the salt kept being white in the dark, refusing to go black with everything else”</div>
+              <div style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; color: #A3B0BB; margin: 12px 0 5px 0;">WHY IT WAS FLAGGED</div>
+              <div style="font-size: 12.5px; line-height: 1.6; color: #22323B;">Near-identical phrasing to your own earlier draft. Self-repetition, not plagiarism — but the image now appears twice in Act I and Act II.</div>
+            </div>
+            <div style="display: flex; gap: 7px; padding: 11px 13px; border-top: 1px solid #EDF1F4;">
+              <div class="btn" style="display: flex; align-items: center; height: 30px; padding: 0 13px; border-radius: 8px; cursor: pointer; font-size: 12.5px; font-weight: 600; color: #FFFFFF; background: {{ accent }};">Rewrite this line</div>
+              <div class="ghost" style="display: flex; align-items: center; height: 30px; padding: 0 13px; border: 1px solid #DCE3E9; border-radius: 8px; cursor: pointer; font-size: 12.5px; font-weight: 600; color: #465A69;">Keep as is</div>
+            </div>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ isM2 }}" hint-placeholder-val="{{ false }}">
+          <div style="border: 1px solid #DCE3E9; border-radius: 11px; overflow: hidden;">
+            <div style="padding: 11px 13px; border-bottom: 1px solid #EDF1F4;">
+              <div style="font-size: 12.5px; font-weight: 600; color: #1C2B33;">Research / evaporites.md</div>
+              <div style="font-size: 11.5px; color: #93A2AE; margin-top: 2px;">Clipping saved 4 February · no citation attached</div>
+            </div>
+            <div style="padding: 12px 13px; background: #FBFCFD;">
+              <div style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; color: #A3B0BB; margin-bottom: 5px;">THEIR TEXT</div>
+              <div style="font-family: Literata, Georgia, serif; font-size: 13.5px; line-height: 1.6; color: #465A69;">“Evaporite basins form where inflow is exceeded by evaporation over geological timescales, leaving a crust of halite several metres deep.”</div>
+              <div style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; color: #A3B0BB; margin: 12px 0 5px 0;">WHY IT WAS FLAGGED</div>
+              <div style="font-size: 12.5px; line-height: 1.6; color: #22323B;">Verbatim from a clipping in your own research binder. The clipping has no source URL, so its origin cannot be verified offline — attach one or paraphrase before this ships.</div>
+            </div>
+            <div style="display: flex; gap: 7px; padding: 11px 13px; border-top: 1px solid #EDF1F4;">
+              <div class="btn" style="display: flex; align-items: center; height: 30px; padding: 0 13px; border-radius: 8px; cursor: pointer; font-size: 12.5px; font-weight: 600; color: #FFFFFF; background: {{ accent }};">Attach citation</div>
+              <div class="ghost" style="display: flex; align-items: center; height: 30px; padding: 0 13px; border: 1px solid #DCE3E9; border-radius: 8px; cursor: pointer; font-size: 12.5px; font-weight: 600; color: #465A69;">Paraphrase</div>
+            </div>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ isM3 }}" hint-placeholder-val="{{ false }}">
+          <div style="border: 1px solid #E4D2F7; background: #FCF8FF; border-radius: 11px; padding: 13px;">
+            <div style="font-size: 12.5px; font-weight: 600; color: #5A0F92; margin-bottom: 6px;">No matching source found</div>
+            <div style="font-size: 12.5px; line-height: 1.62; color: #6B3A94;">Nothing in your drafts, research binder or the local index resembles this passage. It was flagged by the AI-writing detector instead — see the AI writing tab.</div>
+            <div class="btn" onClick="{{ goAi }}" style="display: inline-flex; align-items: center; height: 30px; padding: 0 13px; border-radius: 8px; cursor: pointer; font-size: 12.5px; font-weight: 600; color: #FFFFFF; background: #8B24E0; margin-top: 11px;">Open AI writing</div>
+          </div>
+          </sc-if>
+
+        </div>
+        </sc-if>
+
+        <!-- AI writing -->
+        <sc-if value="{{ isAi }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="border: 1px solid #DCE3E9; border-radius: 11px; padding: 14px;">
+            <div style="display: flex; align-items: baseline; gap: 8px;">
+              <span style="font-size: 27px; font-weight: 700; color: #8B24E0; letter-spacing: -0.02em;">31%</span>
+              <span style="font-size: 12.5px; color: #7B8B98;">of this chapter reads as machine-generated</span>
+            </div>
+            <div style="margin-top: 11px; font-size: 12.5px; line-height: 1.62; color: #465A69;">One paragraph carries unusually low perplexity and uniform sentence rhythm. The rest of the chapter sits well inside your own baseline.</div>
+            <div style="margin-top: 12px; display: flex; align-items: center; gap: 8px; font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 11px; color: #7B8B98;">
+              <span style="width: 6px; height: 6px; border-radius: 50%; background: #31A24C;"></span>
+              binoculars · onnxruntime · on-device
+            </div>
+          </div>
+
+          <div style="margin: 18px 0 10px 0; font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">BY PARAGRAPH</div>
+
+          <div style="display: flex; flex-direction: column; gap: 9px;">
+            <div style="display: flex; align-items: center; gap: 11px;">
+              <span style="width: 20px; font-size: 11.5px; color: #A3B0BB; flex-shrink: 0;">P1</span>
+              <div style="flex-grow: 1; height: 8px; border-radius: 5px; background: #EDF1F4; overflow: hidden;"><div style="height: 8px; width: 8%; border-radius: 5px; background: #C7D2DB;"></div></div>
+              <span style="width: 34px; text-align: right; font-size: 11.5px; color: #7B8B98; font-variant-numeric: tabular-nums;">8%</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 11px;">
+              <span style="width: 20px; font-size: 11.5px; color: #A3B0BB; flex-shrink: 0;">P2</span>
+              <div style="flex-grow: 1; height: 8px; border-radius: 5px; background: #EDF1F4; overflow: hidden;"><div style="height: 8px; width: 12%; border-radius: 5px; background: #C7D2DB;"></div></div>
+              <span style="width: 34px; text-align: right; font-size: 11.5px; color: #7B8B98; font-variant-numeric: tabular-nums;">12%</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 11px;">
+              <span style="width: 20px; font-size: 11.5px; color: #A3B0BB; flex-shrink: 0;">P3</span>
+              <div style="flex-grow: 1; height: 8px; border-radius: 5px; background: #EDF1F4; overflow: hidden;"><div style="height: 8px; width: 6%; border-radius: 5px; background: #C7D2DB;"></div></div>
+              <span style="width: 34px; text-align: right; font-size: 11.5px; color: #7B8B98; font-variant-numeric: tabular-nums;">6%</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 11px;">
+              <span style="width: 20px; font-size: 11.5px; color: #A3B0BB; flex-shrink: 0;">P4</span>
+              <div style="flex-grow: 1; height: 8px; border-radius: 5px; background: #EDF1F4; overflow: hidden;"><div style="height: 8px; width: 22%; border-radius: 5px; background: #C7D2DB;"></div></div>
+              <span style="width: 34px; text-align: right; font-size: 11.5px; color: #7B8B98; font-variant-numeric: tabular-nums;">22%</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 11px;">
+              <span style="width: 20px; font-size: 11.5px; font-weight: 700; color: #8B24E0; flex-shrink: 0;">P5</span>
+              <div style="flex-grow: 1; height: 8px; border-radius: 5px; background: #EDF1F4; overflow: hidden;"><div style="height: 8px; width: 94%; border-radius: 5px; background: #A033FF;"></div></div>
+              <span style="width: 34px; text-align: right; font-size: 11.5px; font-weight: 700; color: #8B24E0; font-variant-numeric: tabular-nums;">94%</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 11px;">
+              <span style="width: 20px; font-size: 11.5px; color: #A3B0BB; flex-shrink: 0;">P6</span>
+              <div style="flex-grow: 1; height: 8px; border-radius: 5px; background: #EDF1F4; overflow: hidden;"><div style="height: 8px; width: 9%; border-radius: 5px; background: #C7D2DB;"></div></div>
+              <span style="width: 34px; text-align: right; font-size: 11.5px; color: #7B8B98; font-variant-numeric: tabular-nums;">9%</span>
+            </div>
+          </div>
+
+          <div style="margin-top: 20px; border: 1px solid #E4D2F7; background: #FCF8FF; border-radius: 11px; padding: 13px;">
+            <div style="font-size: 12.5px; font-weight: 700; color: #5A0F92; margin-bottom: 7px;">Paragraph 5 · why</div>
+            <div style="font-size: 12.5px; line-height: 1.66; color: #6B3A94;">Three abstractions in two sentences (“testament”, “relentless power”, “passage of time”), no concrete noun from the scene, and a closing sentence that summarises the emotion rather than showing it. Your baseline for this book averages 2.1 concrete nouns per sentence; this paragraph has none.</div>
+            <div style="display: flex; gap: 7px; margin-top: 12px;">
+              <div class="btn" style="display: flex; align-items: center; height: 30px; padding: 0 13px; border-radius: 8px; cursor: pointer; font-size: 12.5px; font-weight: 600; color: #FFFFFF; background: #8B24E0;">Rewrite in my voice</div>
+              <div class="ghost" style="display: flex; align-items: center; height: 30px; padding: 0 13px; border: 1px solid #E4D2F7; border-radius: 8px; cursor: pointer; font-size: 12.5px; font-weight: 600; color: #6B3A94;">Mark as mine</div>
+            </div>
+          </div>
+        </div>
+        </sc-if>
+
+        <!-- Rubric -->
+        <sc-if value="{{ isRubric }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="display: flex; align-items: baseline; gap: 9px; margin-bottom: 4px;">
+            <span style="font-size: 27px; font-weight: 700; color: #1D8A3C; letter-spacing: -0.02em;">78</span>
+            <span style="font-size: 12.5px; color: #7B8B98;">/ 100 · Novel draft rubric</span>
+          </div>
+          <div style="font-size: 12.5px; line-height: 1.62; color: #465A69; margin-bottom: 18px;">Scored against your own rubric, not a shared standard. Edit the criteria in project settings.</div>
+
+          <div style="display: flex; flex-direction: column; gap: 15px;">
+            <div>
+              <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 6px;">
+                <span style="font-size: 13px; font-weight: 600; color: #1C2B33;">Pacing</span>
+                <div style="flex-grow: 1;"></div>
+                <span style="font-size: 12.5px; font-weight: 600; color: #465A69;">86</span>
+              </div>
+              <div style="height: 7px; border-radius: 4px; background: #EDF1F4; overflow: hidden;"><div style="height: 7px; width: 86%; border-radius: 4px; background: #31A24C;"></div></div>
+              <div style="font-size: 12px; color: #7B8B98; margin-top: 6px; line-height: 1.55;">Scene turns on the moved stone in the last third. Good.</div>
+            </div>
+
+            <div>
+              <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 6px;">
+                <span style="font-size: 13px; font-weight: 600; color: #1C2B33;">Show, don’t tell</span>
+                <div style="flex-grow: 1;"></div>
+                <span style="font-size: 12.5px; font-weight: 600; color: #465A69;">54</span>
+              </div>
+              <div style="height: 7px; border-radius: 4px; background: #EDF1F4; overflow: hidden;"><div style="height: 7px; width: 54%; border-radius: 4px; background: #FF5C01;"></div></div>
+              <div style="font-size: 12px; color: #7B8B98; margin-top: 6px; line-height: 1.55;">Paragraph 5 states the feeling outright. Same paragraph the detector flagged.</div>
+            </div>
+
+            <div>
+              <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 6px;">
+                <span style="font-size: 13px; font-weight: 600; color: #1C2B33;">Dialogue tags</span>
+                <div style="flex-grow: 1;"></div>
+                <span style="font-size: 12.5px; font-weight: 600; color: #465A69;">91</span>
+              </div>
+              <div style="height: 7px; border-radius: 4px; background: #EDF1F4; overflow: hidden;"><div style="height: 7px; width: 91%; border-radius: 4px; background: #31A24C;"></div></div>
+              <div style="font-size: 12px; color: #7B8B98; margin-top: 6px; line-height: 1.55;">One tag, unadorned. Consistent with the rest of the book.</div>
+            </div>
+
+            <div>
+              <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 6px;">
+                <span style="font-size: 13px; font-weight: 600; color: #1C2B33;">Citation coverage</span>
+                <div style="flex-grow: 1;"></div>
+                <span style="font-size: 12.5px; font-weight: 600; color: #465A69;">40</span>
+              </div>
+              <div style="height: 7px; border-radius: 4px; background: #EDF1F4; overflow: hidden;"><div style="height: 7px; width: 40%; border-radius: 4px; background: #FFC800;"></div></div>
+              <div style="font-size: 12px; color: #7B8B98; margin-top: 6px; line-height: 1.55;">One factual claim carried in from research with no source attached.</div>
+            </div>
+          </div>
+
+          <div style="margin-top: 22px; padding-top: 16px; border-top: 1px solid #EDF1F4; font-size: 12.5px; line-height: 1.62; color: #7B8B98;">Scores are a reading aid. Nothing here decides whether the chapter is finished — you do.</div>
+        </div>
+        </sc-if>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Status bar -->
+  <div style="height: 28px; flex-shrink: 0; display: flex; align-items: center; gap: 16px; padding: 0 14px; background: #F5F7F9; border-top: 1px solid #DCE3E9; font-size: 11.5px; color: #7B8B98;">
+    <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 7px; height: 7px; border-radius: 50%; background: #31A24C;"></span>Ollama · hermes3:8b</span>
+    <span style="font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace;">check_internal_similarity · run_ai_detection · 4 hops · 11.7s</span>
+    <div style="flex-grow: 1;"></div>
+    <span>Packet will export as PDF + JSON</span>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#0064E0","options":["#0064E0","#0082FB","#A033FF","#1C2B33"],"section":"Theme"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { tab: 'sim', sel: 'm1' };
+  }
+
+  renderVals() {
+    var self = this;
+    var st = this.state;
+    var accent = this.props.accent || '#0064E0';
+
+    var TONE = {
+      m1: { base: '#C9DEFB', line: '#0064E0' },
+      m2: { base: '#FFDCC2', line: '#FF5C01' },
+      m3: { base: '#EBD8FF', line: '#A033FF' }
+    };
+
+    var pick = {}, mk = {};
+    ['m1', 'm2', 'm3'].forEach(function (id) {
+      pick[id] = function () {
+        self.setState({ sel: id, tab: id === 'm3' ? self.state.tab : 'sim' });
+      };
+      var on = st.sel === id;
+      mk[id] = {
+        bg: TONE[id].base,
+        ring: on ? ('0 0 0 2px ' + TONE[id].line) : 'none',
+        rowBg: on ? '#F5F7F9' : 'transparent',
+        rowRing: on ? ('inset 0 0 0 1px ' + TONE[id].line) : 'inset 0 0 0 1px #EDF1F4',
+        cls: on ? 'on' : 'off'
+      };
+    });
+
+    function tabStyle(on) {
+      return { fg: on ? accent : '#7B8B98', line: on ? ('inset 0 -2px 0 0 ' + accent) : 'none' };
+    }
+
+    return {
+      accent: accent,
+      pick: pick,
+      mk: mk,
+      isM1: st.sel === 'm1',
+      isM2: st.sel === 'm2',
+      isM3: st.sel === 'm3',
+      isSim: st.tab === 'sim',
+      isAi: st.tab === 'ai',
+      isRubric: st.tab === 'rubric',
+      goSim: function () { self.setState({ tab: 'sim' }); },
+      goAi: function () { self.setState({ tab: 'ai' }); },
+      goRubric: function () { self.setState({ tab: 'rubric' }); },
+      tab: { sim: tabStyle(st.tab === 'sim'), ai: tabStyle(st.tab === 'ai'), rubric: tabStyle(st.tab === 'rubric') }
+    };
+  }
+}
+</script>
+</body>
+</html>
