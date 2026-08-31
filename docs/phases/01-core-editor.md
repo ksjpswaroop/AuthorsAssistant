@@ -1,6 +1,6 @@
 # Phase 1: Core editor
 
-Purpose: bootstrap the Tauri writing shell so authors can open a project, edit scenes in TipTap, and save to local SQLite + Markdown. Status: **not started**. Months 1–2. Parent: [ROADMAP.md](../ROADMAP.md).
+Purpose: bootstrap the Tauri writing shell so authors can open a project, edit scenes in TipTap, and save to local SQLite + Markdown. Status: **complete**. Months 1–2. Parent: [ROADMAP.md](../ROADMAP.md).
 
 ## Goals
 
@@ -67,18 +67,18 @@ Rust crates (pair with the JS plugins): `tauri-plugin-fs`, `tauri-plugin-dialog`
 
 ## Checklist
 
-- [ ] Create Tauri 2 + React + Vite project structure (docs-only until implementation)
-- [ ] Wire Tailwind and a basic Radix layout shell
-- [ ] Implement resizable three-pane layout with `react-resizable-panels`
-- [ ] Left: flat or stub tree of open documents (full DnD in Phase 2)
-- [ ] Center: TipTap + `@tiptap/markdown` serialization
-- [ ] Right: empty inspector panel with Radix tabs placeholder
-- [ ] Define project folder convention (e.g. `Project.aegis/` with `db/`, `manuscript/`, `research/`)
-- [ ] SQLite schema for documents: id, title, parent_id nullable, path, updated_at (`plugin-sql`)
-- [ ] Write/read Markdown files for scene content (`plugin-fs`)
-- [ ] Open project / New project / Save document via dialog + Rust/commands
-- [ ] Autosave or explicit save with dirty-state indicator (`zustand`)
-- [ ] Verify: kill app mid-edit → Markdown on disk still readable in a text editor
+- [x] Create Tauri 2 + React + Vite project structure
+- [x] Wire Tailwind and a basic Radix layout shell
+- [x] Implement resizable three-pane layout with `react-resizable-panels` (v4: `Group` / `Panel` / `Separator`)
+- [x] Left: real nested binder tree with create, rename and delete (full DnD in Phase 2)
+- [x] Center: TipTap + `@tiptap/markdown` serialization
+- [x] Right: inspector with working synopsis, label and status; notes and agent log are later phases
+- [x] Define project folder convention (e.g. `Project.aegis/` with `db/`, `manuscript/`, `research/`)
+- [x] SQLite schema for documents: id, title, parent_id nullable, path, updated_at (via `rusqlite` in the Rust core, **not** `plugin-sql` — see [IMPLEMENTATION.md](../IMPLEMENTATION.md#departures-from-tech-stackmd))
+- [x] Write/read Markdown files for scene content (Rust commands, **not** `plugin-fs`)
+- [x] Open project / New project / Save document via dialog + Rust/commands
+- [x] Autosave or explicit save with dirty-state indicator (`zustand`)
+- [x] Verify: kill app mid-edit → Markdown on disk still readable in a text editor
 
 ## File conventions (target)
 
@@ -108,3 +108,15 @@ MyBook.aegis/
 ## Notes
 
 Keep mutation APIs (create doc, update body) clean—they become tools later ([TOOLS.md](../TOOLS.md)).
+
+## What was built
+
+Delivered against the acceptance criteria above:
+
+- A project is a `.aegis` folder holding `project.sqlite` plus Markdown under `manuscript/`, `research/` and `assets/`, with a `trash/` folder so deletion is never final.
+- Binder, editor, corkboard, outliner and inspector all read the same real documents. Corkboard and outliner are views switched from the title bar, as the design canvas shows.
+- Autosave writes 800 ms after typing stops, on Cmd-S, when switching documents, and when the window loses focus. Saves are atomic (write to a temporary file, then rename), so a crash mid-save cannot truncate a scene.
+- Deleting a folder moves every file beneath it to `trash/` rather than orphaning them — covered by a Rust test.
+- Every screen in the design canvas exists and is reachable. The ones belonging to later phases carry a banner naming the phase and saying what does not work.
+
+Four Rust tests cover slugging, word counting, the create/write/read/reopen round-trip, and the folder-delete case. Code layout and the departures from the plan are documented in [IMPLEMENTATION.md](../IMPLEMENTATION.md); what to do next is in [NEXT-STEPS.md](../NEXT-STEPS.md).

@@ -1,8 +1,8 @@
 # Tools
 
-Purpose: OpenAPI-style catalog of tools the local sidecar exposes to Hermes 3 agents, plus how the Tauri / FastAPI bridge delivers UI updates. Agents call these tools; they do not invent binder mutations in prose alone.
+Purpose: OpenAPI-style catalog of tools the FastAPI tool gateway exposes; **hermes-agent skills** call these endpoints. Agents do not invent binder mutations in prose alone.
 
-Agent roles: [AGENTS.md](AGENTS.md). Architecture: [ARCHITECTURE.md](ARCHITECTURE.md).
+Agent roles: [AGENTS.md](AGENTS.md). Runtime: [HERMES-RUNTIME.md](HERMES-RUNTIME.md). Architecture: [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## Schema shape
 
@@ -20,7 +20,7 @@ Every tool is described with a name, description, and typed parameters (OpenAPI-
 }
 ```
 
-Implementations live in the Python sidecar (or thin TypeScript wrappers that invoke Rust commands). Hermes emits tool calls as JSON; LangGraph executes them and feeds results back.
+Implementations live on the **tool gateway** (`127.0.0.1:8765`) and/or thin TypeScript wrappers that invoke Rust commands. hermes-agent skills HTTP-call the gateway; results feed back into the hermes tool loop.
 
 ---
 
@@ -90,24 +90,24 @@ Implementations live in the Python sidecar (or thin TypeScript wrappers that inv
 ```mermaid
 sequenceDiagram
   participant UI as React_UI
+  participant Hermes as hermes_agent_18765
+  participant GW as FastAPI_tools_8765
   participant Rust as Tauri_Rust
-  participant API as FastAPI_sidecar
-  participant Hermes as Hermes3_LangGraph
 
-  UI->>API: User intent command or check
-  API->>Hermes: Start agent graph
-  Hermes->>API: Tool call JSON
-  API->>Rust: Mutate project or request IPC
+  UI->>Hermes: User intent via OpenAI_/v1
+  Hermes->>Hermes: Plan with Hermes3_Ollama
+  Hermes->>GW: Skill HTTP tool call
+  GW->>Rust: Mutate project or request IPC
   Rust->>UI: Event binder_changed or highlight_range
-  API->>Hermes: Tool result
-  Hermes->>API: Final structured report
-  API->>UI: report_attached / agent_log
+  GW->>Hermes: Tool result
+  Hermes->>UI: Final report via UI or agent_log
 ```
 
 ### Rules
 
-- **Python sidecar** hosts LangGraph, LlamaIndex helpers, Trafilatura, and detectors
-- **Tauri IPC** and/or **loopback FastAPI** connect sidecar ↔ app
+- **hermes-agent** (`:18765`) owns the LLM/tool loop, memory, and skills
+- **FastAPI tool gateway** (`:8765`) hosts TOOLS.md implementations, LlamaIndex helpers, Trafilatura, detectors
+- **Tauri IPC** connects gateway ↔ app UI events
 - **Rust** remains authoritative for file I/O and LibGit2 snapshots when possible
 - **UI updates are events**, not “please refresh”: `binder_changed`, `highlight_range`, `report_attached`, `agent_log`
 - Agents mutate **project files and metadata**; React reflects them—chat is a transcript of tool results
@@ -116,4 +116,47 @@ sequenceDiagram
 
 Tools that delete documents, compile manuscripts, or call `search_web` must support interrupt / confirm before execution (see [AGENTS.md](AGENTS.md) guardrails).
 
-Phase wiring checklist: [phases/05-hermes-agents.md](phases/05-hermes-agents.md).
+Phase wiring checklist: [phases/05-hermes-agents.md](phases/05-hermes-agents.md). Runtime: [HERMES-RUNTIME.md](HERMES-RUNTIME.md).
+
+---
+
+## v2 tools
+
+Appended for Phases 6–9. Same schema shape as above (`name`, `description`, `parameters`). Does not replace the Phase 1–5 catalog.
+
+### Collections and Scrivenings (Phase 6)
+
+| Tool | Description | Key parameters |
+| :--- | :--- | :--- |
+| `create_collection` | Create a manual or empty collection | `name`, `doc_ids?`, `kind?: manual` |
+| `query_smart_collection` | Create/refresh a smart collection from metadata filters | `name`, `filters` (status, label, keyword, pov, section_type) |
+| `open_scrivenings` | Open continuous edit view over child docs | `parent_id` or `doc_ids[]` |
+| `bulk_set_metadata` | Batch-set fields on multi-select | `doc_ids[]`, `status?`, `labels?`, `keywords?`, `section_type?` |
+
+### Compile (Phase 7)
+
+| Tool | Description | Key parameters |
+| :--- | :--- | :--- |
+| `compile_manuscript` | Assemble and export manuscript | `preset`, `filters?`, `root?: binder_id \| collection_id`, `format?: docx \| pdf \| epub \| markdown \| fountain` |
+
+Requires human-in-the-loop confirm before overwrite (same guardrail class as delete / web search).
+
+### Visualization core (Phase 8)
+
+| Tool | Description | Key parameters |
+| :--- | :--- | :--- |
+| `generate_plot_diagram` | Classify synopses into story beats | `method`: three_act \| freytag \| heros_journey |
+| `build_character_graph` | Relationship graph from sheets + co-occurrence | `filters?` (act_range, labels) |
+| `generate_timeline` | Narrative vs chronological scene order | `mode`: chronological \| narrative |
+| `canvas_to_binder` | Commit infinite-canvas layout to binder/collection | `canvas_state` |
+
+### Visualization advanced (Phase 9)
+
+| Tool | Description | Key parameters |
+| :--- | :--- | :--- |
+| `generate_mind_map` | Theme/plot/character mind map | `query`, `root?` |
+| `generate_flowchart` | Branching or chronological flowchart | `type`, `scene_ids?` |
+| `generate_infographic` | Story-bible diagram | `type`: family_tree \| magic_system \| location_map |
+| `suggest_clusters` | Propose collections from semantic similarity | `threshold` |
+
+Phase docs: [06](phases/06-scrivener-completeness.md), [07](phases/07-compile-export.md), [08](phases/08-ai-story-visualization.md), [09](phases/09-ai-viz-advanced.md).

@@ -1,0 +1,194 @@
+/* Reset and the handful of states that inline styles cannot express. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
+  color: #1c2b33;
+  background: #ffffff;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+a {
+  color: #0064e0;
+  text-decoration: none;
+}
+a:hover {
+  color: #0052ba;
+}
+
+/* The window drags by its title bar, like a native one. */
+.drag-region {
+  -webkit-app-region: drag;
+}
+.no-drag {
+  -webkit-app-region: no-drag;
+}
+
+/* Selection-aware hover: a selected row keeps its accent tint. */
+.row:not(.on):hover {
+  background: #edf1f4 !important;
+}
+.tr:not(.on):hover {
+  background: #f7f9fb !important;
+}
+.ghost:hover {
+  background: #edf1f4 !important;
+}
+.btn:hover {
+  filter: brightness(0.93);
+}
+.btn:active {
+  filter: brightness(0.88);
+}
+.seg:hover {
+  color: #1c2b33 !important;
+}
+.card:hover {
+  border-color: #c3d0da !important;
+}
+.disabled {
+  opacity: 0.55;
+  cursor: not-allowed !important;
+}
+.disabled:hover {
+  filter: none !important;
+  background: inherit !important;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  text-align: left;
+}
+button:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid #0064e0;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+textarea {
+  resize: none;
+}
+
+::-webkit-scrollbar {
+  width: 11px;
+  height: 11px;
+}
+::-webkit-scrollbar-thumb {
+  background: #d3dce3;
+  border-radius: 8px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #b9c6d0;
+  background-clip: content-box;
+  border: 3px solid transparent;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* TipTap ---------------------------------------------------------------- */
+
+.aegis-editor .tiptap {
+  outline: none;
+  font-family: Literata, Georgia, serif;
+  font-size: 18.5px;
+  line-height: 1.78;
+  color: #22323b;
+}
+/* Reset first, then space siblings. `.tiptap p` would out-specify
+   `.tiptap > * + *`, so the reset must not target the element name. */
+.aegis-editor .tiptap > * {
+  margin: 0;
+}
+.aegis-editor .tiptap > * + * {
+  margin-top: 22px;
+}
+.aegis-editor .tiptap h1,
+.aegis-editor .tiptap h2,
+.aegis-editor .tiptap h3 {
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  color: #1c2b33;
+  margin: 34px 0 0 0;
+}
+.aegis-editor .tiptap h1 {
+  font-size: 30px;
+}
+.aegis-editor .tiptap h2 {
+  font-size: 24px;
+}
+.aegis-editor .tiptap h3 {
+  font-size: 20px;
+}
+.aegis-editor .tiptap blockquote {
+  border-left: 3px solid #dce3e9;
+  padding-left: 18px;
+  color: #465a69;
+}
+.aegis-editor .tiptap code {
+  font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  font-size: 0.86em;
+  background: #f5f7f9;
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+.aegis-editor .tiptap pre {
+  font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  background: #f7f9fb;
+  border: 1px solid #e4eaef;
+  border-radius: 10px;
+  padding: 14px 16px;
+  overflow-x: auto;
+}
+.aegis-editor .tiptap pre code {
+  background: none;
+  padding: 0;
+}
+.aegis-editor .tiptap ul,
+.aegis-editor .tiptap ol {
+  padding-left: 26px;
+}
+.aegis-editor .tiptap li + li {
+  margin-top: 8px;
+}
+.aegis-editor .tiptap hr {
+  border: none;
+  border-top: 1px solid #dce3e9;
+  margin: 34px 0;
+}
+.aegis-editor .tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+  color: #c3d0da;
+}

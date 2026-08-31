@@ -1,0 +1,25 @@
+[package]
+name = "aegisdraft"
+version = "0.1.0"
+description = "Local-first AI co-author for long-form books"
+authors = ["AegisDraft"]
+edition = "2021"
+rust-version = "1.77"
+
+[lib]
+name = "aegisdraft_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+rusqlite = { version = "0.40", features = ["bundled"] }
+uuid = { version = "1", features = ["v4"] }
+
+[features]
+default = []

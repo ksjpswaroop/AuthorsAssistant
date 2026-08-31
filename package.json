@@ -1,0 +1,36 @@
+{
+  "name": "aegisdraft",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Local-first AI co-author for long-form books.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri",
+    "app": "tauri dev",
+    "app:build": "tauri build",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.11.1",
+    "@tauri-apps/plugin-dialog": "^2.7.3",
+    "@tiptap/markdown": "^3.30.6",
+    "@tiptap/pm": "^3.30.6",
+    "@tiptap/react": "^3.30.6",
+    "@tiptap/starter-kit": "^3.30.6",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-resizable-panels": "^4.12.3",
+    "zustand": "^5.0.15"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.11.4",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^5.1.0",
+    "typescript": "^5.9.0",
+    "vite": "^7.1.0"
+  }
+}

@@ -32,7 +32,7 @@ Purpose: connect Ollama, index the book with LlamaIndex + Qdrant, and ship singl
 
 ## Out of scope
 
-- LangGraph multi-step agents, command bar App Controller (Phase 5)
+- hermes-agent multi-step agents, command bar App Controller (Phase 5 — see [HERMES-RUNTIME.md](../HERMES-RUNTIME.md))
 - Web similarity and Binoculars reports (Phase 4)
 - Mutating binder structure via natural language (Phase 5)
 

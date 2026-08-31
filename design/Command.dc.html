@@ -75,7 +75,7 @@
       <span style="display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; color: #465A69; background: #FFFFFF; border: 1px solid #DCE3E9; border-radius: 7px; padding: 3px 9px;">
         <span style="width: 6px; height: 6px; border-radius: 50%; background: {{ accent }};"></span>App Controller
       </span>
-      <span style="font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 11px; color: #7B8B98;">hermes3:8b</span>
+      <span style="font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 11px; color: #7B8B98;">hermes-agent · hermes3:8b</span>
       <div style="flex-grow: 1;"></div>
       <span style="display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: #7B8B98;">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#31A24C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.4 6.2A9 9 0 1 0 21 12"/><path d="M3 3l18 18"/></svg>
@@ -90,7 +90,7 @@
       <div class="sug" style="display: flex; align-items: center; gap: 12px; padding: 11px 11px; border-radius: 10px; background: {{ accentSoft }}; cursor: pointer;">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="{{ accent }}" stroke-width="1.8" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
         <div style="flex-grow: 1;">
-          <div style="font-size: 13.5px; font-weight: 600; color: #1C2B33;">Multi-step binder change · 4 tool calls</div>
+          <div style="font-size: 13.5px; font-weight: 600; color: #1C2B33;">Multi-step binder change · 4 skills</div>
           <div style="font-size: 12px; color: #7B8B98; margin-top: 2px;">create_folder · create_chapter ×3 · create_character_sheet</div>
         </div>
         <span style="font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 11px; color: #7B8B98; border: 1px solid #DCE3E9; border-radius: 5px; padding: 2px 6px; background: #FFFFFF;">↵</span>
@@ -175,9 +175,9 @@
       </div>
 
       <div style="font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 12px; line-height: 2.05; color: #465A69; background: #F7F9FB; border: 1px solid #E4EAEF; border-radius: 10px; padding: 12px 14px;">
-        <div style="display: flex; gap: 10px;"><span style="color: #31A24C;">✓</span><span>create_folder(name="Act III", parent="Manuscript")</span></div>
-        <div style="display: flex; gap: 10px;"><span style="color: #31A24C;">✓</span><span>create_chapter(parent="Act III", count=3)</span></div>
-        <div style="display: flex; gap: 10px; color: #1C2B33;"><span style="color: #FF5C01;">●</span><span>create_character_sheet(name="Antagonist", parent="Characters")</span></div>
+        <div style="display: flex; gap: 10px;"><span style="color: #31A24C;">✓</span><span>skill create_folder → :8765</span></div>
+        <div style="display: flex; gap: 10px;"><span style="color: #31A24C;">✓</span><span>skill create_chapter ×3 → :8765</span></div>
+        <div style="display: flex; gap: 10px; color: #1C2B33;"><span style="color: #FF5C01;">●</span><span>skill create_character_sheet → :8765</span></div>
         <div style="display: flex; gap: 10px; color: #A3B0BB;"><span>○</span><span>emit binder_changed</span></div>
       </div>
 

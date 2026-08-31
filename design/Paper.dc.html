@@ -1,0 +1,451 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Literata:opsz,wght@7..72,400;7..72,600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; font-family: 'Hanken Grotesk', system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #0064E0; text-decoration: none; }
+    a:hover { color: #0052BA; }
+    .row:not(.on):hover { background: #EDF1F4 !important; }
+    .btn:hover { filter: brightness(0.93); }
+    .ghost:hover { background: #EDF1F4 !important; }
+    .seg:hover { color: #1C2B33 !important; }
+    .cite:hover { filter: brightness(0.96); }
+    .cit:not(.on):hover { background: #F5F7F9 !important; }
+    ::-webkit-scrollbar { width: 11px; height: 11px; }
+    ::-webkit-scrollbar-thumb { background: #D3DCE3; border-radius: 8px; border: 3px solid transparent; background-clip: content-box; }
+    ::-webkit-scrollbar-track { background: transparent; }
+  </style>
+</helmet>
+
+<div style="width: 1440px; height: 900px; display: flex; flex-direction: column; background: #FFFFFF; color: #1C2B33; overflow: hidden;">
+
+  <!-- Title bar -->
+  <div style="height: 40px; flex-shrink: 0; display: flex; align-items: center; gap: 14px; padding: 0 12px; background: #F5F7F9; border-bottom: 1px solid #DCE3E9;">
+    <div style="display: flex; gap: 8px; padding-left: 2px;">
+      <div style="width: 12px; height: 12px; border-radius: 50%; background: #FF5F57;"></div>
+      <div style="width: 12px; height: 12px; border-radius: 50%; background: #FEBC2E;"></div>
+      <div style="width: 12px; height: 12px; border-radius: 50%; background: #28C840;"></div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 9px; padding-left: 8px;">
+      <div style="width: 18px; height: 18px; border-radius: 5px; background: linear-gradient(135deg, #0082FB 0%, #0064E0 55%, #A033FF 100%);"></div>
+      <span style="font-size: 13px; font-weight: 600;">Retrieval Failure Modes</span>
+      <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.05em; color: #0052BA; background: #E7F0FD; border-radius: 6px; padding: 2px 7px;">PAPER</span>
+    </div>
+    <div style="flex-grow: 1;"></div>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span style="font-size: 12px; color: #7B8B98;">ACM sig-conf · 8 pages of 9</span>
+      <div style="width: 1px; height: 18px; background: #DCE3E9;"></div>
+      <div class="ghost" style="display: flex; align-items: center; gap: 7px; height: 28px; padding: 0 11px; border-radius: 7px; cursor: pointer; font-size: 12.5px; font-weight: 500; color: #465A69;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v6M12 15v6M5.6 5.6l4.2 4.2M14.2 14.2l4.2 4.2M3 12h6M15 12h6M5.6 18.4l4.2-4.2M14.2 9.8l4.2-4.2"/></svg>
+        Ask
+      </div>
+      <div class="btn" style="display: flex; align-items: center; gap: 7px; height: 28px; padding: 0 13px; border-radius: 7px; cursor: pointer; font-size: 12.5px; font-weight: 600; color: #FFFFFF; background: {{ accent }};">Build PDF</div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div style="flex-grow: 1; display: flex; min-height: 0;">
+
+    <!-- Structure rail -->
+    <div style="width: 258px; flex-shrink: 0; display: flex; flex-direction: column; background: #F5F7F9; border-right: 1px solid #DCE3E9;">
+      <div style="height: 36px; flex-shrink: 0; display: flex; align-items: center; padding: 0 8px 0 14px;">
+        <span style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #93A2AE;">STRUCTURE</span>
+        <div style="flex-grow: 1;"></div>
+        <div class="ghost" style="width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #7B8B98;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        </div>
+      </div>
+
+      <div style="flex-grow: 1; overflow-y: auto; padding: 0 8px 16px 8px;">
+        <div style="padding: 6px 6px 4px 6px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">FRONT MATTER</div>
+        <div class="row {{ sel.abstract.cls }}" onClick="{{ pick.abstract }}" style="display: flex; align-items: center; gap: 8px; height: 27px; padding: 0 8px 0 12px; border-radius: 6px; cursor: pointer; font-size: 12.5px; background: {{ sel.abstract.bg }}; color: {{ sel.abstract.fg }}; font-weight: {{ sel.abstract.w }};">Title and abstract</div>
+
+        <div style="padding: 12px 6px 4px 6px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">BODY</div>
+        <div class="row {{ sel.intro.cls }}" onClick="{{ pick.intro }}" style="display: flex; align-items: center; gap: 8px; height: 27px; padding: 0 8px 0 12px; border-radius: 6px; cursor: pointer; font-size: 12.5px; background: {{ sel.intro.bg }}; color: {{ sel.intro.fg }}; font-weight: {{ sel.intro.w }};">
+          <span style="width: 15px; color: #A3B0BB; font-variant-numeric: tabular-nums;">1</span>Introduction</div>
+        <div class="row {{ sel.related.cls }}" onClick="{{ pick.related }}" style="display: flex; align-items: center; gap: 8px; height: 27px; padding: 0 8px 0 12px; border-radius: 6px; cursor: pointer; font-size: 12.5px; background: {{ sel.related.bg }}; color: {{ sel.related.fg }}; font-weight: {{ sel.related.w }};">
+          <span style="width: 15px; color: #A3B0BB; font-variant-numeric: tabular-nums;">2</span>Related Work</div>
+        <div class="row {{ sel.method.cls }}" onClick="{{ pick.method }}" style="display: flex; align-items: center; gap: 8px; height: 27px; padding: 0 8px 0 12px; border-radius: 6px; cursor: pointer; font-size: 12.5px; background: {{ sel.method.bg }}; color: {{ sel.method.fg }}; font-weight: {{ sel.method.w }};">
+          <span style="width: 15px; color: #A3B0BB; font-variant-numeric: tabular-nums;">3</span>Method</div>
+        <div class="row {{ sel.chunking.cls }}" onClick="{{ pick.chunking }}" style="display: flex; align-items: center; gap: 8px; height: 27px; padding: 0 8px 0 27px; border-radius: 6px; cursor: pointer; font-size: 12.5px; background: {{ sel.chunking.bg }}; color: {{ sel.chunking.fg }}; font-weight: {{ sel.chunking.w }};">
+          <span style="width: 22px; color: #A3B0BB; font-variant-numeric: tabular-nums;">3.1</span>Chunking</div>
+        <div class="row {{ sel.length.cls }}" onClick="{{ pick.length }}" style="display: flex; align-items: center; gap: 8px; height: 27px; padding: 0 8px 0 27px; border-radius: 6px; cursor: pointer; font-size: 12.5px; background: {{ sel.length.bg }}; color: {{ sel.length.fg }}; font-weight: {{ sel.length.w }};">
+          <span style="width: 22px; color: #A3B0BB; font-variant-numeric: tabular-nums;">3.2</span>
+          <span style="flex-grow: 1;">Length effects</span>
+          <span style="width: 6px; height: 6px; border-radius: 50%; background: #FF5C01; flex-shrink: 0;"></span>
+        </div>
+        <div class="row {{ sel.experiments.cls }}" onClick="{{ pick.experiments }}" style="display: flex; align-items: center; gap: 8px; height: 27px; padding: 0 8px 0 12px; border-radius: 6px; cursor: pointer; font-size: 12.5px; background: {{ sel.experiments.bg }}; color: {{ sel.experiments.fg }}; font-weight: {{ sel.experiments.w }};">
+          <span style="width: 15px; color: #A3B0BB; font-variant-numeric: tabular-nums;">4</span>Experiments</div>
+        <div class="row {{ sel.results.cls }}" onClick="{{ pick.results }}" style="display: flex; align-items: center; gap: 8px; height: 27px; padding: 0 8px 0 12px; border-radius: 6px; cursor: pointer; font-size: 12.5px; background: {{ sel.results.bg }}; color: {{ sel.results.fg }}; font-weight: {{ sel.results.w }};">
+          <span style="width: 15px; color: #A3B0BB; font-variant-numeric: tabular-nums;">5</span>Results</div>
+        <div class="row {{ sel.discussion.cls }}" onClick="{{ pick.discussion }}" style="display: flex; align-items: center; gap: 8px; height: 27px; padding: 0 8px 0 12px; border-radius: 6px; cursor: pointer; font-size: 12.5px; background: {{ sel.discussion.bg }}; color: {{ sel.discussion.fg }}; font-weight: {{ sel.discussion.w }};">
+          <span style="width: 15px; color: #A3B0BB; font-variant-numeric: tabular-nums;">6</span>Discussion</div>
+
+        <div style="padding: 12px 6px 4px 6px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">BACK MATTER</div>
+        <div class="row {{ sel.references.cls }}" onClick="{{ pick.references }}" style="display: flex; align-items: center; gap: 8px; height: 27px; padding: 0 8px 0 12px; border-radius: 6px; cursor: pointer; font-size: 12.5px; background: {{ sel.references.bg }}; color: {{ sel.references.fg }}; font-weight: {{ sel.references.w }};">References</div>
+        <div class="row {{ sel.appendix.cls }}" onClick="{{ pick.appendix }}" style="display: flex; align-items: center; gap: 8px; height: 27px; padding: 0 8px 0 12px; border-radius: 6px; cursor: pointer; font-size: 12.5px; background: {{ sel.appendix.bg }}; color: {{ sel.appendix.fg }}; font-weight: {{ sel.appendix.w }};">Appendix A · Prompts</div>
+
+        <div style="padding: 12px 6px 4px 6px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">ASSETS</div>
+        <div style="display: flex; align-items: center; gap: 8px; height: 27px; padding: 0 8px 0 12px; border-radius: 6px; font-size: 12.5px; color: #465A69;">
+          <span style="flex-grow: 1;">Figures</span><span style="color: #93A2AE;">4</span></div>
+        <div style="display: flex; align-items: center; gap: 8px; height: 27px; padding: 0 8px 0 12px; border-radius: 6px; font-size: 12.5px; color: #465A69;">
+          <span style="flex-grow: 1;">Tables</span><span style="color: #93A2AE;">2</span></div>
+        <div style="display: flex; align-items: center; gap: 8px; height: 27px; padding: 0 8px 0 12px; border-radius: 6px; font-size: 12.5px; color: #465A69;">
+          <span style="flex-grow: 1;">Equations</span><span style="color: #93A2AE;">7</span></div>
+      </div>
+    </div>
+
+    <!-- Editor -->
+    <div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column;">
+      <div style="height: 44px; flex-shrink: 0; display: flex; align-items: center; gap: 10px; padding: 0 18px; border-bottom: 1px solid #EDF1F4;">
+        <span style="font-size: 12.5px; color: #93A2AE;">{{ sec.crumb }}</span>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#C3D0DA" stroke-width="2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg>
+        <span style="font-size: 12.5px; font-weight: 600;">{{ sec.title }}</span>
+        <div style="flex-grow: 1;"></div>
+        <span style="font-size: 12px; color: #7B8B98;">{{ sec.words }} words</span>
+        <span style="font-size: 12px; color: #7B8B98;">·</span>
+        <span style="font-size: 12px; color: #7B8B98;">{{ sec.cites }} citations</span>
+      </div>
+
+      <div style="flex-grow: 1; overflow-y: auto; display: flex; justify-content: center;">
+        <div style="width: 660px; padding: 44px 0 140px 0;">
+
+          <h2 style="margin: 0 0 22px 0; font-family: Literata, Georgia, serif; font-size: 24px; font-weight: 600; letter-spacing: -0.012em; color: #1C2B33;">{{ sec.heading }}</h2>
+
+          <!-- 3.2 Length effects -->
+          <sc-if value="{{ isLength }}" hint-placeholder-val="{{ true }}">
+          <div style="font-family: Literata, Georgia, serif; font-size: 16.5px; line-height: 1.78; color: #22323B;">
+            <p style="margin: 0 0 20px 0;">Length normalisation is not a new problem. The probabilistic relevance framework already accounts for document length when scoring, and does so precisely because longer documents accumulate term matches without becoming more relevant <span class="cite" onClick="{{ citePick.bm25 }}" style="background: {{ citeMark.bm25 }}; border-radius: 4px; padding: 1px 4px; cursor: pointer; font-family: 'Hanken Grotesk', sans-serif; font-size: 14px; font-weight: 500; color: #0052BA;">(Robertson &amp; Zaragoza, 2009)</span>. What has not been settled is the same question one level down, where the unit being scored is a chunk the system itself chose.</p>
+
+            <p style="margin: 0 0 20px 0;">We define recall at rank <i>k</i> over a query set <i>Q</i> in the usual way, so that our numbers can be read against the retrieval literature without translation:</p>
+
+            <div style="margin: 0 0 8px 0; display: flex; align-items: center; gap: 16px; padding: 18px 20px; background: #FBFCFD; border: 1px solid #EDF1F4; border-radius: 10px;">
+              <div style="flex-grow: 1; text-align: center; font-family: Literata, Georgia, serif; font-size: 18px; color: #1C2B33;">
+                <i>R</i>@<i>k</i> &nbsp;=&nbsp; <span style="display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; font-size: 14px;"><span style="padding: 0 6px 2px 6px; border-bottom: 1px solid #1C2B33;">1</span><span style="padding-top: 2px;">|<i>Q</i>|</span></span> &nbsp;<span style="font-size: 24px; vertical-align: -3px;">∑</span><sub style="font-size: 12px;"><i>q</i>∈<i>Q</i></sub>&nbsp; <b style="font-weight: 400;">1</b>[ rank(<i>q</i>) ≤ <i>k</i> ]
+              </div>
+              <span style="font-size: 14px; color: #7B8B98; font-family: Literata, Georgia, serif; flex-shrink: 0;">(3)</span>
+            </div>
+            <div style="font-size: 12px; color: #A3B0BB; margin-bottom: 22px;">Equation 3 · referenced once, in §5</div>
+
+            <p style="margin: 0 0 20px 0;">Holding the encoder fixed and sweeping chunk length from 64 to 1,024 tokens produces the curve in <span style="background: #EDF1F4; border-radius: 4px; padding: 1px 5px; font-family: 'Hanken Grotesk', sans-serif; font-size: 14px; font-weight: 600; color: #465A69; cursor: pointer;">Figure 2</span>. <span style="background: #FFF1D6; border-bottom: 2px solid #FFC800; padding: 1px 0; border-radius: 2px;">Recall falls away sharply past 512 tokens on every corpus we tried</span><span style="display: inline-block; transform: translateY(-6px); margin-left: 2px; font-family: 'Hanken Grotesk', sans-serif; font-size: 10px; font-weight: 700; color: #B26A00; background: #FFF1D6; border-radius: 4px; padding: 1px 4px;">needs a citation or a number</span>, which we read as a property of the encoder rather than of the corpus.</p>
+
+            <div style="margin: 0 0 22px 0; border: 1px dashed #C3D0DA; border-radius: 11px; background: #FBFCFD; overflow: hidden;">
+              <div style="height: 168px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 9px;">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#C3D0DA" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 19h16"/><path d="M7 15l3.5-4.5L14 13l4-6"/></svg>
+                <div style="font-size: 12.5px; color: #93A2AE;">Renders at build time from <span style="font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 11.5px;">figures/recall_by_length.py</span></div>
+                <div style="font-size: 11.5px; color: #C3D0DA;">Last run 2 days ago · inputs changed since</div>
+              </div>
+              <div style="padding: 11px 16px; border-top: 1px dashed #DCE3E9; font-family: Literata, Georgia, serif; font-size: 13.5px; line-height: 1.55; color: #465A69;"><b style="font-weight: 600;">Figure 2:</b> Recall@10 against chunk length in tokens, three corpora, encoder held fixed.</div>
+            </div>
+
+            <p style="margin: 0;">The effect survives when overlap is held at zero, which rules out the simplest explanation — that longer chunks merely absorb the boundaries that shorter ones straddle.</p>
+          </div>
+          </sc-if>
+
+          <!-- 2 Related Work -->
+          <sc-if value="{{ isRelated }}" hint-placeholder-val="{{ false }}">
+          <div style="font-family: Literata, Georgia, serif; font-size: 16.5px; line-height: 1.78; color: #22323B;">
+            <p style="margin: 0 0 20px 0;">Retrieval-augmented generation established the retrieve-then-generate pattern that most current systems still follow <span class="cite" onClick="{{ citePick.rag }}" style="background: {{ citeMark.rag }}; border-radius: 4px; padding: 1px 4px; cursor: pointer; font-family: 'Hanken Grotesk', sans-serif; font-size: 14px; font-weight: 500; color: #0052BA;">(Lewis et al., 2020)</span>, and the dense retrieval work it builds on fixed passages at roughly one hundred words <span class="cite" onClick="{{ citePick.dpr }}" style="background: {{ citeMark.dpr }}; border-radius: 4px; padding: 1px 4px; cursor: pointer; font-family: 'Hanken Grotesk', sans-serif; font-size: 14px; font-weight: 500; color: #0052BA;">(Karpukhin et al., 2020)</span>. That choice has been inherited far more often than it has been re-examined.</p>
+
+            <p style="margin: 0 0 20px 0;">Two lines of work complicate it. Late interaction defers the comparison to the token level, which changes what a badly placed boundary costs <span class="cite" onClick="{{ citePick.colbert }}" style="background: {{ citeMark.colbert }}; border-radius: 4px; padding: 1px 4px; cursor: pointer; font-family: 'Hanken Grotesk', sans-serif; font-size: 14px; font-weight: 500; color: #0052BA;">(Khattab &amp; Zaharia, 2020)</span>. Fusion-in-decoder scales the number of passages rather than their size, and reports gains from doing so <span class="cite" onClick="{{ citePick.fid }}" style="background: {{ citeMark.fid }}; border-radius: 4px; padding: 1px 4px; cursor: pointer; font-family: 'Hanken Grotesk', sans-serif; font-size: 14px; font-weight: 500; color: #0052BA;">(Izacard &amp; Grave, 2021)</span>.</p>
+
+            <p style="margin: 0;">Neither evaluates at book length, and that is the gap this paper occupies — a narrower gap than our first draft claimed.</p>
+          </div>
+          </sc-if>
+
+          <!-- References -->
+          <sc-if value="{{ isRefs }}" hint-placeholder-val="{{ false }}">
+          <div style="font-family: Literata, Georgia, serif; font-size: 14.5px; line-height: 1.7; color: #22323B;">
+            <div style="display: flex; align-items: center; gap: 9px; margin-bottom: 18px; padding: 10px 13px; background: #F0F6FF; border: 1px solid #CFE1FA; border-radius: 9px; font-family: 'Hanken Grotesk', sans-serif;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0064E0" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 11v5.5M12 7.6h.01"/></svg>
+              <span style="font-size: 12.5px; color: #1F4F8F;">Generated from the library on build. Edit entries there, not here.</span>
+            </div>
+            <p style="margin: 0 0 14px 0; padding-left: 26px; text-indent: -26px;">Izacard, G. and Grave, E. (2021). Leveraging passage retrieval with generative models for open domain question answering. <i>EACL</i>.</p>
+            <p style="margin: 0 0 14px 0; padding-left: 26px; text-indent: -26px;">Karpukhin, V., Oğuz, B., Min, S., et al. (2020). Dense passage retrieval for open-domain question answering. <i>EMNLP</i>.</p>
+            <p style="margin: 0 0 14px 0; padding-left: 26px; text-indent: -26px;">Khattab, O. and Zaharia, M. (2020). ColBERT: efficient and effective passage search via contextualized late interaction over BERT. <i>SIGIR</i>.</p>
+            <p style="margin: 0 0 14px 0; padding-left: 26px; text-indent: -26px;">Lewis, P., Perez, E., Piktus, A., et al. (2020). Retrieval-augmented generation for knowledge-intensive NLP tasks. <i>NeurIPS</i>.</p>
+            <p style="margin: 0 0 14px 0; padding-left: 26px; text-indent: -26px; background: #FFFAF0; border-radius: 4px;">Malkov, Y. A. and Yashunin, D. A. (2020). Efficient and robust approximate nearest neighbor search using hierarchical navigable small world graphs. <i>IEEE TPAMI</i>, <span style="color: #B26A00; font-family: 'Hanken Grotesk', sans-serif; font-size: 12.5px; font-weight: 600;">[pages missing]</span>.</p>
+            <p style="margin: 0; padding-left: 26px; text-indent: -26px;">Robertson, S. and Zaragoza, H. (2009). The probabilistic relevance framework: BM25 and beyond. <i>Foundations and Trends in Information Retrieval</i>.</p>
+          </div>
+          </sc-if>
+
+          <!-- Outline-only sections -->
+          <sc-if value="{{ isStub }}" hint-placeholder-val="{{ false }}">
+          <div>
+            <div style="display: flex; align-items: center; gap: 9px; padding: 11px 13px; background: #F7F9FB; border: 1px solid #E4EAEF; border-radius: 10px; margin-bottom: 22px;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7B8B98" stroke-width="1.9" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg>
+              <span style="font-size: 12.5px; color: #465A69;">Outline only — no prose written yet.</span>
+            </div>
+            <div style="font-family: Literata, Georgia, serif; font-size: 16.5px; line-height: 1.85; color: #7B8B98;">
+              <div style="margin-bottom: 12px;">— {{ sec.b1 }}</div>
+              <div style="margin-bottom: 12px;">— {{ sec.b2 }}</div>
+              <div>— {{ sec.b3 }}</div>
+            </div>
+            <div style="margin-top: 26px; display: flex; gap: 10px;">
+              <div class="btn" style="display: flex; align-items: center; gap: 7px; height: 34px; padding: 0 14px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; color: #FFFFFF; background: {{ accent }};">Draft from these bullets</div>
+              <div class="ghost" style="display: flex; align-items: center; height: 34px; padding: 0 14px; border: 1px solid #DCE3E9; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; color: #465A69;">Pull sources for this section</div>
+            </div>
+          </div>
+          </sc-if>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Inspector -->
+    <div style="width: 340px; flex-shrink: 0; display: flex; flex-direction: column; background: #FFFFFF; border-left: 1px solid #DCE3E9;">
+      <div style="height: 44px; flex-shrink: 0; display: flex; align-items: stretch; gap: 2px; padding: 0 12px; border-bottom: 1px solid #EDF1F4;">
+        <div class="seg" onClick="{{ goCites }}" style="display: flex; align-items: center; padding: 0 11px; font-size: 12.5px; font-weight: 600; cursor: pointer; color: {{ tab.cites.fg }}; box-shadow: {{ tab.cites.line }};">Citations</div>
+        <div class="seg" onClick="{{ goFigs }}" style="display: flex; align-items: center; padding: 0 11px; font-size: 12.5px; font-weight: 600; cursor: pointer; color: {{ tab.figs.fg }}; box-shadow: {{ tab.figs.line }};">Figures</div>
+        <div class="seg" onClick="{{ goChecks }}" style="display: flex; align-items: center; gap: 6px; padding: 0 11px; font-size: 12.5px; font-weight: 600; cursor: pointer; color: {{ tab.checks.fg }}; box-shadow: {{ tab.checks.line }};">
+          Checks
+          <span style="font-size: 10px; font-weight: 700; color: #FFFFFF; background: #FF5C01; border-radius: 9px; padding: 1px 5px;">2</span>
+        </div>
+      </div>
+
+      <div style="flex-grow: 1; overflow-y: auto; padding: 16px 16px 24px 16px;">
+
+        <sc-if value="{{ isCites }}" hint-placeholder-val="{{ true }}">
+        <div>
+          <div style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB; margin-bottom: 10px;">IN THIS SECTION</div>
+
+          <div class="cit {{ citeSel.bm25.cls }}" onClick="{{ citePick.bm25 }}" style="display: flex; gap: 10px; padding: 10px 11px; border-radius: 9px; cursor: pointer; background: {{ citeSel.bm25.bg }}; box-shadow: {{ citeSel.bm25.ring }};">
+            <span style="width: 7px; height: 7px; border-radius: 50%; background: #31A24C; margin-top: 6px; flex-shrink: 0;"></span>
+            <div style="min-width: 0; flex-grow: 1;">
+              <div style="font-size: 13px; font-weight: 600; color: #1C2B33;">Robertson &amp; Zaragoza, 2009</div>
+              <div style="font-size: 12px; color: #7B8B98; margin-top: 2px;">In the library · complete</div>
+            </div>
+          </div>
+
+          <div class="cit {{ citeSel.colbert.cls }}" onClick="{{ citePick.colbert }}" style="display: flex; gap: 10px; padding: 10px 11px; border-radius: 9px; cursor: pointer; margin-top: 3px; background: {{ citeSel.colbert.bg }}; box-shadow: {{ citeSel.colbert.ring }};">
+            <span style="width: 7px; height: 7px; border-radius: 50%; background: #0064E0; margin-top: 6px; flex-shrink: 0;"></span>
+            <div style="min-width: 0; flex-grow: 1;">
+              <div style="font-size: 13px; font-weight: 600; color: #1C2B33;">Khattab &amp; Zaharia, 2020</div>
+              <div style="font-size: 12px; color: #7B8B98; margin-top: 2px;">Added by Deep Research · first use</div>
+            </div>
+          </div>
+
+          <div class="cit {{ citeSel.hnsw.cls }}" onClick="{{ citePick.hnsw }}" style="display: flex; gap: 10px; padding: 10px 11px; border-radius: 9px; cursor: pointer; margin-top: 3px; background: {{ citeSel.hnsw.bg }}; box-shadow: {{ citeSel.hnsw.ring }};">
+            <span style="width: 7px; height: 7px; border-radius: 50%; background: #FFC800; margin-top: 6px; flex-shrink: 0;"></span>
+            <div style="min-width: 0; flex-grow: 1;">
+              <div style="font-size: 13px; font-weight: 600; color: #1C2B33;">Malkov &amp; Yashunin, 2020</div>
+              <div style="font-size: 12px; color: #B26A00; margin-top: 2px;">Page numbers missing</div>
+            </div>
+          </div>
+
+          <div style="margin: 20px 0 10px 0; font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">CLAIMS WITH NO SOURCE</div>
+          <div style="border: 1px solid #F2D9A4; background: #FFFAF0; border-radius: 10px; padding: 12px 13px;">
+            <div style="font-family: Literata, Georgia, serif; font-size: 13.5px; line-height: 1.58; color: #5C4300;">“Recall falls away sharply past 512 tokens on every corpus we tried”</div>
+            <div style="font-size: 12.5px; line-height: 1.6; color: #7A5200; margin-top: 9px;">An empirical claim with neither a citation nor a number. Either point it at Figure 2 with a value, or soften it.</div>
+            <div style="display: flex; gap: 7px; margin-top: 11px;">
+              <div class="btn" style="display: flex; align-items: center; height: 29px; padding: 0 12px; border-radius: 7px; cursor: pointer; font-size: 12px; font-weight: 600; color: #FFFFFF; background: {{ accent }};">Find a source</div>
+              <div class="ghost" style="display: flex; align-items: center; height: 29px; padding: 0 12px; border: 1px solid #E4D6B4; border-radius: 7px; cursor: pointer; font-size: 12px; font-weight: 600; color: #7A5200;">Cite Figure 2</div>
+            </div>
+          </div>
+
+          <div style="margin-top: 18px; display: flex; align-items: center; justify-content: center; gap: 7px; height: 34px; border: 1px dashed #C3D0DA; border-radius: 8px; cursor: pointer; font-size: 12.5px; font-weight: 600; color: #465A69;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            Insert a citation from the library
+          </div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ isFigs }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB; margin-bottom: 10px;">FIGURES · 4</div>
+
+          <div style="display: flex; gap: 11px; padding: 11px 12px; border: 1px solid #EDF1F4; border-radius: 10px;">
+            <span style="width: 34px; height: 34px; border-radius: 8px; background: #E4F5E9; color: #1D8A3C; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 12px; font-weight: 700;">1</span>
+            <div style="min-width: 0; flex-grow: 1;">
+              <div style="font-size: 12.5px; font-weight: 600; color: #1C2B33;">System overview</div>
+              <div style="font-size: 11.5px; color: #7B8B98; margin-top: 2px;">static SVG · cited in §3</div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 11px; padding: 11px 12px; border: 1px solid #F2D9A4; background: #FFFAF0; border-radius: 10px; margin-top: 4px;">
+            <span style="width: 34px; height: 34px; border-radius: 8px; background: #FFF1D6; color: #B26A00; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 12px; font-weight: 700;">2</span>
+            <div style="min-width: 0; flex-grow: 1;">
+              <div style="font-size: 12.5px; font-weight: 600; color: #7A5200;">Recall by chunk length</div>
+              <div style="font-size: 11.5px; color: #A05A1E; margin-top: 2px; font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace;">recall_by_length.py</div>
+              <div style="font-size: 11.5px; color: #A05A1E; margin-top: 4px;">Inputs changed 2 days ago — the built PDF is showing a stale plot.</div>
+              <div class="btn" style="display: inline-flex; align-items: center; height: 27px; padding: 0 11px; border-radius: 7px; cursor: pointer; font-size: 11.5px; font-weight: 600; color: #FFFFFF; background: #B26A00; margin-top: 9px;">Re-run locally</div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 11px; padding: 11px 12px; border: 1px solid #EDF1F4; border-radius: 10px; margin-top: 4px;">
+            <span style="width: 34px; height: 34px; border-radius: 8px; background: #E4F5E9; color: #1D8A3C; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 12px; font-weight: 700;">3</span>
+            <div style="min-width: 0; flex-grow: 1;">
+              <div style="font-size: 12.5px; font-weight: 600; color: #1C2B33;">Overlap ablation</div>
+              <div style="font-size: 11.5px; color: #7B8B98; margin-top: 2px;">overlap_ablation.py · cited in §5</div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 11px; padding: 11px 12px; border: 1px solid #EDF1F4; border-radius: 10px; margin-top: 4px;">
+            <span style="width: 34px; height: 34px; border-radius: 8px; background: #EDF1F4; color: #7B8B98; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 12px; font-weight: 700;">4</span>
+            <div style="min-width: 0; flex-grow: 1;">
+              <div style="font-size: 12.5px; font-weight: 600; color: #1C2B33;">Failure taxonomy</div>
+              <div style="font-size: 11.5px; color: #7B8B98; margin-top: 2px;">static SVG · <span style="color: #B26A00; font-weight: 600;">never referenced in the text</span></div>
+            </div>
+          </div>
+
+          <div style="margin-top: 16px; font-size: 12.5px; line-height: 1.6; color: #7B8B98;">Figures generated from scripts are rebuilt on the machine at build time. Nothing is uploaded to render them.</div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ isChecks }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB; margin-bottom: 11px;">BEFORE SUBMISSION</div>
+
+          <div style="display: flex; flex-direction: column; gap: 3px;">
+            <div style="display: flex; align-items: center; gap: 10px; padding: 10px 11px; border-radius: 9px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#31A24C" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+              <span style="flex-grow: 1; font-size: 13px; color: #22323B;">Every citation resolves to the library</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; padding: 10px 11px; border-radius: 9px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#31A24C" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+              <span style="flex-grow: 1; font-size: 13px; color: #22323B;">No overlap with your own thesis</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; padding: 10px 11px; border-radius: 9px; background: #FFFAF0;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B26A00" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 8v5M12 16.4h.01"/></svg>
+              <span style="flex-grow: 1; font-size: 13px; color: #7A5200;">2 references are missing fields</span>
+              <span style="font-size: 12px; font-weight: 600; color: #B26A00;">Fix</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; padding: 10px 11px; border-radius: 9px; background: #FFFAF0;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B26A00" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 8v5M12 16.4h.01"/></svg>
+              <span style="flex-grow: 1; font-size: 13px; color: #7A5200;">1 unsupported empirical claim</span>
+              <span style="font-size: 12px; font-weight: 600; color: #B26A00;">Show</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; padding: 10px 11px; border-radius: 9px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#31A24C" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+              <span style="flex-grow: 1; font-size: 13px; color: #22323B;">Figure 4 is defined but never referenced</span>
+            </div>
+          </div>
+
+          <div style="margin-top: 18px; border: 1px solid #E4D2F7; background: #FCF8FF; border-radius: 11px; padding: 13px;">
+            <div style="font-size: 12.5px; font-weight: 700; color: #5A0F92; margin-bottom: 7px;">AI writing · 4% of the body</div>
+            <div style="font-size: 12.5px; line-height: 1.62; color: #6B3A94;">Well under the threshold most venues use. The two flagged sentences are both in §6 and both were drafted from your own bullets.</div>
+          </div>
+
+          <div class="btn" style="display: flex; align-items: center; justify-content: center; gap: 7px; height: 36px; margin-top: 16px; border-radius: 9px; cursor: pointer; font-size: 13px; font-weight: 600; color: #FFFFFF; background: {{ accent }};">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11M8 10.5l4 4 4-4"/><path d="M4 20h16"/></svg>
+            Export submission packet
+          </div>
+          <div style="font-size: 12px; line-height: 1.55; color: #93A2AE; margin-top: 9px; text-align: center;">PDF, sources, .bib, and the integrity report in one folder.</div>
+        </div>
+        </sc-if>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Status bar -->
+  <div style="height: 28px; flex-shrink: 0; display: flex; align-items: center; gap: 16px; padding: 0 14px; background: #F5F7F9; border-top: 1px solid #DCE3E9; font-size: 11.5px; color: #7B8B98;">
+    <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 7px; height: 7px; border-radius: 50%; background: #31A24C;"></span>Ollama · hermes3:8b</span>
+    <span>Library indexed alongside the manuscript · 2,904 chunks</span>
+    <span style="display: flex; align-items: center; gap: 6px;">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18.4 6.2A9 9 0 1 0 21 12"/><path d="M3 3l18 18"/></svg>
+      Offline
+    </span>
+    <div style="flex-grow: 1;"></div>
+    <span>LaTeX build 14s ago · 8 pages</span>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#0064E0","options":["#0064E0","#0082FB","#A033FF","#1C2B33"],"section":"Theme"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { sec: 'length', tab: 'cites', cite: 'bm25' };
+  }
+
+  tint(hex, a) {
+    var h = String(hex || '#0064E0').replace('#', '');
+    if (h.length === 3) { h = h.charAt(0) + h.charAt(0) + h.charAt(1) + h.charAt(1) + h.charAt(2) + h.charAt(2); }
+    var n = parseInt(h, 16);
+    if (isNaN(n)) { n = 0x0064E0; }
+    return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+  }
+
+  renderVals() {
+    var self = this;
+    var st = this.state;
+    var accent = this.props.accent || '#0064E0';
+    var soft = this.tint(accent, 0.10);
+
+    var SECTIONS = {
+      abstract:    { crumb: 'Front matter', title: 'Title and abstract', heading: 'Abstract', words: '186', cites: 0, kind: 'stub',
+                     b1: 'One sentence on what breaks at book length', b2: 'The measurement, in one clause', b3: 'The result, with the number' },
+      intro:       { crumb: 'Body', title: '1 Introduction', heading: '1  Introduction', words: '0', cites: 0, kind: 'stub',
+                     b1: 'Chunking is a choice nobody re-examines', b2: 'It was fixed for Wikipedia-length documents', b3: 'Books are not Wikipedia articles' },
+      related:     { crumb: 'Body', title: '2 Related Work', heading: '2  Related Work', words: '214', cites: 4, kind: 'related' },
+      method:      { crumb: 'Body', title: '3 Method', heading: '3  Method', words: '0', cites: 0, kind: 'stub',
+                     b1: 'Corpora and why these three', b2: 'Encoder held fixed throughout', b3: 'What we sweep and what we hold' },
+      chunking:    { crumb: 'Body / 3 Method', title: '3.1 Chunking', heading: '3.1  Chunking', words: '0', cites: 0, kind: 'stub',
+                     b1: 'Boundary policy: sentence, then token cap', b2: 'Overlap as a separate axis, not a default', b3: 'What we do not do: semantic splitting' },
+      length:      { crumb: 'Body / 3 Method', title: '3.2 Length effects', heading: '3.2  Length effects', words: '241', cites: 3, kind: 'length' },
+      experiments: { crumb: 'Body', title: '4 Experiments', heading: '4  Experiments', words: '0', cites: 0, kind: 'stub',
+                     b1: 'Sweep: 64 to 1,024 tokens, six steps', b2: 'Overlap: 0, 10, 25 percent', b3: 'Five seeds, report the spread not the best' },
+      results:     { crumb: 'Body', title: '5 Results', heading: '5  Results', words: '0', cites: 0, kind: 'stub',
+                     b1: 'The curve, and where it turns', b2: 'Ranking degrades before recall does', b3: 'Rule out the index as the cause' },
+      discussion:  { crumb: 'Body', title: '6 Discussion', heading: '6  Discussion', words: '92', cites: 1, kind: 'stub',
+                     b1: 'Overlap stays an open question', b2: 'What this does not show', b3: 'What a practitioner should change on Monday' },
+      references:  { crumb: 'Back matter', title: 'References', heading: 'References', words: '—', cites: 6, kind: 'refs' },
+      appendix:    { crumb: 'Back matter', title: 'Appendix A', heading: 'Appendix A  Prompts', words: '0', cites: 0, kind: 'stub',
+                     b1: 'Exact prompts, verbatim', b2: 'Decoding settings', b3: 'Model versions and quantisation' }
+    };
+
+    var pick = {}, sel = {};
+    Object.keys(SECTIONS).forEach(function (id) {
+      pick[id] = function () { self.setState({ sec: id }); };
+      var on = st.sec === id;
+      sel[id] = { bg: on ? soft : 'transparent', fg: on ? accent : '#465A69', w: on ? '600' : '450', cls: on ? 'on' : 'off' };
+    });
+
+    var citePick = {}, citeSel = {}, citeMark = {};
+    ['bm25', 'colbert', 'hnsw', 'rag', 'dpr', 'fid'].forEach(function (id) {
+      citePick[id] = function () { self.setState({ cite: id, tab: 'cites' }); };
+      var on = st.cite === id;
+      citeSel[id] = { bg: on ? soft : 'transparent', ring: on ? ('inset 0 0 0 1px ' + accent) : 'inset 0 0 0 1px #EDF1F4', cls: on ? 'on' : 'off' };
+      citeMark[id] = on ? '#CFE1FA' : '#EDF3FA';
+    });
+
+    function tabStyle(on) {
+      return { fg: on ? accent : '#7B8B98', line: on ? ('inset 0 -2px 0 0 ' + accent) : 'none' };
+    }
+
+    var cur = SECTIONS[st.sec] || SECTIONS.length;
+
+    return {
+      accent: accent,
+      sec: cur,
+      pick: pick,
+      sel: sel,
+      citePick: citePick,
+      citeSel: citeSel,
+      citeMark: citeMark,
+      isLength: cur.kind === 'length',
+      isRelated: cur.kind === 'related',
+      isRefs: cur.kind === 'refs',
+      isStub: cur.kind === 'stub',
+      isCites: st.tab === 'cites',
+      isFigs: st.tab === 'figs',
+      isChecks: st.tab === 'checks',
+      goCites: function () { self.setState({ tab: 'cites' }); },
+      goFigs: function () { self.setState({ tab: 'figs' }); },
+      goChecks: function () { self.setState({ tab: 'checks' }); },
+      tab: { cites: tabStyle(st.tab === 'cites'), figs: tabStyle(st.tab === 'figs'), checks: tabStyle(st.tab === 'checks') }
+    };
+  }
+}
+</script>
+</body>
+</html>

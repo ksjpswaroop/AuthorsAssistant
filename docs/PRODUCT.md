@@ -8,9 +8,9 @@ AegisDraft is a **local-first AI co-author and editor** for long-form work. It c
 
 - A Scrivener-inspired writing studio (binder, corkboard, outliner, inspector, compile)
 - Turnitin-class integrity (similarity, AI-writing detection, rubrics, exportable reports)
-- Hermes 3 agents that mutate the project via tools—not a passive autocomplete box
+- **hermes-agent** (Hermes 3 via Ollama) that mutates the project via skills—not a passive autocomplete box
 
-Authors keep unpublished manuscripts on their own machines. The AI plans multi-step work, writes into the binder and editor, and explains integrity findings in human-readable reports.
+Authors keep unpublished manuscripts on their own machines. The co-author plans multi-step work, writes into the binder and editor, explains integrity findings, **learns the author’s voice**, and **grows project skills** the more it is used.
 
 ## Non-goals
 
@@ -53,24 +53,26 @@ Scores alone are not enough. The Integrity agent synthesizes *why* a section was
 - Scene continuation (`Ctrl+Space`), rewrite, tone/style shifter
 - Devil’s advocate critique before “submit chapter”
 - Integrity-aware generation: flag or rewrite passages that would fail a check
+- **Rewrite in my voice** using a local style profile learned from accepted prose
 
-Single-shot tools land in Phase 3; multi-step Hermes orchestration lands in Phase 5 ([ROADMAP.md](ROADMAP.md)).
+Single-shot tools land in Phase 3; multi-step **hermes-agent** orchestration lands in Phase 5 ([ROADMAP.md](ROADMAP.md), [HERMES-RUNTIME.md](HERMES-RUNTIME.md)).
 
 ## Agent UX
 
-- **Command bar** for App Controller intents
-- **Inspector agent log** showing plan steps and tool calls (local traces only)
+- **Command bar** for App Controller intents (hermes-agent profile)
+- **Inspector agent log** showing profile, plan steps, skills used, and style match (local traces only)
 - Agents **write into** the binder and editor; chat is a transcript of work done, not the only deliverable
+- **Voice & skills:** style profile from accepted prose; proposed skills after repeated workflows (user confirms)
 - Guardrails: confirm before delete, compile, or web search; optional snapshot before bulk writes
 
 ## Privacy as a product requirement
 
 | Rule | Requirement |
 | :--- | :--- |
-| Default offline | Drafting, RAG, snapshots, and agent runs work with no network |
+| Default offline | Drafting, RAG, hermes-agent, snapshots work with no network |
 | No cloud manuscript | Text does not leave the machine unless the user explicitly opts into web similarity |
-| Local models | Hermes 3, draft models, embeddings, and detectors run via Ollama / ONNX / local hosts |
-| Local traces | Agent plans and tool I/O stay on disk with the project |
+| Local models + runtime | Hermes 3 / draft models via Ollama; hermes-agent on loopback; no cloud portal by default |
+| Local traces & style | Agent plans, memory, style profile, and skills stay on disk with the project |
 | Opt-in web | SearXNG + Trafilatura only for highlighted / selected phrases, never a full-book upload |
 
 Architecture details: [ARCHITECTURE.md](ARCHITECTURE.md).

@@ -1,0 +1,405 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Literata:opsz,wght@7..72,400;7..72,600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; font-family: 'Hanken Grotesk', system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #0064E0; text-decoration: none; }
+    a:hover { color: #0052BA; }
+    .btn:hover { filter: brightness(0.93); }
+    .ghost:hover { background: #EDF1F4 !important; }
+    .coll:not(.on):hover { background: #EDF1F4 !important; }
+    .tr:not(.on):hover { background: #F7F9FB !important; }
+    ::-webkit-scrollbar { width: 11px; height: 11px; }
+    ::-webkit-scrollbar-thumb { background: #D3DCE3; border-radius: 8px; border: 3px solid transparent; background-clip: content-box; }
+    ::-webkit-scrollbar-track { background: transparent; }
+  </style>
+</helmet>
+
+<div style="width: 1440px; height: 900px; display: flex; flex-direction: column; background: #FFFFFF; color: #1C2B33; overflow: hidden;">
+
+  <!-- Title bar -->
+  <div style="height: 40px; flex-shrink: 0; display: flex; align-items: center; gap: 14px; padding: 0 12px; background: #F5F7F9; border-bottom: 1px solid #DCE3E9;">
+    <div style="display: flex; gap: 8px; padding-left: 2px;">
+      <div style="width: 12px; height: 12px; border-radius: 50%; background: #FF5F57;"></div>
+      <div style="width: 12px; height: 12px; border-radius: 50%; background: #FEBC2E;"></div>
+      <div style="width: 12px; height: 12px; border-radius: 50%; background: #28C840;"></div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 9px; padding-left: 8px;">
+      <div style="width: 18px; height: 18px; border-radius: 5px; background: linear-gradient(135deg, #0082FB 0%, #0064E0 55%, #A033FF 100%);"></div>
+      <span style="font-size: 13px; font-weight: 600;">Retrieval Failure Modes</span>
+      <span style="font-size: 12px; color: #93A2AE;">paper · Library</span>
+    </div>
+    <div style="flex-grow: 1;"></div>
+    <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #7B8B98;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#31A24C" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18.4 6.2A9 9 0 1 0 21 12"/><path d="M3 3l18 18"/></svg>
+      Metadata read from the PDFs themselves
+    </div>
+  </div>
+
+  <!-- Header -->
+  <div style="height: 56px; flex-shrink: 0; display: flex; align-items: center; gap: 14px; padding: 0 22px; border-bottom: 1px solid #DCE3E9;">
+    <div>
+      <div style="font-size: 15px; font-weight: 700; letter-spacing: -0.01em;">Library</div>
+      <div style="font-size: 12px; color: #93A2AE; margin-top: 1px;">13 references · 11 PDFs on disk · 2,904 chunks indexed</div>
+    </div>
+    <div style="flex-grow: 1;"></div>
+    <div style="display: flex; align-items: center; gap: 9px; width: 300px; height: 34px; padding: 0 12px; border: 1px solid #DCE3E9; border-radius: 9px;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#93A2AE" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6.6"/><path d="M16 16l4.5 4.5"/></svg>
+      <span style="font-size: 13px; color: #A3B0BB;">Search titles, authors, or full text…</span>
+    </div>
+    <div class="ghost" style="display: flex; align-items: center; gap: 7px; height: 34px; padding: 0 14px; border: 1px solid #DCE3E9; border-radius: 9px; cursor: pointer; font-size: 13px; font-weight: 600; color: #465A69;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V5M8 8.5l4-4 4 4"/><path d="M4 20h16"/></svg>
+      Add a PDF
+    </div>
+    <div class="btn" style="display: flex; align-items: center; height: 34px; padding: 0 16px; border-radius: 9px; cursor: pointer; font-size: 13px; font-weight: 600; color: #FFFFFF; background: {{ accent }};">Export .bib</div>
+  </div>
+
+  <!-- Body -->
+  <div style="flex-grow: 1; display: flex; min-height: 0;">
+
+    <!-- Collections -->
+    <div style="width: 248px; flex-shrink: 0; background: #F5F7F9; border-right: 1px solid #DCE3E9; padding: 12px 8px; overflow-y: auto;">
+      <div style="padding: 6px 10px 8px 10px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">COLLECTIONS</div>
+
+      <div class="coll {{ c.all.cls }}" onClick="{{ goColl.all }}" style="display: flex; align-items: center; gap: 9px; height: 30px; padding: 0 11px; border-radius: 8px; cursor: pointer; font-size: 13px; background: {{ c.all.bg }}; color: {{ c.all.fg }}; font-weight: {{ c.all.w }};">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity="0.7"><path d="M4 19.5V5a2 2 0 0 1 2-2h13v18H6a2 2 0 0 1-2-1.5z"/></svg>
+        <span style="flex-grow: 1;">All references</span><span style="color: #93A2AE; font-weight: 450;">13</span>
+      </div>
+      <div class="coll {{ c.cited.cls }}" onClick="{{ goColl.cited }}" style="display: flex; align-items: center; gap: 9px; height: 30px; padding: 0 11px; border-radius: 8px; cursor: pointer; font-size: 13px; margin-top: 2px; background: {{ c.cited.bg }}; color: {{ c.cited.fg }}; font-weight: {{ c.cited.w }};">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+        <span style="flex-grow: 1;">Cited in this paper</span><span style="color: #93A2AE; font-weight: 450;">6</span>
+      </div>
+      <div class="coll {{ c.uncited.cls }}" onClick="{{ goColl.uncited }}" style="display: flex; align-items: center; gap: 9px; height: 30px; padding: 0 11px; border-radius: 8px; cursor: pointer; font-size: 13px; margin-top: 2px; background: {{ c.uncited.bg }}; color: {{ c.uncited.fg }}; font-weight: {{ c.uncited.w }};">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" opacity="0.7"><circle cx="12" cy="12" r="8.6"/></svg>
+        <span style="flex-grow: 1;">Read but uncited</span><span style="color: #93A2AE; font-weight: 450;">6</span>
+      </div>
+      <div class="coll {{ c.gaps.cls }}" onClick="{{ goColl.gaps }}" style="display: flex; align-items: center; gap: 9px; height: 30px; padding: 0 11px; border-radius: 8px; cursor: pointer; font-size: 13px; margin-top: 2px; background: {{ c.gaps.bg }}; color: {{ c.gaps.fg }}; font-weight: {{ c.gaps.w }};">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" opacity="0.7"><circle cx="12" cy="12" r="8.6"/><path d="M12 8v5M12 16.4h.01"/></svg>
+        <span style="flex-grow: 1;">Incomplete metadata</span><span style="color: #B26A00; font-weight: 600;">2</span>
+      </div>
+      <div class="coll {{ c.held.cls }}" onClick="{{ goColl.held }}" style="display: flex; align-items: center; gap: 9px; height: 30px; padding: 0 11px; border-radius: 8px; cursor: pointer; font-size: 13px; margin-top: 2px; background: {{ c.held.bg }}; color: {{ c.held.fg }}; font-weight: {{ c.held.w }};">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" opacity="0.7"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        <span style="flex-grow: 1;">Held back</span><span style="color: #93A2AE; font-weight: 450;">1</span>
+      </div>
+
+      <div style="padding: 16px 10px 8px 10px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">TAGS</div>
+      <div style="display: flex; flex-wrap: wrap; gap: 6px; padding: 0 8px;">
+        <span style="font-size: 11.5px; font-weight: 500; color: #465A69; background: #E4EAEF; border-radius: 6px; padding: 4px 9px; cursor: pointer;">chunking</span>
+        <span style="font-size: 11.5px; font-weight: 500; color: #465A69; background: #E4EAEF; border-radius: 6px; padding: 4px 9px; cursor: pointer;">retrieval</span>
+        <span style="font-size: 11.5px; font-weight: 500; color: #465A69; background: #E4EAEF; border-radius: 6px; padding: 4px 9px; cursor: pointer;">evaluation</span>
+        <span style="font-size: 11.5px; font-weight: 500; color: #465A69; background: #E4EAEF; border-radius: 6px; padding: 4px 9px; cursor: pointer;">ANN indexes</span>
+        <span style="font-size: 11.5px; font-weight: 500; color: #465A69; background: #E4EAEF; border-radius: 6px; padding: 4px 9px; cursor: pointer;">long context</span>
+      </div>
+
+      <div style="margin: 18px 8px 0 8px; padding: 12px; border: 1px dashed #C3D0DA; border-radius: 10px;">
+        <div style="font-size: 12.5px; font-weight: 600; color: #465A69;">Drop a PDF here</div>
+        <div style="font-size: 11.5px; line-height: 1.55; color: #93A2AE; margin-top: 4px;">Title, authors and year are read out of the file. Looking up a DOI needs the network, and asks first.</div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column;">
+      <div style="display: grid; grid-template-columns: minmax(0, 1fr) 62px 78px 104px; align-items: center; height: 34px; flex-shrink: 0; background: #F5F7F9; border-bottom: 1px solid #DCE3E9; padding: 0 18px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em; color: #93A2AE;">
+        <div style="color: #465A69;">REFERENCE</div>
+        <div style="text-align: right;">YEAR</div>
+        <div style="text-align: right;">CITED</div>
+        <div style="text-align: right;">STATUS</div>
+      </div>
+
+      <div style="flex-grow: 1; overflow-y: auto;">
+
+        <div class="tr {{ s.dpr.cls }}" onClick="{{ pick.dpr }}" style="display: grid; grid-template-columns: minmax(0, 1fr) 62px 78px 104px; align-items: center; min-height: 58px; padding: 0 18px; border-bottom: 1px solid #EDF1F4; cursor: pointer; background: {{ s.dpr.bg }}; box-shadow: {{ s.dpr.ring }};">
+          <div style="min-width: 0; padding-right: 16px;">
+            <div style="font-size: 13.5px; font-weight: 600; color: #1C2B33; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Dense Passage Retrieval for Open-Domain Question Answering</div>
+            <div style="font-size: 12px; color: #7B8B98; margin-top: 2px;">Karpukhin, Oğuz, Min et al. · EMNLP</div>
+          </div>
+          <div style="text-align: right; font-size: 12.5px; color: #465A69; font-variant-numeric: tabular-nums;">2020</div>
+          <div style="text-align: right; font-size: 12.5px; color: #465A69; font-variant-numeric: tabular-nums;">3</div>
+          <div style="text-align: right;"><span style="font-size: 11px; font-weight: 600; color: #1D8A3C; background: #E4F5E9; border-radius: 6px; padding: 3px 8px;">Indexed</span></div>
+        </div>
+
+        <div class="tr {{ s.rag.cls }}" onClick="{{ pick.rag }}" style="display: grid; grid-template-columns: minmax(0, 1fr) 62px 78px 104px; align-items: center; min-height: 58px; padding: 0 18px; border-bottom: 1px solid #EDF1F4; cursor: pointer; background: {{ s.rag.bg }}; box-shadow: {{ s.rag.ring }};">
+          <div style="min-width: 0; padding-right: 16px;">
+            <div style="font-size: 13.5px; font-weight: 600; color: #1C2B33; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks</div>
+            <div style="font-size: 12px; color: #7B8B98; margin-top: 2px;">Lewis, Perez, Piktus et al. · NeurIPS</div>
+          </div>
+          <div style="text-align: right; font-size: 12.5px; color: #465A69; font-variant-numeric: tabular-nums;">2020</div>
+          <div style="text-align: right; font-size: 12.5px; color: #465A69; font-variant-numeric: tabular-nums;">2</div>
+          <div style="text-align: right;"><span style="font-size: 11px; font-weight: 600; color: #1D8A3C; background: #E4F5E9; border-radius: 6px; padding: 3px 8px;">Indexed</span></div>
+        </div>
+
+        <div class="tr {{ s.colbert.cls }}" onClick="{{ pick.colbert }}" style="display: grid; grid-template-columns: minmax(0, 1fr) 62px 78px 104px; align-items: center; min-height: 58px; padding: 0 18px; border-bottom: 1px solid #EDF1F4; cursor: pointer; background: {{ s.colbert.bg }}; box-shadow: {{ s.colbert.ring }};">
+          <div style="min-width: 0; padding-right: 16px;">
+            <div style="font-size: 13.5px; font-weight: 600; color: #1C2B33; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">ColBERT: Efficient and Effective Passage Search via Late Interaction</div>
+            <div style="font-size: 12px; color: #7B8B98; margin-top: 2px;">Khattab &amp; Zaharia · SIGIR</div>
+          </div>
+          <div style="text-align: right; font-size: 12.5px; color: #465A69; font-variant-numeric: tabular-nums;">2020</div>
+          <div style="text-align: right; font-size: 12.5px; color: #A3B0BB; font-variant-numeric: tabular-nums;">—</div>
+          <div style="text-align: right;"><span style="font-size: 11px; font-weight: 600; color: #0052BA; background: #E7F0FD; border-radius: 6px; padding: 3px 8px;">New</span></div>
+        </div>
+
+        <div class="tr {{ s.fid.cls }}" onClick="{{ pick.fid }}" style="display: grid; grid-template-columns: minmax(0, 1fr) 62px 78px 104px; align-items: center; min-height: 58px; padding: 0 18px; border-bottom: 1px solid #EDF1F4; cursor: pointer; background: {{ s.fid.bg }}; box-shadow: {{ s.fid.ring }};">
+          <div style="min-width: 0; padding-right: 16px;">
+            <div style="font-size: 13.5px; font-weight: 600; color: #1C2B33; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Leveraging Passage Retrieval with Generative Models for Open Domain QA</div>
+            <div style="font-size: 12px; color: #7B8B98; margin-top: 2px;">Izacard &amp; Grave · EACL</div>
+          </div>
+          <div style="text-align: right; font-size: 12.5px; color: #465A69; font-variant-numeric: tabular-nums;">2021</div>
+          <div style="text-align: right; font-size: 12.5px; color: #A3B0BB; font-variant-numeric: tabular-nums;">—</div>
+          <div style="text-align: right;"><span style="font-size: 11px; font-weight: 600; color: #0052BA; background: #E7F0FD; border-radius: 6px; padding: 3px 8px;">New</span></div>
+        </div>
+
+        <div class="tr {{ s.hnsw.cls }}" onClick="{{ pick.hnsw }}" style="display: grid; grid-template-columns: minmax(0, 1fr) 62px 78px 104px; align-items: center; min-height: 58px; padding: 0 18px; border-bottom: 1px solid #EDF1F4; cursor: pointer; background: {{ s.hnsw.bg }}; box-shadow: {{ s.hnsw.ring }};">
+          <div style="min-width: 0; padding-right: 16px;">
+            <div style="font-size: 13.5px; font-weight: 600; color: #1C2B33; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Efficient and Robust Approximate Nearest Neighbor Search Using HNSW Graphs</div>
+            <div style="font-size: 12px; color: #7B8B98; margin-top: 2px;">Malkov &amp; Yashunin · IEEE TPAMI</div>
+          </div>
+          <div style="text-align: right; font-size: 12.5px; color: #465A69; font-variant-numeric: tabular-nums;">2020</div>
+          <div style="text-align: right; font-size: 12.5px; color: #465A69; font-variant-numeric: tabular-nums;">1</div>
+          <div style="text-align: right;"><span style="font-size: 11px; font-weight: 600; color: #B26A00; background: #FFF1D6; border-radius: 6px; padding: 3px 8px;">No pages</span></div>
+        </div>
+
+        <div class="tr {{ s.bm25.cls }}" onClick="{{ pick.bm25 }}" style="display: grid; grid-template-columns: minmax(0, 1fr) 62px 78px 104px; align-items: center; min-height: 58px; padding: 0 18px; border-bottom: 1px solid #EDF1F4; cursor: pointer; background: {{ s.bm25.bg }}; box-shadow: {{ s.bm25.ring }};">
+          <div style="min-width: 0; padding-right: 16px;">
+            <div style="font-size: 13.5px; font-weight: 600; color: #1C2B33; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">The Probabilistic Relevance Framework: BM25 and Beyond</div>
+            <div style="font-size: 12px; color: #7B8B98; margin-top: 2px;">Robertson &amp; Zaragoza · Foundations and Trends in IR</div>
+          </div>
+          <div style="text-align: right; font-size: 12.5px; color: #465A69; font-variant-numeric: tabular-nums;">2009</div>
+          <div style="text-align: right; font-size: 12.5px; color: #465A69; font-variant-numeric: tabular-nums;">1</div>
+          <div style="text-align: right;"><span style="font-size: 11px; font-weight: 600; color: #1D8A3C; background: #E4F5E9; border-radius: 6px; padding: 3px 8px;">Indexed</span></div>
+        </div>
+
+        <div class="tr {{ s.faiss.cls }}" onClick="{{ pick.faiss }}" style="display: grid; grid-template-columns: minmax(0, 1fr) 62px 78px 104px; align-items: center; min-height: 58px; padding: 0 18px; border-bottom: 1px solid #EDF1F4; cursor: pointer; background: {{ s.faiss.bg }}; box-shadow: {{ s.faiss.ring }};">
+          <div style="min-width: 0; padding-right: 16px;">
+            <div style="font-size: 13.5px; font-weight: 600; color: #1C2B33; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Billion-Scale Similarity Search with GPUs</div>
+            <div style="font-size: 12px; color: #7B8B98; margin-top: 2px;">Johnson, Douze &amp; Jégou · IEEE Transactions on Big Data</div>
+          </div>
+          <div style="text-align: right; font-size: 12.5px; color: #465A69; font-variant-numeric: tabular-nums;">2019</div>
+          <div style="text-align: right; font-size: 12.5px; color: #A3B0BB; font-variant-numeric: tabular-nums;">—</div>
+          <div style="text-align: right;"><span style="font-size: 11px; font-weight: 600; color: #B26A00; background: #FFF1D6; border-radius: 6px; padding: 3px 8px;">No PDF</span></div>
+        </div>
+
+        <div class="tr {{ s.blog.cls }}" onClick="{{ pick.blog }}" style="display: grid; grid-template-columns: minmax(0, 1fr) 62px 78px 104px; align-items: center; min-height: 58px; padding: 0 18px; border-bottom: 1px solid #EDF1F4; cursor: pointer; background: {{ s.blog.bg }}; box-shadow: {{ s.blog.ring }};">
+          <div style="min-width: 0; padding-right: 16px;">
+            <div style="font-size: 13.5px; font-weight: 600; color: #93A2AE; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">The only chunk size that matters</div>
+            <div style="font-size: 12px; color: #A3B0BB; margin-top: 2px;">no author · vendor blog</div>
+          </div>
+          <div style="text-align: right; font-size: 12.5px; color: #A3B0BB; font-variant-numeric: tabular-nums;">—</div>
+          <div style="text-align: right; font-size: 12.5px; color: #A3B0BB; font-variant-numeric: tabular-nums;">—</div>
+          <div style="text-align: right;"><span style="font-size: 11px; font-weight: 600; color: #7B8B98; background: #EDF1F4; border-radius: 6px; padding: 3px 8px;">Held back</span></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Detail -->
+    <div style="width: 400px; flex-shrink: 0; display: flex; flex-direction: column; background: #FFFFFF; border-left: 1px solid #DCE3E9;">
+      <div style="flex-grow: 1; overflow-y: auto; padding: 18px 16px 24px 16px;">
+
+        <div style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB; margin-bottom: 9px;">{{ d.kind }}</div>
+        <div style="font-family: Literata, Georgia, serif; font-size: 18px; line-height: 1.36; font-weight: 600; letter-spacing: -0.012em; color: #1C2B33;">{{ d.title }}</div>
+        <div style="font-size: 12.5px; color: #7B8B98; margin-top: 7px; line-height: 1.5;">{{ d.authors }}</div>
+        <div style="font-size: 12.5px; color: #7B8B98; margin-top: 2px;">{{ d.venue }}</div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 13px;">
+          <span style="font-size: 11px; font-weight: 600; border-radius: 6px; padding: 4px 9px; color: {{ d.pdfFg }}; background: {{ d.pdfBg }};">{{ d.pdf }}</span>
+          <span style="font-size: 11px; font-weight: 600; border-radius: 6px; padding: 4px 9px; color: {{ d.idxFg }}; background: {{ d.idxBg }};">{{ d.idx }}</span>
+        </div>
+
+        <div style="margin-top: 18px; padding: 12px 13px; background: #F7F9FB; border: 1px solid #E4EAEF; border-radius: 10px; font-size: 12.5px; line-height: 1.62; color: #22323B;">{{ d.note }}</div>
+
+        <div style="margin: 20px 0 9px 0; font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">CITED IN</div>
+        <div style="font-size: 13px; line-height: 1.7; color: #22323B; white-space: pre-line;">{{ d.cited }}</div>
+
+        <div style="margin: 20px 0 9px 0; display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">BIBTEX</span>
+          <div style="flex-grow: 1;"></div>
+          <span style="font-size: 12px; font-weight: 600; color: {{ accent }}; cursor: pointer;">Copy</span>
+        </div>
+        <div style="font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 11.5px; line-height: 1.7; color: #465A69; background: #F7F9FB; border: 1px solid #E4EAEF; border-radius: 10px; padding: 12px 13px; white-space: pre-wrap; overflow-x: auto;">{{ d.bib }}</div>
+
+        <div style="display: flex; gap: 8px; margin-top: 16px;">
+          <div class="btn" style="display: flex; align-items: center; height: 33px; padding: 0 14px; border-radius: 8px; cursor: pointer; font-size: 12.5px; font-weight: 600; color: #FFFFFF; background: {{ accent }};">Insert citation</div>
+          <div class="ghost" style="display: flex; align-items: center; height: 33px; padding: 0 14px; border: 1px solid #DCE3E9; border-radius: 8px; cursor: pointer; font-size: 12.5px; font-weight: 600; color: #465A69;">Open PDF</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Status bar -->
+  <div style="height: 28px; flex-shrink: 0; display: flex; align-items: center; gap: 16px; padding: 0 14px; background: #F5F7F9; border-top: 1px solid #DCE3E9; font-size: 11.5px; color: #7B8B98;">
+    <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 7px; height: 7px; border-radius: 50%; background: #31A24C;"></span>Ollama · nomic-embed-text</span>
+    <span>Library indexed · 2,904 chunks · searchable alongside the manuscript</span>
+    <div style="flex-grow: 1;"></div>
+    <span>~/Papers/RetrievalFailureModes.aegis/library</span>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#0064E0","options":["#0064E0","#0082FB","#A033FF","#1C2B33"],"section":"Theme"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { src: 'dpr', coll: 'all' };
+  }
+
+  tint(hex, a) {
+    var h = String(hex || '#0064E0').replace('#', '');
+    if (h.length === 3) { h = h.charAt(0) + h.charAt(0) + h.charAt(1) + h.charAt(1) + h.charAt(2) + h.charAt(2); }
+    var n = parseInt(h, 16);
+    if (isNaN(n)) { n = 0x0064E0; }
+    return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+  }
+
+  renderVals() {
+    var self = this;
+    var st = this.state;
+    var accent = this.props.accent || '#0064E0';
+    var soft = this.tint(accent, 0.08);
+
+    var OK = { bg: '#E4F5E9', fg: '#1D8A3C' };
+    var WARN = { bg: '#FFF1D6', fg: '#B26A00' };
+    var MUTE = { bg: '#EDF1F4', fg: '#7B8B98' };
+
+    var SOURCES = {
+      dpr: {
+        kind: 'CONFERENCE PAPER',
+        title: 'Dense Passage Retrieval for Open-Domain Question Answering',
+        authors: 'Vladimir Karpukhin, Barlas Oğuz, Sewon Min, Patrick Lewis, Ledell Wu, Sergey Edunov, Danqi Chen, Wen-tau Yih',
+        venue: 'EMNLP 2020',
+        pdf: 'PDF on disk', pdfTone: OK,
+        idx: '412 chunks indexed', idxTone: OK,
+        note: 'The 100-word passage convention in this paper is the baseline §3 measures against. Cite it for the convention, not for the result.',
+        cited: '§2 Related Work — twice\n§3.1 Baselines — once',
+        bib: '@inproceedings{karpukhin2020dpr,\n  author    = {Karpukhin, Vladimir and others},\n  title     = {Dense Passage Retrieval for\n               Open-Domain Question Answering},\n  booktitle = {EMNLP},\n  year      = {2020}\n}'
+      },
+      rag: {
+        kind: 'CONFERENCE PAPER',
+        title: 'Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks',
+        authors: 'Patrick Lewis, Ethan Perez, Aleksandra Piktus, Fabio Petroni, Vladimir Karpukhin, Naman Goyal et al.',
+        venue: 'NeurIPS 2020',
+        pdf: 'PDF on disk', pdfTone: OK,
+        idx: '388 chunks indexed', idxTone: OK,
+        note: 'Sets up the retrieve-then-generate framing this paper argues does not survive book-length inputs. Belongs in §2, not §4.',
+        cited: '§1 Introduction — once\n§2 Related Work — once',
+        bib: '@inproceedings{lewis2020rag,\n  author    = {Lewis, Patrick and others},\n  title     = {Retrieval-Augmented Generation for\n               Knowledge-Intensive NLP Tasks},\n  booktitle = {NeurIPS},\n  year      = {2020}\n}'
+      },
+      colbert: {
+        kind: 'CONFERENCE PAPER · ADDED BY DEEP RESEARCH',
+        title: 'ColBERT: Efficient and Effective Passage Search via Contextualized Late Interaction over BERT',
+        authors: 'Omar Khattab, Matei Zaharia',
+        venue: 'SIGIR 2020',
+        pdf: 'PDF on disk', pdfTone: OK,
+        idx: '246 chunks indexed', idxTone: OK,
+        note: 'Found while researching question 3. Late interaction changes what a chunk boundary costs, which is the closest published argument to the overlap claim in §6.',
+        cited: 'Not cited yet.',
+        bib: '@inproceedings{khattab2020colbert,\n  author    = {Khattab, Omar and Zaharia, Matei},\n  title     = {ColBERT: Efficient and Effective\n               Passage Search via Contextualized\n               Late Interaction over BERT},\n  booktitle = {SIGIR},\n  year      = {2020}\n}'
+      },
+      fid: {
+        kind: 'CONFERENCE PAPER · ADDED BY DEEP RESEARCH',
+        title: 'Leveraging Passage Retrieval with Generative Models for Open Domain Question Answering',
+        authors: 'Gautier Izacard, Edouard Grave',
+        venue: 'EACL 2021',
+        pdf: 'PDF on disk', pdfTone: OK,
+        idx: '203 chunks indexed', idxTone: OK,
+        note: 'Scales passage count rather than passage size — the nearest published result to what §4 wants to claim. Read before writing §4.2.',
+        cited: 'Not cited yet.',
+        bib: '@inproceedings{izacard2021fid,\n  author    = {Izacard, Gautier and Grave, Edouard},\n  title     = {Leveraging Passage Retrieval with\n               Generative Models for Open Domain\n               Question Answering},\n  booktitle = {EACL},\n  year      = {2021}\n}'
+      },
+      hnsw: {
+        kind: 'JOURNAL ARTICLE · METADATA INCOMPLETE',
+        title: 'Efficient and Robust Approximate Nearest Neighbor Search Using Hierarchical Navigable Small World Graphs',
+        authors: 'Yury A. Malkov, Dmitry A. Yashunin',
+        venue: 'IEEE Transactions on Pattern Analysis and Machine Intelligence, 2020',
+        pdf: 'PDF on disk', pdfTone: OK,
+        idx: 'Page numbers missing', idxTone: WARN,
+        note: 'Volume and page range could not be read from the PDF. A journal citation without them will be flagged at submission — fill them in by hand, or approve a DOI lookup.',
+        cited: '§5 Threats to Validity — once',
+        bib: '@article{malkov2020hnsw,\n  author  = {Malkov, Yury A. and\n             Yashunin, Dmitry A.},\n  title   = {Efficient and Robust Approximate Nearest\n             Neighbor Search Using HNSW Graphs},\n  journal = {IEEE TPAMI},\n  year    = {2020},\n  pages   = {MISSING}\n}'
+      },
+      bm25: {
+        kind: 'MONOGRAPH',
+        title: 'The Probabilistic Relevance Framework: BM25 and Beyond',
+        authors: 'Stephen Robertson, Hugo Zaragoza',
+        venue: 'Foundations and Trends in Information Retrieval, 2009',
+        pdf: 'PDF on disk', pdfTone: OK,
+        idx: '641 chunks indexed', idxTone: OK,
+        note: 'Length normalisation was settled for documents long before it was unsettled for chunks. §3 should say that plainly rather than deriving it again.',
+        cited: '§3.2 Length effects — once',
+        bib: '@article{robertson2009bm25,\n  author  = {Robertson, Stephen and\n             Zaragoza, Hugo},\n  title   = {The Probabilistic Relevance Framework:\n             BM25 and Beyond},\n  journal = {Foundations and Trends in IR},\n  year    = {2009}\n}'
+      },
+      faiss: {
+        kind: 'JOURNAL ARTICLE · NO FILE',
+        title: 'Billion-Scale Similarity Search with GPUs',
+        authors: 'Jeff Johnson, Matthijs Douze, Hervé Jégou',
+        venue: 'IEEE Transactions on Big Data, 2019',
+        pdf: 'No PDF on disk', pdfTone: WARN,
+        idx: 'Not indexed', idxTone: MUTE,
+        note: 'Reference only — the file was never added, so nothing from it can be retrieved or similarity-checked. Add the PDF before citing it in §5.',
+        cited: 'Not cited yet.',
+        bib: '@article{johnson2019faiss,\n  author  = {Johnson, Jeff and Douze, Matthijs\n             and Jegou, Herve},\n  title   = {Billion-Scale Similarity Search\n             with GPUs},\n  journal = {IEEE Transactions on Big Data},\n  year    = {2019}\n}'
+      },
+      blog: {
+        kind: 'WEB PAGE · HELD BACK',
+        title: 'The only chunk size that matters',
+        authors: 'No author named',
+        venue: 'Vendor blog · no publication date',
+        pdf: 'Snapshot on disk', pdfTone: OK,
+        idx: 'Kept out of the index', idxTone: MUTE,
+        note: 'Deep Research held this back: the numbers are unattributed and the benchmark is never named. Kept as a reading note so you know it was considered — not offered as a citation.',
+        cited: 'Not citable.',
+        bib: 'No BibTeX generated for held-back sources.'
+      }
+    };
+
+    var pick = {}, s = {};
+    Object.keys(SOURCES).forEach(function (id) {
+      pick[id] = function () { self.setState({ src: id }); };
+      var on = st.src === id;
+      s[id] = { bg: on ? soft : 'transparent', ring: on ? ('inset 3px 0 0 0 ' + accent) : 'none', cls: on ? 'on' : 'off' };
+    });
+
+    var goColl = {}, c = {};
+    ['all', 'cited', 'uncited', 'gaps', 'held'].forEach(function (id) {
+      goColl[id] = function () { self.setState({ coll: id }); };
+      var on = st.coll === id;
+      c[id] = { bg: on ? soft : 'transparent', fg: on ? accent : '#465A69', w: on ? '600' : '450', cls: on ? 'on' : 'off' };
+    });
+
+    var cur = SOURCES[st.src] || SOURCES.dpr;
+
+    return {
+      accent: accent,
+      pick: pick,
+      s: s,
+      goColl: goColl,
+      c: c,
+      d: {
+        kind: cur.kind,
+        title: cur.title,
+        authors: cur.authors,
+        venue: cur.venue,
+        note: cur.note,
+        cited: cur.cited,
+        bib: cur.bib,
+        pdf: cur.pdf,
+        pdfBg: cur.pdfTone.bg,
+        pdfFg: cur.pdfTone.fg,
+        idx: cur.idx,
+        idxBg: cur.idxTone.bg,
+        idxFg: cur.idxTone.fg
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

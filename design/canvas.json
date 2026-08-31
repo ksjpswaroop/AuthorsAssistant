@@ -1,0 +1,46 @@
+{
+  "pages": [
+    { "id": "studio", "name": "Studio" },
+    { "id": "research", "name": "Research and long-form" }
+  ],
+  "artboards": [
+    { "file": "Main.dc.html",      "page": "studio",   "x": 0,    "y": 0,    "w": 1440, "h": 900, "title": "Studio — binder / editor / inspector", "is_interactive": true },
+    { "file": "Command.dc.html",   "page": "studio",   "x": 1560, "y": 0,    "w": 1440, "h": 900, "title": "Command bar — App Controller run",     "is_interactive": true },
+    { "file": "Integrity.dc.html", "page": "studio",   "x": 3120, "y": 0,    "w": 1440, "h": 900, "title": "Integrity report",                     "is_interactive": true },
+    { "file": "Welcome.dc.html",   "page": "studio",   "x": 0,    "y": 1080, "w": 1000, "h": 680, "title": "Launch window",                        "is_interactive": true },
+    { "file": "Models.dc.html",    "page": "studio",   "x": 1120, "y": 1080, "w": 1040, "h": 760, "title": "Settings — Ollama and local models",   "is_interactive": true },
+    { "file": "Compile.dc.html",   "page": "studio",   "x": 2280, "y": 1080, "w": 880,  "h": 660, "title": "Compile dialog",                       "is_interactive": true },
+
+    { "file": "Research.dc.html",  "page": "research", "x": 0,    "y": 0,    "w": 1440, "h": 900, "title": "Deep Research session",                "is_interactive": true },
+    { "file": "Library.dc.html",   "page": "research", "x": 1560, "y": 0,    "w": 1440, "h": 900, "title": "Library — sources and citations",      "is_interactive": true },
+    { "file": "Paper.dc.html",     "page": "research", "x": 0,    "y": 1080, "w": 1440, "h": 900, "title": "Research paper studio",                "is_interactive": true },
+    { "file": "TechBook.dc.html",  "page": "research", "x": 1560, "y": 1080, "w": 1440, "h": 900, "title": "Technical book studio",                "is_interactive": true }
+  ],
+  "annotations": [
+    {
+      "id": "system-note",
+      "page": "studio",
+      "x": 0,
+      "y": -168,
+      "w": 700,
+      "text": "AegisDraft — Tauri desktop shell.\nMeta palette: #0064E0 primary, #1C2B33 ink, #F5F7F9 rails; the #0082FB / #A033FF / #FF5C01 / #FFC800 family is reserved for meaning — blue = internal match, orange = web, purple = AI writing, yellow = continuity.\nType: Hanken Grotesk (chrome) / Literata (manuscript) / IBM Plex Mono (agent log and model tags)."
+    },
+    {
+      "id": "local-note",
+      "page": "studio",
+      "x": 1120,
+      "y": 1900,
+      "w": 700,
+      "text": "No cloud model path exists anywhere in this UI. Web similarity is the single opt-in network switch, and it is off by default.\nSample manuscript, word counts and scores are placeholder data for the prototype."
+    },
+    {
+      "id": "research-note",
+      "page": "research",
+      "x": 0,
+      "y": -196,
+      "w": 900,
+      "text": "Three project types on one shell: a Deep Research session that fills the Library, and the Library feeding both a paper and a technical book.\nDeep Research is the one part of the product that needs the network. The design keeps the promise narrow: only the generated questions are sent, never the manuscript; the domain list is visible; every request is logged to research-trace.json; reading, embedding and drafting all still happen locally.\nBibliography entries are real, widely-known papers used as sample data. Every score, percentage, word count and file path is invented."
+    }
+  ],
+  "launch": { "view": "canvas", "page": "research" }
+}

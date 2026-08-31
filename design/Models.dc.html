@@ -1,0 +1,323 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; font-family: 'Hanken Grotesk', system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #0064E0; text-decoration: none; }
+    a:hover { color: #0052BA; }
+    .btn:hover { filter: brightness(0.93); }
+    .ghost:hover { background: #EDF1F4 !important; }
+    .nav:not(.on):hover { background: #EDF1F4 !important; }
+    .mrow:not(.on):hover { background: #F7F9FB !important; }
+    ::-webkit-scrollbar { width: 11px; }
+    ::-webkit-scrollbar-thumb { background: #D3DCE3; border-radius: 8px; border: 3px solid transparent; background-clip: content-box; }
+    ::-webkit-scrollbar-track { background: transparent; }
+  </style>
+</helmet>
+
+<div style="width: 1040px; height: 760px; display: flex; flex-direction: column; background: #FFFFFF; color: #1C2B33; overflow: hidden;">
+
+  <div style="height: 40px; flex-shrink: 0; display: flex; align-items: center; gap: 12px; padding: 0 12px; background: #F5F7F9; border-bottom: 1px solid #DCE3E9;">
+    <div style="display: flex; gap: 8px; padding-left: 2px;">
+      <div style="width: 12px; height: 12px; border-radius: 50%; background: #FF5F57;"></div>
+      <div style="width: 12px; height: 12px; border-radius: 50%; background: #FEBC2E;"></div>
+      <div style="width: 12px; height: 12px; border-radius: 50%; background: #28C840;"></div>
+    </div>
+    <div style="flex-grow: 1; text-align: center; font-size: 13px; font-weight: 600; margin-left: -60px;">Settings</div>
+  </div>
+
+  <div style="flex-grow: 1; display: flex; min-height: 0;">
+
+    <!-- Nav -->
+    <div style="width: 208px; flex-shrink: 0; background: #F5F7F9; border-right: 1px solid #DCE3E9; padding: 14px 10px; display: flex; flex-direction: column; gap: 2px;">
+      <div class="nav" style="display: flex; align-items: center; gap: 10px; height: 32px; padding: 0 11px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; color: #465A69;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v2.4M12 18.6V21M3 12h2.4M18.6 12H21M5.6 5.6l1.7 1.7M16.7 16.7l1.7 1.7M18.4 5.6l-1.7 1.7M7.3 16.7l-1.7 1.7"/></svg>
+        General
+      </div>
+      <div class="nav on" style="display: flex; align-items: center; gap: 10px; height: 32px; padding: 0 11px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; background: {{ accentSoft }}; color: {{ accent }};">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v6M12 15v6M5.6 5.6l4.2 4.2M14.2 14.2l4.2 4.2M3 12h6M15 12h6M5.6 18.4l4.2-4.2M14.2 9.8l4.2-4.2"/></svg>
+        Models
+      </div>
+      <div class="nav" style="display: flex; align-items: center; gap: 10px; height: 32px; padding: 0 11px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; color: #465A69;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7.5 3v6c0 4.6-3.1 8.1-7.5 9.4C7.6 20.1 4.5 16.6 4.5 12V6z"/></svg>
+        Privacy
+      </div>
+      <div class="nav" style="display: flex; align-items: center; gap: 10px; height: 32px; padding: 0 11px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; color: #465A69;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11M8 10.5l4 4 4-4"/><path d="M4 20h16"/></svg>
+        Compile
+      </div>
+      <div class="nav" style="display: flex; align-items: center; gap: 10px; height: 32px; padding: 0 11px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; color: #465A69;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg>
+        Rubrics
+      </div>
+      <div class="nav" style="display: flex; align-items: center; gap: 10px; height: 32px; padding: 0 11px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; color: #465A69;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        Voice &amp; skills
+      </div>
+
+      <div style="flex-grow: 1;"></div>
+      <div style="padding: 11px; font-size: 11.5px; line-height: 1.6; color: #93A2AE;">AegisDraft 0.1 · Tauri 2<br>Local build</div>
+    </div>
+
+    <!-- Content -->
+    <div style="flex-grow: 1; overflow-y: auto; padding: 22px 26px 30px 26px; min-width: 0;">
+
+      <div style="font-size: 17px; font-weight: 700; letter-spacing: -0.012em;">Models</div>
+      <div style="font-size: 13px; color: #7B8B98; margin-top: 3px;">Ollama for models, hermes-agent for multi-step skills. Nothing leaves this machine by default.</div>
+
+      <!-- Connection -->
+      <div style="margin-top: 18px; border: 1px solid #DCE3E9; border-radius: 12px; padding: 15px 16px; display: flex; align-items: center; gap: 13px;">
+        <span style="width: 9px; height: 9px; border-radius: 50%; background: #31A24C; flex-shrink: 0;"></span>
+        <div style="flex-grow: 1; min-width: 0;">
+          <div style="font-size: 13.5px; font-weight: 600;">Connected to Ollama</div>
+          <div style="font-size: 12px; color: #7B8B98; margin-top: 2px; font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace;">http://127.0.0.1:11434 · v0.6.2 · 6 models · 26.0 GB on disk</div>
+        </div>
+        <div class="ghost" style="display: flex; align-items: center; height: 31px; padding: 0 13px; border: 1px solid #DCE3E9; border-radius: 8px; cursor: pointer; font-size: 12.5px; font-weight: 600; color: #465A69; flex-shrink: 0;">Change host</div>
+        <div class="ghost" style="display: flex; align-items: center; height: 31px; padding: 0 13px; border: 1px solid #DCE3E9; border-radius: 8px; cursor: pointer; font-size: 12.5px; font-weight: 600; color: #465A69; flex-shrink: 0;">Test</div>
+      </div>
+
+      <div style="margin-top: 10px; border: 1px solid #DCE3E9; border-radius: 12px; padding: 15px 16px; display: flex; align-items: center; gap: 13px;">
+        <span style="width: 9px; height: 9px; border-radius: 50%; background: #31A24C; flex-shrink: 0;"></span>
+        <div style="flex-grow: 1; min-width: 0;">
+          <div style="font-size: 13.5px; font-weight: 600;">hermes-agent Ready</div>
+          <div style="font-size: 12px; color: #7B8B98; margin-top: 2px; font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace;">http://127.0.0.1:18765/v1 · local-only · 4 profiles · tools :8765</div>
+        </div>
+        <span style="font-size: 11px; font-weight: 600; color: #1D8A3C; background: #E4F5E9; border-radius: 6px; padding: 3px 8px; flex-shrink: 0;">Ready</span>
+        <div class="ghost" style="display: flex; align-items: center; height: 31px; padding: 0 13px; border: 1px solid #DCE3E9; border-radius: 8px; cursor: pointer; font-size: 12.5px; font-weight: 600; color: #465A69; flex-shrink: 0;">Test</div>
+      </div>
+
+      <!-- Roles -->
+      <div style="margin: 24px 0 10px 0; font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">WHAT EACH MODEL DOES</div>
+
+      <div style="border: 1px solid #DCE3E9; border-radius: 12px; overflow: hidden;">
+        <div style="display: flex; align-items: center; gap: 14px; padding: 13px 16px; border-bottom: 1px solid #EDF1F4;">
+          <div style="width: 168px; flex-shrink: 0;">
+            <div style="font-size: 13.5px; font-weight: 600;">Agents</div>
+            <div style="font-size: 11.5px; color: #93A2AE; margin-top: 1px;">hermes-agent model</div>
+          </div>
+          <div style="flex-grow: 1; display: flex; align-items: center; gap: 8px; height: 33px; padding: 0 12px; border: 1px solid #DCE3E9; border-radius: 8px; background: #FBFCFD; cursor: pointer;">
+            <span style="font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 12.5px; color: #1C2B33;">{{ agent }}</span>
+            <div style="flex-grow: 1;"></div>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#93A2AE" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 14px; padding: 13px 16px; border-bottom: 1px solid #EDF1F4;">
+          <div style="width: 168px; flex-shrink: 0;">
+            <div style="font-size: 13.5px; font-weight: 600;">Drafting</div>
+            <div style="font-size: 11.5px; color: #93A2AE; margin-top: 1px;">continue, rewrite, tone</div>
+          </div>
+          <div style="flex-grow: 1; display: flex; align-items: center; gap: 8px; height: 33px; padding: 0 12px; border: 1px solid #DCE3E9; border-radius: 8px; background: #FBFCFD; cursor: pointer;">
+            <span style="font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 12.5px; color: #1C2B33;">llama3.1:8b</span>
+            <div style="flex-grow: 1;"></div>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#93A2AE" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 14px; padding: 13px 16px; border-bottom: 1px solid #EDF1F4;">
+          <div style="width: 168px; flex-shrink: 0;">
+            <div style="font-size: 13.5px; font-weight: 600;">Embeddings</div>
+            <div style="font-size: 11.5px; color: #93A2AE; margin-top: 1px;">book-wide memory, similarity</div>
+          </div>
+          <div style="flex-grow: 1; display: flex; align-items: center; gap: 8px; height: 33px; padding: 0 12px; border: 1px solid #DCE3E9; border-radius: 8px; background: #FBFCFD; cursor: pointer;">
+            <span style="font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 12.5px; color: #1C2B33;">nomic-embed-text</span>
+            <div style="flex-grow: 1;"></div>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#93A2AE" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 14px; padding: 13px 16px;">
+          <div style="width: 168px; flex-shrink: 0;">
+            <div style="font-size: 13.5px; font-weight: 600;">AI detection</div>
+            <div style="font-size: 11.5px; color: #93A2AE; margin-top: 1px;">not an Ollama model</div>
+          </div>
+          <div style="flex-grow: 1; display: flex; align-items: center; gap: 8px; height: 33px; padding: 0 12px; border: 1px solid #DCE3E9; border-radius: 8px; background: #FBFCFD; cursor: pointer;">
+            <span style="font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 12.5px; color: #1C2B33;">binoculars · onnxruntime</span>
+            <div style="flex-grow: 1;"></div>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#93A2AE" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Installed -->
+      <div style="display: flex; align-items: center; gap: 10px; margin: 24px 0 10px 0;">
+        <span style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">INSTALLED · PICK THE AGENT MODEL</span>
+        <div style="flex-grow: 1;"></div>
+        <span style="font-size: 12.5px; font-weight: 600; color: {{ accent }}; cursor: pointer;">Pull a model…</span>
+      </div>
+
+      <div style="border: 1px solid #DCE3E9; border-radius: 12px; overflow: hidden;">
+
+        <div class="mrow {{ sel.h8.cls }}" onClick="{{ pick.h8 }}" style="display: flex; align-items: center; gap: 13px; padding: 12px 16px; border-bottom: 1px solid #EDF1F4; cursor: pointer; background: {{ sel.h8.bg }};">
+          <span style="width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border: 1.5px solid {{ sel.h8.dot }}; background: {{ sel.h8.fill }};">
+            <span style="width: 6px; height: 6px; border-radius: 50%; background: #FFFFFF; opacity: {{ sel.h8.op }};"></span>
+          </span>
+          <span style="width: 190px; flex-shrink: 0; font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 13px; font-weight: 500; color: #1C2B33;">hermes3:8b</span>
+          <span style="flex-grow: 1; font-size: 12.5px; color: #7B8B98;">Function calling, strict JSON, 4–5 hop plans</span>
+          <span style="font-size: 12px; color: #93A2AE; width: 68px; text-align: right; font-variant-numeric: tabular-nums;">4.7 GB</span>
+          <span style="font-size: 11px; font-weight: 600; color: #1D8A3C; background: #E4F5E9; border-radius: 6px; padding: 3px 8px; width: 62px; text-align: center;">Ready</span>
+        </div>
+
+        <div class="mrow {{ sel.h70.cls }}" onClick="{{ pick.h70 }}" style="display: flex; align-items: center; gap: 13px; padding: 12px 16px; border-bottom: 1px solid #EDF1F4; cursor: pointer; background: {{ sel.h70.bg }};">
+          <span style="width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border: 1.5px solid {{ sel.h70.dot }}; background: {{ sel.h70.fill }};">
+            <span style="width: 6px; height: 6px; border-radius: 50%; background: #FFFFFF; opacity: {{ sel.h70.op }};"></span>
+          </span>
+          <span style="width: 190px; flex-shrink: 0; font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 13px; font-weight: 500; color: #1C2B33;">hermes3:70b</span>
+          <span style="flex-grow: 1; font-size: 12.5px; color: #7B8B98;">Better long plans. Needs ~48 GB unified memory</span>
+          <span style="font-size: 12px; color: #93A2AE; width: 68px; text-align: right; font-variant-numeric: tabular-nums;">40 GB</span>
+          <span style="font-size: 11px; font-weight: 600; color: #B26A00; background: #FFF1D6; border-radius: 6px; padding: 3px 8px; width: 62px; text-align: center;">Pull</span>
+        </div>
+
+        <div class="mrow {{ sel.q14.cls }}" onClick="{{ pick.q14 }}" style="display: flex; align-items: center; gap: 13px; padding: 12px 16px; border-bottom: 1px solid #EDF1F4; cursor: pointer; background: {{ sel.q14.bg }};">
+          <span style="width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border: 1.5px solid {{ sel.q14.dot }}; background: {{ sel.q14.fill }};">
+            <span style="width: 6px; height: 6px; border-radius: 50%; background: #FFFFFF; opacity: {{ sel.q14.op }};"></span>
+          </span>
+          <span style="width: 190px; flex-shrink: 0; font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 13px; font-weight: 500; color: #1C2B33;">qwen2.5:14b</span>
+          <span style="flex-grow: 1; font-size: 12.5px; color: #7B8B98;">Fallback planner; stronger at long context</span>
+          <span style="font-size: 12px; color: #93A2AE; width: 68px; text-align: right; font-variant-numeric: tabular-nums;">9.0 GB</span>
+          <span style="font-size: 11px; font-weight: 600; color: #1D8A3C; background: #E4F5E9; border-radius: 6px; padding: 3px 8px; width: 62px; text-align: center;">Ready</span>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 13px; padding: 12px 16px; border-bottom: 1px solid #EDF1F4;">
+          <span style="width: 16px; flex-shrink: 0;"></span>
+          <span style="width: 190px; flex-shrink: 0; font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 13px; color: #7B8B98;">llama3.1:8b</span>
+          <span style="flex-grow: 1; font-size: 12.5px; color: #A3B0BB;">Assigned to drafting</span>
+          <span style="font-size: 12px; color: #A3B0BB; width: 68px; text-align: right; font-variant-numeric: tabular-nums;">4.9 GB</span>
+          <span style="font-size: 11px; font-weight: 600; color: #1D8A3C; background: #E4F5E9; border-radius: 6px; padding: 3px 8px; width: 62px; text-align: center;">Ready</span>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 13px; padding: 12px 16px; border-bottom: 1px solid #EDF1F4;">
+          <span style="width: 16px; flex-shrink: 0;"></span>
+          <span style="width: 190px; flex-shrink: 0; font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 13px; color: #7B8B98;">mistral-nemo:12b</span>
+          <span style="flex-grow: 1; font-size: 12.5px; color: #A3B0BB;">Unassigned</span>
+          <span style="font-size: 12px; color: #A3B0BB; width: 68px; text-align: right; font-variant-numeric: tabular-nums;">7.1 GB</span>
+          <span style="font-size: 11px; font-weight: 600; color: #1D8A3C; background: #E4F5E9; border-radius: 6px; padding: 3px 8px; width: 62px; text-align: center;">Ready</span>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 13px; padding: 12px 16px;">
+          <span style="width: 16px; flex-shrink: 0;"></span>
+          <span style="width: 190px; flex-shrink: 0; font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 13px; color: #7B8B98;">nomic-embed-text</span>
+          <span style="flex-grow: 1; font-size: 12.5px; color: #A3B0BB;">Assigned to embeddings · 1,842 chunks indexed</span>
+          <span style="font-size: 12px; color: #A3B0BB; width: 68px; text-align: right; font-variant-numeric: tabular-nums;">274 MB</span>
+          <span style="font-size: 11px; font-weight: 600; color: #1D8A3C; background: #E4F5E9; border-radius: 6px; padding: 3px 8px; width: 62px; text-align: center;">Ready</span>
+        </div>
+      </div>
+
+      <!-- Privacy -->
+      <div style="margin: 24px 0 10px 0; font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">VOICE &amp; SKILLS · LEARNS AS YOU WRITE</div>
+
+      <div style="border: 1px solid #DCE3E9; border-radius: 12px; overflow: hidden; margin-bottom: 8px;">
+        <div style="display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-bottom: 1px solid #EDF1F4;">
+          <div style="flex-grow: 1;">
+            <div style="font-size: 13.5px; font-weight: 600;">Writing style profile</div>
+            <div style="font-size: 12px; color: #7B8B98; margin-top: 2px; line-height: 1.55;">Built from accepted scenes in this project. Used for “rewrite in my voice.” Stays on disk.</div>
+          </div>
+          <span style="font-size: 11px; font-weight: 600; color: #1D8A3C; background: #E4F5E9; border-radius: 6px; padding: 3px 8px; flex-shrink: 0;">Active</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-bottom: 1px solid #EDF1F4;">
+          <div style="flex-grow: 1;">
+            <div style="font-size: 13.5px; font-weight: 600;">Project skills</div>
+            <div style="font-size: 12px; color: #7B8B98; margin-top: 2px; line-height: 1.55; font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace;">12 skills · last proposed: act-2-setup</div>
+          </div>
+          <div class="ghost" style="display: flex; align-items: center; height: 31px; padding: 0 13px; border: 1px solid #DCE3E9; border-radius: 8px; cursor: pointer; font-size: 12.5px; font-weight: 600; color: #465A69; flex-shrink: 0;">Review</div>
+        </div>
+        <div style="padding: 12px 16px; font-size: 12px; color: #7B8B98; line-height: 1.55;">New skills install only after you confirm. hermes-agent memory for this book never leaves the machine.</div>
+      </div>
+
+      <div style="margin: 24px 0 10px 0; font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">NETWORK</div>
+
+      <div style="border: 1px solid #DCE3E9; border-radius: 12px; overflow: hidden;">
+        <div style="display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-bottom: 1px solid #EDF1F4;">
+          <div style="flex-grow: 1;">
+            <div style="font-size: 13.5px; font-weight: 600;">Web similarity check</div>
+            <div style="font-size: 12px; color: #7B8B98; margin-top: 2px; line-height: 1.55;">Sends only the phrases you approve, one at a time, through SearXNG. The manuscript is never uploaded.</div>
+          </div>
+          <span onClick="{{ toggleWeb }}" style="width: 40px; height: 23px; border-radius: 13px; flex-shrink: 0; cursor: pointer; position: relative; background: {{ sw.web.track }};">
+            <span style="position: absolute; top: 2.5px; left: {{ sw.web.x }}px; width: 18px; height: 18px; border-radius: 50%; background: #FFFFFF; box-shadow: 0 1px 3px rgba(28,43,51,0.28);"></span>
+          </span>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 14px; padding: 14px 16px;">
+          <div style="flex-grow: 1;">
+            <div style="font-size: 13.5px; font-weight: 600;">Keep agent traces in the project</div>
+            <div style="font-size: 12px; color: #7B8B98; margin-top: 2px; line-height: 1.55;">Plans and tool calls are written to the project folder so you can read what an agent did. Nothing is sent anywhere.</div>
+          </div>
+          <span onClick="{{ toggleTrace }}" style="width: 40px; height: 23px; border-radius: 13px; flex-shrink: 0; cursor: pointer; position: relative; background: {{ sw.trace.track }};">
+            <span style="position: absolute; top: 2.5px; left: {{ sw.trace.x }}px; width: 18px; height: 18px; border-radius: 50%; background: #FFFFFF; box-shadow: 0 1px 3px rgba(28,43,51,0.28);"></span>
+          </span>
+        </div>
+      </div>
+
+      <div style="margin-top: 14px; display: flex; align-items: center; gap: 9px; font-size: 12.5px; color: #7B8B98;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#31A24C" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7.5 3v6c0 4.6-3.1 8.1-7.5 9.4C7.6 20.1 4.5 16.6 4.5 12V6z"/><path d="M9.2 12.2l2 2 3.6-4"/></svg>
+        {{ netLine }}
+      </div>
+
+    </div>
+  </div>
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#0064E0","options":["#0064E0","#0082FB","#A033FF","#1C2B33"],"section":"Theme"},"$preview":{"width":1040,"height":760}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { agent: 'h8', web: false, trace: true };
+  }
+
+  tint(hex, a) {
+    var h = String(hex || '#0064E0').replace('#', '');
+    if (h.length === 3) { h = h.charAt(0) + h.charAt(0) + h.charAt(1) + h.charAt(1) + h.charAt(2) + h.charAt(2); }
+    var n = parseInt(h, 16);
+    if (isNaN(n)) { n = 0x0064E0; }
+    return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+  }
+
+  renderVals() {
+    var self = this;
+    var st = this.state;
+    var accent = this.props.accent || '#0064E0';
+    var soft = this.tint(accent, 0.09);
+
+    var TAGS = { h8: 'hermes3:8b', h70: 'hermes3:70b', q14: 'qwen2.5:14b' };
+    var pick = {}, sel = {};
+    Object.keys(TAGS).forEach(function (id) {
+      pick[id] = function () { self.setState({ agent: id }); };
+      var on = st.agent === id;
+      sel[id] = {
+        bg: on ? soft : 'transparent',
+        dot: on ? accent : '#C3D0DA',
+        fill: on ? accent : '#FFFFFF',
+        op: on ? '1' : '0',
+        cls: on ? 'on' : 'off'
+      };
+    });
+
+    return {
+      accent: accent,
+      accentSoft: soft,
+      agent: TAGS[st.agent] || TAGS.h8,
+      pick: pick,
+      sel: sel,
+      toggleWeb: function () { self.setState({ web: !st.web }); },
+      toggleTrace: function () { self.setState({ trace: !st.trace }); },
+      sw: {
+        web: { track: st.web ? accent : '#D3DCE3', x: st.web ? 19 : 2 },
+        trace: { track: st.trace ? accent : '#D3DCE3', x: st.trace ? 19 : 2 }
+      },
+      netLine: st.web
+        ? 'Web similarity is on. Each phrase still needs your confirmation before it is sent.'
+        : 'Nothing in this app makes a network request right now.'
+    };
+  }
+}
+</script>
+</body>
+</html>

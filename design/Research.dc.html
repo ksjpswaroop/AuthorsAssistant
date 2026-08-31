@@ -1,0 +1,434 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Literata:opsz,wght@7..72,400;7..72,600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; font-family: 'Hanken Grotesk', system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #0064E0; text-decoration: none; }
+    a:hover { color: #0052BA; }
+    .btn:hover { filter: brightness(0.93); }
+    .ghost:hover { background: #EDF1F4 !important; }
+    .step:not(.on):hover { background: #EDF1F4 !important; }
+    .src:hover { border-color: #C3D0DA !important; }
+    ::-webkit-scrollbar { width: 11px; height: 11px; }
+    ::-webkit-scrollbar-thumb { background: #D3DCE3; border-radius: 8px; border: 3px solid transparent; background-clip: content-box; }
+    ::-webkit-scrollbar-track { background: transparent; }
+  </style>
+</helmet>
+
+<div style="width: 1440px; height: 900px; display: flex; flex-direction: column; background: #FFFFFF; color: #1C2B33; overflow: hidden;">
+
+  <!-- Title bar -->
+  <div style="height: 40px; flex-shrink: 0; display: flex; align-items: center; gap: 14px; padding: 0 12px; background: #F5F7F9; border-bottom: 1px solid #DCE3E9;">
+    <div style="display: flex; gap: 8px; padding-left: 2px;">
+      <div style="width: 12px; height: 12px; border-radius: 50%; background: #FF5F57;"></div>
+      <div style="width: 12px; height: 12px; border-radius: 50%; background: #FEBC2E;"></div>
+      <div style="width: 12px; height: 12px; border-radius: 50%; background: #28C840;"></div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 9px; padding-left: 8px;">
+      <div style="width: 18px; height: 18px; border-radius: 5px; background: linear-gradient(135deg, #0082FB 0%, #0064E0 55%, #A033FF 100%);"></div>
+      <span style="font-size: 13px; font-weight: 600;">Retrieval Failure Modes</span>
+      <span style="font-size: 12px; color: #93A2AE;">paper · Deep Research</span>
+    </div>
+    <div style="flex-grow: 1;"></div>
+    <div style="display: flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 600; color: #C24A00; background: #FFEDE0; border-radius: 7px; padding: 4px 10px;">
+      <span style="width: 6px; height: 6px; border-radius: 50%; background: #FF5C01;"></span>
+      Network open for this session
+    </div>
+  </div>
+
+  <!-- Session header -->
+  <div style="flex-shrink: 0; padding: 15px 22px 14px 22px; border-bottom: 1px solid #DCE3E9;">
+    <div style="display: flex; align-items: flex-start; gap: 16px;">
+      <div style="min-width: 0; flex-grow: 1;">
+        <div style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB; margin-bottom: 5px;">RESEARCH QUESTION</div>
+        <div style="font-family: Literata, Georgia, serif; font-size: 19px; line-height: 1.35; letter-spacing: -0.01em; color: #1C2B33;">How do chunk size and overlap affect recall when retrieving from documents longer than the context window?</div>
+      </div>
+      <div style="display: flex; gap: 9px; flex-shrink: 0; padding-top: 18px;">
+        <div class="ghost" style="display: flex; align-items: center; height: 34px; padding: 0 14px; border: 1px solid #DCE3E9; border-radius: 9px; cursor: pointer; font-size: 13px; font-weight: 600; color: #465A69;">Pause</div>
+        <div class="btn" style="display: flex; align-items: center; gap: 7px; height: 34px; padding: 0 16px; border-radius: 9px; cursor: pointer; font-size: 13px; font-weight: 600; color: #FFFFFF; background: {{ accent }};">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          File 12 sources into the binder
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 9px; margin-top: 13px;">
+      <span style="display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; color: #1D8A3C; background: #E4F5E9; border-radius: 7px; padding: 4px 9px;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+        Only the 4 questions were sent — never the manuscript
+      </span>
+      <span style="font-size: 11.5px; color: #7B8B98;">·</span>
+      <span style="font-size: 11.5px; color: #7B8B98;">9 domains allowed: arxiv.org, aclanthology.org, +7</span>
+      <span style="font-size: 11.5px; color: #7B8B98;">·</span>
+      <span style="font-size: 11.5px; color: #7B8B98;">reading and embedding happen on this machine</span>
+      <div style="flex-grow: 1;"></div>
+      <span style="font-size: 12px; font-weight: 600; color: {{ accent }}; cursor: pointer;">Review the request log</span>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div style="flex-grow: 1; display: flex; min-height: 0;">
+
+    <!-- Plan rail -->
+    <div style="width: 318px; flex-shrink: 0; display: flex; flex-direction: column; background: #F5F7F9; border-right: 1px solid #DCE3E9;">
+      <div style="height: 36px; flex-shrink: 0; display: flex; align-items: center; padding: 0 14px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #93A2AE;">PLAN · 4 SUB-QUESTIONS</div>
+
+      <div style="flex-grow: 1; overflow-y: auto; padding: 0 8px 14px 8px;">
+
+        <div class="step {{ sel.all.cls }}" onClick="{{ pick.all }}" style="display: flex; align-items: center; gap: 10px; padding: 9px 11px; border-radius: 9px; cursor: pointer; background: {{ sel.all.bg }};">
+          <span style="width: 20px; height: 20px; border-radius: 6px; background: #E4EAEF; color: #465A69; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">∗</span>
+          <span style="flex-grow: 1; font-size: 13px; color: {{ sel.all.fg }}; font-weight: {{ sel.all.w }};">Everything</span>
+          <span style="font-size: 11.5px; color: #93A2AE;">12</span>
+        </div>
+
+        <div class="step {{ sel.q1.cls }}" onClick="{{ pick.q1 }}" style="display: flex; gap: 10px; padding: 10px 11px; border-radius: 9px; cursor: pointer; margin-top: 3px; background: {{ sel.q1.bg }};">
+          <span style="width: 20px; height: 20px; border-radius: 6px; background: #E4F5E9; color: #1D8A3C; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">1</span>
+          <div style="min-width: 0; flex-grow: 1;">
+            <div style="font-size: 13px; line-height: 1.45; color: {{ sel.q1.fg }}; font-weight: {{ sel.q1.w }};">How is recall actually measured in long-document retrieval?</div>
+            <div style="font-size: 11.5px; color: #93A2AE; margin-top: 3px;">3 sources · settled</div>
+          </div>
+        </div>
+
+        <div class="step {{ sel.q2.cls }}" onClick="{{ pick.q2 }}" style="display: flex; gap: 10px; padding: 10px 11px; border-radius: 9px; cursor: pointer; margin-top: 3px; background: {{ sel.q2.bg }};">
+          <span style="width: 20px; height: 20px; border-radius: 6px; background: #E4F5E9; color: #1D8A3C; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">2</span>
+          <div style="min-width: 0; flex-grow: 1;">
+            <div style="font-size: 13px; line-height: 1.45; color: {{ sel.q2.fg }}; font-weight: {{ sel.q2.w }};">What chunk sizes do published systems actually use?</div>
+            <div style="font-size: 11.5px; color: #93A2AE; margin-top: 3px;">4 sources · settled</div>
+          </div>
+        </div>
+
+        <div class="step {{ sel.q3.cls }}" onClick="{{ pick.q3 }}" style="display: flex; gap: 10px; padding: 10px 11px; border-radius: 9px; cursor: pointer; margin-top: 3px; background: {{ sel.q3.bg }};">
+          <span style="width: 20px; height: 20px; border-radius: 6px; background: #FFF1D6; color: #B26A00; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">3</span>
+          <div style="min-width: 0; flex-grow: 1;">
+            <div style="font-size: 13px; line-height: 1.45; color: {{ sel.q3.fg }}; font-weight: {{ sel.q3.w }};">Does overlap help recall, or only pad the index?</div>
+            <div style="font-size: 11.5px; color: #93A2AE; margin-top: 3px;">2 sources · thin evidence</div>
+          </div>
+        </div>
+
+        <div class="step {{ sel.q4.cls }}" onClick="{{ pick.q4 }}" style="display: flex; gap: 10px; padding: 10px 11px; border-radius: 9px; cursor: pointer; margin-top: 3px; background: {{ sel.q4.bg }};">
+          <span style="width: 20px; height: 20px; border-radius: 6px; background: #E7F0FD; color: #0052BA; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">4</span>
+          <div style="min-width: 0; flex-grow: 1;">
+            <div style="font-size: 13px; line-height: 1.45; color: {{ sel.q4.fg }}; font-weight: {{ sel.q4.w }};">What breaks first past 100k tokens — recall or ranking?</div>
+            <div style="font-size: 11.5px; color: #93A2AE; margin-top: 3px;">3 sources · reading</div>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: center; gap: 7px; height: 34px; margin-top: 10px; border: 1px dashed #C3D0DA; border-radius: 9px; cursor: pointer; font-size: 12.5px; font-weight: 600; color: #465A69;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          Add a question
+        </div>
+      </div>
+
+      <div style="flex-shrink: 0; border-top: 1px solid #E4EAEF; padding: 12px 14px;">
+        <div style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB; margin-bottom: 8px;">TOOL TRACE</div>
+        <div style="font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 10.5px; line-height: 1.9; color: #7B8B98;">
+          <div>plan_research(depth=2)</div>
+          <div>search_library ×4 · search_web ×4</div>
+          <div>fetch_source ×12 · extract_claims ×12</div>
+          <div style="color: #A3B0BB;">14 hops · 3m 41s</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Source stream -->
+    <div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; background: #FBFCFD;">
+      <div style="height: 42px; flex-shrink: 0; display: flex; align-items: center; gap: 10px; padding: 0 20px; border-bottom: 1px solid #EDF1F4; background: #FFFFFF;">
+        <span style="font-size: 13px; font-weight: 600;">{{ headline }}</span>
+        <div style="flex-grow: 1;"></div>
+        <span style="display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: #7B8B98;"><span style="width: 9px; height: 9px; border-radius: 3px; background: #C9DEFB;"></span>in your library</span>
+        <span style="display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: #7B8B98;"><span style="width: 9px; height: 9px; border-radius: 3px; background: #FFDCC2;"></span>fetched from the web</span>
+      </div>
+
+      <div style="flex-grow: 1; overflow-y: auto; padding: 14px 20px 30px 20px; display: flex; flex-direction: column; gap: 9px;">
+
+        <div class="src" style="border: 1px solid #DCE3E9; background: #FFFFFF; border-radius: 11px; padding: 13px 15px; opacity: {{ dim.c1 }};">
+          <div style="display: flex; align-items: flex-start; gap: 11px;">
+            <span style="width: 26px; height: 26px; border-radius: 7px; background: #C9DEFB; color: #0052BA; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M6 3h8l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/></svg>
+            </span>
+            <div style="min-width: 0; flex-grow: 1;">
+              <div style="font-size: 13.5px; font-weight: 600; color: #1C2B33; line-height: 1.4;">Dense Passage Retrieval for Open-Domain Question Answering</div>
+              <div style="font-size: 12px; color: #7B8B98; margin-top: 3px;">Karpukhin et al. · EMNLP 2020 · already in your library</div>
+              <div style="font-size: 12.5px; line-height: 1.6; color: #465A69; margin-top: 8px;">Fixes passages at 100 words and reports top-k retrieval accuracy — the measurement convention most later work inherits without restating it.</div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0;">
+              <span style="font-size: 10.5px; font-weight: 700; color: #0052BA; background: #E7F0FD; border-radius: 6px; padding: 3px 8px;">Q1 · Q2</span>
+              <span style="font-size: 11.5px; color: #93A2AE;">indexed</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="src" style="border: 1px solid #DCE3E9; background: #FFFFFF; border-radius: 11px; padding: 13px 15px; opacity: {{ dim.c2 }};">
+          <div style="display: flex; align-items: flex-start; gap: 11px;">
+            <span style="width: 26px; height: 26px; border-radius: 7px; background: #FFDCC2; color: #A34500; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.5 2.4 14.5 0 17M12 3.5c-2.4 2.5-2.4 14.5 0 17"/></svg>
+            </span>
+            <div style="min-width: 0; flex-grow: 1;">
+              <div style="font-size: 13.5px; font-weight: 600; color: #1C2B33; line-height: 1.4;">Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks</div>
+              <div style="font-size: 12px; color: #7B8B98; margin-top: 3px;">Lewis et al. · NeurIPS 2020 · arxiv.org · fetched 3m ago</div>
+              <div style="font-size: 12.5px; line-height: 1.6; color: #465A69; margin-top: 8px;">Establishes the retrieve-then-generate framing this paper argues against for book-length inputs. Worth citing in §2, not §4.</div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0;">
+              <span style="font-size: 10.5px; font-weight: 700; color: #A34500; background: #FFEDE0; border-radius: 6px; padding: 3px 8px;">Q1</span>
+              <span style="font-size: 11.5px; color: #93A2AE;">indexed</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="src" style="border: 1px solid #DCE3E9; background: #FFFFFF; border-radius: 11px; padding: 13px 15px; opacity: {{ dim.c3 }};">
+          <div style="display: flex; align-items: flex-start; gap: 11px;">
+            <span style="width: 26px; height: 26px; border-radius: 7px; background: #FFDCC2; color: #A34500; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.5 2.4 14.5 0 17M12 3.5c-2.4 2.5-2.4 14.5 0 17"/></svg>
+            </span>
+            <div style="min-width: 0; flex-grow: 1;">
+              <div style="font-size: 13.5px; font-weight: 600; color: #1C2B33; line-height: 1.4;">ColBERT: Efficient and Effective Passage Search via Contextualized Late Interaction</div>
+              <div style="font-size: 12px; color: #7B8B98; margin-top: 3px;">Khattab &amp; Zaharia · SIGIR 2020 · aclanthology.org · fetched 3m ago</div>
+              <div style="font-size: 12.5px; line-height: 1.6; color: #465A69; margin-top: 8px;">Late interaction changes what a chunk boundary costs you. Directly relevant to the overlap question, and nobody in the shortlist has cited it yet.</div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0;">
+              <span style="font-size: 10.5px; font-weight: 700; color: #A34500; background: #FFEDE0; border-radius: 6px; padding: 3px 8px;">Q2 · Q3</span>
+              <span style="font-size: 11.5px; color: #93A2AE;">indexed</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="src" style="border: 1px solid #DCE3E9; background: #FFFFFF; border-radius: 11px; padding: 13px 15px; opacity: {{ dim.c4 }};">
+          <div style="display: flex; align-items: flex-start; gap: 11px;">
+            <span style="width: 26px; height: 26px; border-radius: 7px; background: #C9DEFB; color: #0052BA; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M6 3h8l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/></svg>
+            </span>
+            <div style="min-width: 0; flex-grow: 1;">
+              <div style="font-size: 13.5px; font-weight: 600; color: #1C2B33; line-height: 1.4;">Efficient and Robust Approximate Nearest Neighbor Search Using HNSW Graphs</div>
+              <div style="font-size: 12px; color: #7B8B98; margin-top: 3px;">Malkov &amp; Yashunin · IEEE TPAMI 2020 · already in your library</div>
+              <div style="font-size: 12.5px; line-height: 1.6; color: #465A69; margin-top: 8px;">Index-side, not chunk-side. Kept because §5 needs it to explain why recall drops are not an ANN artefact.</div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0;">
+              <span style="font-size: 10.5px; font-weight: 700; color: #0052BA; background: #E7F0FD; border-radius: 6px; padding: 3px 8px;">Q4</span>
+              <span style="font-size: 11.5px; color: #93A2AE;">indexed</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="src" style="border: 1px solid #DCE3E9; background: #FFFFFF; border-radius: 11px; padding: 13px 15px; opacity: {{ dim.c5 }};">
+          <div style="display: flex; align-items: flex-start; gap: 11px;">
+            <span style="width: 26px; height: 26px; border-radius: 7px; background: #FFDCC2; color: #A34500; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.5 2.4 14.5 0 17M12 3.5c-2.4 2.5-2.4 14.5 0 17"/></svg>
+            </span>
+            <div style="min-width: 0; flex-grow: 1;">
+              <div style="font-size: 13.5px; font-weight: 600; color: #1C2B33; line-height: 1.4;">Leveraging Passage Retrieval with Generative Models for Open Domain QA</div>
+              <div style="font-size: 12px; color: #7B8B98; margin-top: 3px;">Izacard &amp; Grave · EACL 2021 · arxiv.org · fetched 2m ago</div>
+              <div style="font-size: 12.5px; line-height: 1.6; color: #465A69; margin-top: 8px;">Fusion-in-Decoder scales with passage count rather than passage size — the closest published result to the claim §4 wants to make.</div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0;">
+              <span style="font-size: 10.5px; font-weight: 700; color: #A34500; background: #FFEDE0; border-radius: 6px; padding: 3px 8px;">Q2 · Q4</span>
+              <span style="font-size: 11.5px; color: #93A2AE;">indexed</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="src" style="border: 1px solid #DCE3E9; background: #FFFFFF; border-radius: 11px; padding: 13px 15px; opacity: {{ dim.c6 }};">
+          <div style="display: flex; align-items: flex-start; gap: 11px;">
+            <span style="width: 26px; height: 26px; border-radius: 7px; background: #C9DEFB; color: #0052BA; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M6 3h8l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/></svg>
+            </span>
+            <div style="min-width: 0; flex-grow: 1;">
+              <div style="font-size: 13.5px; font-weight: 600; color: #1C2B33; line-height: 1.4;">The Probabilistic Relevance Framework: BM25 and Beyond</div>
+              <div style="font-size: 12px; color: #7B8B98; margin-top: 3px;">Robertson &amp; Zaragoza · FnTIR 2009 · already in your library</div>
+              <div style="font-size: 12.5px; line-height: 1.6; color: #465A69; margin-top: 8px;">Length normalisation was solved for documents long before it was un-solved for chunks. §3 should say so plainly.</div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0;">
+              <span style="font-size: 10.5px; font-weight: 700; color: #0052BA; background: #E7F0FD; border-radius: 6px; padding: 3px 8px;">Q1 · Q3</span>
+              <span style="font-size: 11.5px; color: #93A2AE;">indexed</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="src" style="border: 1px solid #F2D9A4; background: #FFFAF0; border-radius: 11px; padding: 13px 15px; opacity: {{ dim.c7 }};">
+          <div style="display: flex; align-items: flex-start; gap: 11px;">
+            <span style="width: 26px; height: 26px; border-radius: 7px; background: #FFF1D6; color: #B26A00; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 8v5M12 16.6h.01"/><circle cx="12" cy="12" r="8.6"/></svg>
+            </span>
+            <div style="min-width: 0; flex-grow: 1;">
+              <div style="font-size: 13.5px; font-weight: 600; color: #7A5200; line-height: 1.4;">Blog post: “The only chunk size that matters”</div>
+              <div style="font-size: 12px; color: #A05A1E; margin-top: 3px;">no author · no date · vendor blog · fetched 2m ago</div>
+              <div style="font-size: 12.5px; line-height: 1.6; color: #5C4300; margin-top: 8px;">Held back. Numbers are unattributed and the benchmark is not named — cite this and a reviewer will ask where the figure came from.</div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0;">
+              <span style="font-size: 10.5px; font-weight: 700; color: #B26A00; background: #FFF1D6; border-radius: 6px; padding: 3px 8px;">Q2</span>
+              <span style="font-size: 11.5px; font-weight: 600; color: #B26A00;">held back</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; font-size: 12.5px; color: #93A2AE;">
+          <span style="width: 9px; height: 9px; border-radius: 50%; border: 2px solid #C3D0DA; border-top-color: {{ accent }};"></span>
+          Reading 5 more sources for question 4…
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Findings -->
+    <div style="width: 396px; flex-shrink: 0; display: flex; flex-direction: column; background: #FFFFFF; border-left: 1px solid #DCE3E9;">
+      <div style="height: 42px; flex-shrink: 0; display: flex; align-items: center; padding: 0 16px; border-bottom: 1px solid #EDF1F4;">
+        <span style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">WHAT THE SOURCES SAY</span>
+      </div>
+
+      <div style="flex-grow: 1; overflow-y: auto; padding: 16px 16px 24px 16px;">
+
+        <sc-if value="{{ isAll }}" hint-placeholder-val="{{ true }}">
+        <div style="font-size: 13.5px; line-height: 1.68; color: #22323B;">
+          <p style="margin: 0 0 14px 0;">Nothing in the retrieved literature measures recall at book length. Every result on the shortlist evaluates passages drawn from Wikipedia-scale documents, where a chunk is a fraction of the document rather than a fraction of a chapter.</p>
+          <p style="margin: 0 0 14px 0;">That is the gap this paper can claim, and it is narrower than the current draft of §1 asserts — two of the twelve sources come close.</p>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ isQ1 }}" hint-placeholder-val="{{ false }}">
+        <div style="font-size: 13.5px; line-height: 1.68; color: #22323B;">
+          <p style="margin: 0 0 14px 0;">Recall is almost always reported as top-k retrieval accuracy over a fixed passage length — 100 words in <span style="background: #E7F0FD; color: #0052BA; border-radius: 4px; padding: 1px 5px; font-size: 12.5px; font-weight: 600;">Karpukhin 2020</span>, inherited without restatement by most of what follows.</p>
+          <p style="margin: 0;">No source on this list reports recall as a function of chunk length. If §3 wants that curve, it has to be measured here.</p>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ isQ2 }}" hint-placeholder-val="{{ false }}">
+        <div style="font-size: 13.5px; line-height: 1.68; color: #22323B;">
+          <p style="margin: 0 0 14px 0;">Published chunk sizes cluster at 100 words and at 512 tokens, and the choice is nearly always justified by the encoder's input limit rather than by any measurement.</p>
+          <p style="margin: 0;"><span style="background: #E7F0FD; color: #0052BA; border-radius: 4px; padding: 1px 5px; font-size: 12.5px; font-weight: 600;">Izacard 2021</span> is the exception worth citing: it scales passage count instead of passage size.</p>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ isQ3 }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="display: flex; align-items: center; gap: 9px; padding: 10px 12px; background: #FFFAF0; border: 1px solid #F2D9A4; border-radius: 9px; margin-bottom: 13px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#B26A00" stroke-width="2.1" stroke-linecap="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 8v5M12 16.4h.01"/></svg>
+            <span style="font-size: 12.5px; font-weight: 600; color: #7A5200;">Thin evidence — two sources, neither direct</span>
+          </div>
+          <div style="font-size: 13.5px; line-height: 1.68; color: #22323B;">
+            <p style="margin: 0 0 14px 0;">Nothing retrieved isolates overlap as a variable. The nearest arguments are indirect: late interaction in <span style="background: #E7F0FD; color: #0052BA; border-radius: 4px; padding: 1px 5px; font-size: 12.5px; font-weight: 600;">Khattab 2020</span> reduces what a boundary costs, and length normalisation in <span style="background: #E7F0FD; color: #0052BA; border-radius: 4px; padding: 1px 5px; font-size: 12.5px; font-weight: 600;">Robertson 2009</span> predicts overlap should inflate scores without improving ranking.</p>
+            <p style="margin: 0;">Treat this as an open question in §6, not a settled result.</p>
+          </div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ isQ4 }}" hint-placeholder-val="{{ false }}">
+        <div style="font-size: 13.5px; line-height: 1.68; color: #22323B;">
+          <p style="margin: 0 0 14px 0;">Still reading. On the evidence so far, ranking degrades before recall does: the right chunk stays in the candidate set and falls out of the top-k.</p>
+          <p style="margin: 0;"><span style="background: #E7F0FD; color: #0052BA; border-radius: 4px; padding: 1px 5px; font-size: 12.5px; font-weight: 600;">Malkov 2020</span> is filed here only to rule out the index as the cause.</p>
+        </div>
+        </sc-if>
+
+        <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #EDF1F4;">
+          <div style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB; margin-bottom: 10px;">WHERE THIS WILL BE FILED</div>
+          <div style="display: flex; align-items: center; gap: 9px; font-size: 13px; color: #22323B; padding: 6px 0;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7B8B98" stroke-width="1.8" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+            Research / Chunking <span style="color: #A3B0BB;">— 12 notes</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 9px; font-size: 13px; color: #22323B; padding: 6px 0;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7B8B98" stroke-width="1.8" stroke-linecap="round"><path d="M4 19.5V5a2 2 0 0 1 2-2h13v18H6a2 2 0 0 1-2-1.5z"/></svg>
+            Library <span style="color: #A3B0BB;">— 6 new references, 6 already held</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 9px; font-size: 13px; color: #22323B; padding: 6px 0;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7B8B98" stroke-width="1.8" stroke-linejoin="round"><path d="M6 3h8l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/></svg>
+            §2 Related Work <span style="color: #A3B0BB;">— draft paragraph, unplaced</span>
+          </div>
+        </div>
+
+        <div style="margin-top: 16px; display: flex; gap: 8px;">
+          <div class="btn" style="display: flex; align-items: center; height: 33px; padding: 0 14px; border-radius: 8px; cursor: pointer; font-size: 12.5px; font-weight: 600; color: #FFFFFF; background: {{ accent }};">File everything</div>
+          <div class="ghost" style="display: flex; align-items: center; height: 33px; padding: 0 14px; border: 1px solid #DCE3E9; border-radius: 8px; cursor: pointer; font-size: 12.5px; font-weight: 600; color: #465A69;">Review one by one</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Status bar -->
+  <div style="height: 28px; flex-shrink: 0; display: flex; align-items: center; gap: 16px; padding: 0 14px; background: #F5F7F9; border-top: 1px solid #DCE3E9; font-size: 11.5px; color: #7B8B98;">
+    <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 7px; height: 7px; border-radius: 50%; background: #31A24C;"></span>Ollama · hermes3:8b</span>
+    <span style="display: flex; align-items: center; gap: 6px; color: #C24A00;">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.5 2.4 14.5 0 17M12 3.5c-2.4 2.5-2.4 14.5 0 17"/></svg>
+      18 requests to 9 domains · every URL written to research-trace.json
+    </span>
+    <div style="flex-grow: 1;"></div>
+    <span>Sources read on this machine · nothing uploaded</span>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#0064E0","options":["#0064E0","#0082FB","#A033FF","#1C2B33"],"section":"Theme"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { step: 'all' };
+  }
+
+  tint(hex, a) {
+    var h = String(hex || '#0064E0').replace('#', '');
+    if (h.length === 3) { h = h.charAt(0) + h.charAt(0) + h.charAt(1) + h.charAt(1) + h.charAt(2) + h.charAt(2); }
+    var n = parseInt(h, 16);
+    if (isNaN(n)) { n = 0x0064E0; }
+    return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+  }
+
+  renderVals() {
+    var self = this;
+    var st = this.state;
+    var accent = this.props.accent || '#0064E0';
+    var soft = this.tint(accent, 0.10);
+
+    var STEPS = ['all', 'q1', 'q2', 'q3', 'q4'];
+    var pick = {}, sel = {};
+    STEPS.forEach(function (id) {
+      pick[id] = function () { self.setState({ step: id }); };
+      var on = st.step === id;
+      sel[id] = { bg: on ? soft : 'transparent', fg: on ? accent : '#465A69', w: on ? '600' : '450', cls: on ? 'on' : 'off' };
+    });
+
+    // which sub-questions each source card answers
+    var CARDS = {
+      c1: ['q1', 'q2'],
+      c2: ['q1'],
+      c3: ['q2', 'q3'],
+      c4: ['q4'],
+      c5: ['q2', 'q4'],
+      c6: ['q1', 'q3'],
+      c7: ['q2']
+    };
+    var dim = {};
+    Object.keys(CARDS).forEach(function (c) {
+      dim[c] = (st.step === 'all' || CARDS[c].indexOf(st.step) !== -1) ? '1' : '0.3';
+    });
+
+    var HEADLINES = {
+      all: '12 sources · 6 from your library, 6 fetched, 1 held back',
+      q1: 'Question 1 · 3 sources on how recall is measured',
+      q2: 'Question 2 · 4 sources on chunk sizes in published systems',
+      q3: 'Question 3 · 2 sources on overlap, neither direct',
+      q4: 'Question 4 · 3 sources so far, still reading'
+    };
+
+    return {
+      accent: accent,
+      pick: pick,
+      sel: sel,
+      dim: dim,
+      headline: HEADLINES[st.step] || HEADLINES.all,
+      isAll: st.step === 'all',
+      isQ1: st.step === 'q1',
+      isQ2: st.step === 'q2',
+      isQ3: st.step === 'q3',
+      isQ4: st.step === 'q4'
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,452 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Literata:opsz,wght@7..72,400;7..72,600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; font-family: 'Hanken Grotesk', system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: #0064E0; text-decoration: none; }
+    a:hover { color: #0052BA; }
+    .row:not(.on):hover { background: #EDF1F4 !important; }
+    .btn:hover { filter: brightness(0.93); }
+    .ghost:hover { background: #EDF1F4 !important; }
+    .seg:hover { color: #1C2B33 !important; }
+    ::-webkit-scrollbar { width: 11px; height: 11px; }
+    ::-webkit-scrollbar-thumb { background: #D3DCE3; border-radius: 8px; border: 3px solid transparent; background-clip: content-box; }
+    ::-webkit-scrollbar-track { background: transparent; }
+  </style>
+</helmet>
+
+<div style="width: 1440px; height: 900px; display: flex; flex-direction: column; background: #FFFFFF; color: #1C2B33; overflow: hidden;">
+
+  <!-- Title bar -->
+  <div style="height: 40px; flex-shrink: 0; display: flex; align-items: center; gap: 14px; padding: 0 12px; background: #F5F7F9; border-bottom: 1px solid #DCE3E9;">
+    <div style="display: flex; gap: 8px; padding-left: 2px;">
+      <div style="width: 12px; height: 12px; border-radius: 50%; background: #FF5F57;"></div>
+      <div style="width: 12px; height: 12px; border-radius: 50%; background: #FEBC2E;"></div>
+      <div style="width: 12px; height: 12px; border-radius: 50%; background: #28C840;"></div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 9px; padding-left: 8px;">
+      <div style="width: 18px; height: 18px; border-radius: 5px; background: linear-gradient(135deg, #0082FB 0%, #0064E0 55%, #A033FF 100%);"></div>
+      <span style="font-size: 13px; font-weight: 600;">Vector Search in Practice</span>
+      <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.05em; color: #6B12A8; background: #F3E8FF; border-radius: 6px; padding: 2px 7px;">TECHNICAL BOOK</span>
+    </div>
+    <div style="flex-grow: 1;"></div>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #7B8B98; font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#31A24C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+        code repo @ 3f9a1c2
+      </span>
+      <div style="width: 1px; height: 18px; background: #DCE3E9;"></div>
+      <div class="ghost" style="display: flex; align-items: center; gap: 7px; height: 28px; padding: 0 11px; border-radius: 7px; cursor: pointer; font-size: 12.5px; font-weight: 500; color: #465A69;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 1 2.6 5.9"/><path d="M4 20v-5h5"/></svg>
+        Test all listings
+      </div>
+      <div class="btn" style="display: flex; align-items: center; height: 28px; padding: 0 13px; border-radius: 7px; cursor: pointer; font-size: 12.5px; font-weight: 600; color: #FFFFFF; background: {{ accent }};">Build EPUB</div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div style="flex-grow: 1; display: flex; min-height: 0;">
+
+    <!-- Binder -->
+    <div style="width: 258px; flex-shrink: 0; display: flex; flex-direction: column; background: #F5F7F9; border-right: 1px solid #DCE3E9;">
+      <div style="height: 36px; flex-shrink: 0; display: flex; align-items: center; padding: 0 8px 0 14px;">
+        <span style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #93A2AE;">CONTENTS</span>
+        <div style="flex-grow: 1;"></div>
+        <span style="font-size: 11.5px; color: #A3B0BB;">3 parts · 12 ch</span>
+      </div>
+
+      <div style="flex-grow: 1; overflow-y: auto; padding: 0 8px 16px 8px;">
+        <div style="padding: 6px 6px 4px 6px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">PART I · FOUNDATIONS</div>
+        <div class="row {{ sel.c1.cls }}" onClick="{{ pick.c1 }}" style="display: flex; align-items: center; gap: 8px; height: 27px; padding: 0 8px 0 12px; border-radius: 6px; cursor: pointer; font-size: 12.5px; background: {{ sel.c1.bg }}; color: {{ sel.c1.fg }}; font-weight: {{ sel.c1.w }};">
+          <span style="width: 15px; color: #A3B0BB; font-variant-numeric: tabular-nums;">1</span>Why exact search stops working</div>
+        <div class="row {{ sel.c2.cls }}" onClick="{{ pick.c2 }}" style="display: flex; align-items: center; gap: 8px; height: 27px; padding: 0 8px 0 12px; border-radius: 6px; cursor: pointer; font-size: 12.5px; background: {{ sel.c2.bg }}; color: {{ sel.c2.fg }}; font-weight: {{ sel.c2.w }};">
+          <span style="width: 15px; color: #A3B0BB; font-variant-numeric: tabular-nums;">2</span>What a vector index is</div>
+        <div class="row {{ sel.c21.cls }}" onClick="{{ pick.c21 }}" style="display: flex; align-items: center; gap: 8px; height: 27px; padding: 0 8px 0 27px; border-radius: 6px; cursor: pointer; font-size: 12.5px; background: {{ sel.c21.bg }}; color: {{ sel.c21.fg }}; font-weight: {{ sel.c21.w }};">
+          <span style="width: 22px; color: #A3B0BB; font-variant-numeric: tabular-nums;">2.1</span>Distance and its discontents</div>
+        <div class="row {{ sel.c3.cls }}" onClick="{{ pick.c3 }}" style="display: flex; align-items: center; gap: 8px; height: 27px; padding: 0 8px 0 12px; border-radius: 6px; cursor: pointer; font-size: 12.5px; background: {{ sel.c3.bg }}; color: {{ sel.c3.fg }}; font-weight: {{ sel.c3.w }};">
+          <span style="width: 15px; color: #A3B0BB; font-variant-numeric: tabular-nums;">3</span>Embeddings you can afford</div>
+
+        <div style="padding: 12px 6px 4px 6px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">PART II · BUILDING</div>
+        <div class="row {{ sel.c4.cls }}" onClick="{{ pick.c4 }}" style="display: flex; align-items: center; gap: 8px; height: 27px; padding: 0 8px 0 12px; border-radius: 6px; cursor: pointer; font-size: 12.5px; background: {{ sel.c4.bg }}; color: {{ sel.c4.fg }}; font-weight: {{ sel.c4.w }};">
+          <span style="width: 15px; color: #A3B0BB; font-variant-numeric: tabular-nums;">4</span>Chunking for recall</div>
+        <div class="row {{ sel.c41.cls }}" onClick="{{ pick.c41 }}" style="display: flex; align-items: center; gap: 8px; height: 27px; padding: 0 8px 0 27px; border-radius: 6px; cursor: pointer; font-size: 12.5px; background: {{ sel.c41.bg }}; color: {{ sel.c41.fg }}; font-weight: {{ sel.c41.w }};">
+          <span style="width: 22px; color: #A3B0BB; font-variant-numeric: tabular-nums;">4.1</span>Where to cut</div>
+        <div class="row {{ sel.c42.cls }}" onClick="{{ pick.c42 }}" style="display: flex; align-items: center; gap: 8px; height: 27px; padding: 0 8px 0 27px; border-radius: 6px; cursor: pointer; font-size: 12.5px; background: {{ sel.c42.bg }}; color: {{ sel.c42.fg }}; font-weight: {{ sel.c42.w }};">
+          <span style="width: 22px; color: #A3B0BB; font-variant-numeric: tabular-nums;">4.2</span>How big is a chunk</div>
+        <div class="row {{ sel.c43.cls }}" onClick="{{ pick.c43 }}" style="display: flex; align-items: center; gap: 8px; height: 27px; padding: 0 8px 0 27px; border-radius: 6px; cursor: pointer; font-size: 12.5px; background: {{ sel.c43.bg }}; color: {{ sel.c43.fg }}; font-weight: {{ sel.c43.w }};">
+          <span style="width: 22px; color: #A3B0BB; font-variant-numeric: tabular-nums;">4.3</span>
+          <span style="flex-grow: 1;">Overlap without waste</span>
+          <span style="width: 6px; height: 6px; border-radius: 50%; background: #FF5C01; flex-shrink: 0;"></span>
+        </div>
+        <div class="row {{ sel.c5.cls }}" onClick="{{ pick.c5 }}" style="display: flex; align-items: center; gap: 8px; height: 27px; padding: 0 8px 0 12px; border-radius: 6px; cursor: pointer; font-size: 12.5px; background: {{ sel.c5.bg }}; color: {{ sel.c5.fg }}; font-weight: {{ sel.c5.w }};">
+          <span style="width: 15px; color: #A3B0BB; font-variant-numeric: tabular-nums;">5</span>Indexing at scale</div>
+        <div class="row {{ sel.c6.cls }}" onClick="{{ pick.c6 }}" style="display: flex; align-items: center; gap: 8px; height: 27px; padding: 0 8px 0 12px; border-radius: 6px; cursor: pointer; font-size: 12.5px; background: {{ sel.c6.bg }}; color: {{ sel.c6.fg }}; font-weight: {{ sel.c6.w }};">
+          <span style="width: 15px; color: #A3B0BB; font-variant-numeric: tabular-nums;">6</span>Hybrid retrieval</div>
+
+        <div style="padding: 12px 6px 4px 6px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">PART III · OPERATING</div>
+        <div class="row {{ sel.c7.cls }}" onClick="{{ pick.c7 }}" style="display: flex; align-items: center; gap: 8px; height: 27px; padding: 0 8px 0 12px; border-radius: 6px; cursor: pointer; font-size: 12.5px; background: {{ sel.c7.bg }}; color: {{ sel.c7.fg }}; font-weight: {{ sel.c7.w }};">
+          <span style="width: 15px; color: #A3B0BB; font-variant-numeric: tabular-nums;">7</span>Measuring what users feel</div>
+
+        <div style="padding: 12px 6px 4px 6px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">ASSETS</div>
+        <div style="display: flex; align-items: center; gap: 8px; height: 27px; padding: 0 8px 0 12px; font-size: 12.5px; color: #465A69;">
+          <span style="flex-grow: 1;">Listings</span><span style="color: #93A2AE;">42</span></div>
+        <div style="display: flex; align-items: center; gap: 8px; height: 27px; padding: 0 8px 0 12px; font-size: 12.5px; color: #465A69;">
+          <span style="flex-grow: 1;">Figures</span><span style="color: #93A2AE;">18</span></div>
+        <div style="display: flex; align-items: center; gap: 8px; height: 27px; padding: 0 8px 0 12px; font-size: 12.5px; color: #465A69;">
+          <span style="flex-grow: 1;">Glossary</span><span style="color: #93A2AE;">96</span></div>
+      </div>
+    </div>
+
+    <!-- Editor -->
+    <div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column;">
+      <div style="height: 44px; flex-shrink: 0; display: flex; align-items: center; gap: 10px; padding: 0 18px; border-bottom: 1px solid #EDF1F4;">
+        <span style="font-size: 12.5px; color: #93A2AE;">{{ ch.crumb }}</span>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#C3D0DA" stroke-width="2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg>
+        <span style="font-size: 12.5px; font-weight: 600;">{{ ch.title }}</span>
+        <div style="flex-grow: 1;"></div>
+        <span style="font-size: 12px; color: #7B8B98;">{{ ch.words }} words</span>
+        <span style="font-size: 12px; color: #7B8B98;">·</span>
+        <span style="font-size: 12px; color: #7B8B98;">{{ ch.listings }} listings</span>
+      </div>
+
+      <div style="flex-grow: 1; overflow-y: auto; display: flex; justify-content: center;">
+        <div style="width: 672px; padding: 44px 0 140px 0;">
+
+          <h2 style="margin: 0 0 22px 0; font-family: Literata, Georgia, serif; font-size: 25px; font-weight: 600; letter-spacing: -0.012em; color: #1C2B33;">{{ ch.heading }}</h2>
+
+          <!-- 4.3 Overlap without waste -->
+          <sc-if value="{{ isC43 }}" hint-placeholder-val="{{ true }}">
+          <div style="font-family: Literata, Georgia, serif; font-size: 16.5px; line-height: 1.78; color: #22323B;">
+            <p style="margin: 0 0 20px 0;">Overlap exists to stop a sentence that answers the question from being cut in half. That is the whole of the justification, and it is worth remembering, because every token you overlap is a token you store twice, embed twice, and search twice.</p>
+
+            <div style="margin: 0 0 22px 0; display: flex; gap: 12px; padding: 13px 15px; background: #F0F6FF; border-left: 3px solid #0064E0; border-radius: 0 9px 9px 0;">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0064E0" stroke-width="1.9" stroke-linecap="round" style="flex-shrink: 0; margin-top: 2px;"><circle cx="12" cy="12" r="8.6"/><path d="M12 11v5.5M12 7.6h.01"/></svg>
+              <div style="font-family: 'Hanken Grotesk', sans-serif; font-size: 13.5px; line-height: 1.62; color: #1F4F8F;"><b style="font-weight: 700;">Note</b> — the cost is not linear in the overlap fraction. At 25 percent overlap you store a third more chunks, not a quarter more, because the last window of every document is padded.</div>
+            </div>
+
+            <p style="margin: 0 0 18px 0;">A windowing function is four lines and one guard. The guard is the part people leave out, and it is the part that turns a bad configuration into an infinite loop rather than a warning.</p>
+
+            <div style="margin: 0 0 8px 0; border: 1px solid #DCE3E9; border-radius: 11px; overflow: hidden;">
+              <div style="display: flex; align-items: center; gap: 9px; padding: 9px 13px; background: #F5F7F9; border-bottom: 1px solid #DCE3E9;">
+                <span style="font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 11.5px; font-weight: 500; color: #465A69;">chunker.py</span>
+                <span style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.05em; color: #6B12A8; background: #F3E8FF; border-radius: 5px; padding: 2px 7px;">PYTHON</span>
+                <div style="flex-grow: 1;"></div>
+                <span style="display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; color: #1D8A3C;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+                  tested at 3f9a1c2
+                </span>
+              </div>
+              <div style="display: flex; font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 12.5px; line-height: 1.85; background: #FFFFFF;">
+                <div style="flex-shrink: 0; padding: 12px 0 12px 0; width: 40px; text-align: right; color: #C3D0DA; user-select: none; border-right: 1px solid #EDF1F4;">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10</div>
+                <div style="padding: 12px 14px; color: #22323B; overflow-x: auto; white-space: pre;"><span style="color: #8B24E0;">def</span> <span style="color: #0064E0;">chunks</span>(text, size=<span style="color: #C24A00;">512</span>, overlap=<span style="color: #C24A00;">64</span>):
+    <span style="color: #1D8A3C;">"""Yield token windows with a fixed overlap."""</span>
+    tokens = tokenizer.encode(text)
+    step = size - overlap
+    <span style="color: #8B24E0;">if</span> step &lt;= <span style="color: #C24A00;">0</span>:
+        <span style="color: #8B24E0;">raise</span> <span style="color: #0064E0;">ValueError</span>(<span style="color: #1D8A3C;">"overlap must be smaller than size"</span>)
+    <span style="color: #8B24E0;">for</span> start <span style="color: #8B24E0;">in</span> <span style="color: #0064E0;">range</span>(<span style="color: #C24A00;">0</span>, <span style="color: #0064E0;">len</span>(tokens), step):
+        window = tokens[start:start + size]
+        <span style="color: #8B24E0;">if</span> <span style="color: #0064E0;">len</span>(window) &lt; overlap:
+            <span style="color: #8B24E0;">break</span></div>
+              </div>
+            </div>
+            <div style="font-size: 12px; color: #A3B0BB; margin-bottom: 22px; font-family: 'Hanken Grotesk', sans-serif;">Listing 4.2 · referenced twice · lives in the repo, not in the manuscript</div>
+
+            <p style="margin: 0 0 22px 0;">The final guard on line 9 drops a trailing window shorter than the overlap itself. Without it the last chunk of every document is a near-duplicate of the one before it, and your index grows by the number of documents for no recall at all — see <span style="background: #EDF1F4; border-radius: 4px; padding: 1px 5px; font-family: 'Hanken Grotesk', sans-serif; font-size: 14px; font-weight: 600; color: #465A69; cursor: pointer;">Figure 4.4</span>.</p>
+
+            <div style="margin: 0; display: flex; gap: 12px; padding: 13px 15px; background: #FFFAF0; border-left: 3px solid #FFC800; border-radius: 0 9px 9px 0;">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#B26A00" stroke-width="2.1" stroke-linecap="round" style="flex-shrink: 0; margin-top: 2px;"><circle cx="12" cy="12" r="8.6"/><path d="M12 8v5M12 16.4h.01"/></svg>
+              <div style="font-family: 'Hanken Grotesk', sans-serif; font-size: 13.5px; line-height: 1.62; color: #7A5200;"><b style="font-weight: 700;">Careful</b> — tokenizers are not interchangeable here. A 512-token window under one tokenizer is not a 512-token window under another, and re-indexing after a tokenizer change is not optional.</div>
+            </div>
+          </div>
+          </sc-if>
+
+          <!-- 2.1 Distance and its discontents -->
+          <sc-if value="{{ isC21 }}" hint-placeholder-val="{{ false }}">
+          <div style="font-family: Literata, Georgia, serif; font-size: 16.5px; line-height: 1.78; color: #22323B;">
+            <p style="margin: 0 0 20px 0;">Two vectors can be close in the sense that matters to a metric and far apart in the sense that matters to a reader. Most of the disappointment people report with vector search comes from this gap, not from the index.</p>
+
+            <div style="margin: 0 0 22px 0; border: 1px solid #DCE3E9; border-radius: 11px; padding: 14px 16px;">
+              <div style="font-family: 'Hanken Grotesk', sans-serif; font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB; margin-bottom: 7px;">DEFINITION · FIRST USE</div>
+              <div style="font-size: 15.5px; line-height: 1.66; color: #22323B;"><b style="font-weight: 600;">Cosine similarity</b> — the cosine of the angle between two vectors, ignoring their magnitudes. Two documents on the same topic score alike whether one is a sentence or a chapter.</div>
+              <div style="font-family: 'Hanken Grotesk', sans-serif; font-size: 12px; color: #93A2AE; margin-top: 9px;">Added to the glossary · used 31 times after this point</div>
+            </div>
+
+            <p style="margin: 0;">The consequence is that length information has to be reintroduced somewhere else, which is what chapter 4 spends its time on.</p>
+          </div>
+          </sc-if>
+
+          <!-- Stub chapters -->
+          <sc-if value="{{ isStub }}" hint-placeholder-val="{{ false }}">
+          <div>
+            <div style="display: flex; align-items: center; gap: 9px; padding: 11px 13px; background: #F7F9FB; border: 1px solid #E4EAEF; border-radius: 10px; margin-bottom: 22px;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7B8B98" stroke-width="1.9" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg>
+              <span style="font-size: 12.5px; color: #465A69;">Outline and listings planned — prose not written.</span>
+            </div>
+            <div style="font-family: Literata, Georgia, serif; font-size: 16.5px; line-height: 1.85; color: #7B8B98;">
+              <div style="margin-bottom: 12px;">— {{ ch.b1 }}</div>
+              <div style="margin-bottom: 12px;">— {{ ch.b2 }}</div>
+              <div>— {{ ch.b3 }}</div>
+            </div>
+            <div style="margin-top: 26px; display: flex; gap: 10px;">
+              <div class="btn" style="display: flex; align-items: center; height: 34px; padding: 0 14px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; color: #FFFFFF; background: {{ accent }};">Draft from these bullets</div>
+              <div class="ghost" style="display: flex; align-items: center; height: 34px; padding: 0 14px; border: 1px solid #DCE3E9; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; color: #465A69;">Pull a listing from the repo</div>
+            </div>
+          </div>
+          </sc-if>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Inspector -->
+    <div style="width: 340px; flex-shrink: 0; display: flex; flex-direction: column; background: #FFFFFF; border-left: 1px solid #DCE3E9;">
+      <div style="height: 44px; flex-shrink: 0; display: flex; align-items: stretch; gap: 2px; padding: 0 12px; border-bottom: 1px solid #EDF1F4;">
+        <div class="seg" onClick="{{ goList }}" style="display: flex; align-items: center; padding: 0 11px; font-size: 12.5px; font-weight: 600; cursor: pointer; color: {{ tab.list.fg }}; box-shadow: {{ tab.list.line }};">Listings</div>
+        <div class="seg" onClick="{{ goTerms }}" style="display: flex; align-items: center; padding: 0 11px; font-size: 12.5px; font-weight: 600; cursor: pointer; color: {{ tab.terms.fg }}; box-shadow: {{ tab.terms.line }};">Terms</div>
+        <div class="seg" onClick="{{ goChecks }}" style="display: flex; align-items: center; gap: 6px; padding: 0 11px; font-size: 12.5px; font-weight: 600; cursor: pointer; color: {{ tab.checks.fg }}; box-shadow: {{ tab.checks.line }};">
+          Checks
+          <span style="font-size: 10px; font-weight: 700; color: #FFFFFF; background: #FF5C01; border-radius: 9px; padding: 1px 5px;">3</span>
+        </div>
+      </div>
+
+      <div style="flex-grow: 1; overflow-y: auto; padding: 16px 16px 24px 16px;">
+
+        <sc-if value="{{ isList }}" hint-placeholder-val="{{ true }}">
+        <div>
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 11px;">
+            <span style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB;">IN THIS CHAPTER</span>
+            <div style="flex-grow: 1;"></div>
+            <span style="font-size: 11.5px; color: #7B8B98;">7 listings</span>
+          </div>
+
+          <div style="border: 1px solid #EDF1F4; border-radius: 10px; padding: 11px 12px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 12px; font-weight: 500; color: #1C2B33; flex-grow: 1;">4.1 tokenize.py</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#31A24C" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+            </div>
+            <div style="font-size: 11.5px; color: #93A2AE; margin-top: 3px;">python · tested · referenced once</div>
+          </div>
+
+          <div style="border: 1px solid {{ accent }}; border-radius: 10px; padding: 11px 12px; margin-top: 4px; background: {{ accentSoft }};">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 12px; font-weight: 500; color: #1C2B33; flex-grow: 1;">4.2 chunker.py</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#31A24C" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+            </div>
+            <div style="font-size: 11.5px; color: #465A69; margin-top: 3px;">python · tested · referenced twice</div>
+          </div>
+
+          <div style="border: 1px solid #F2D9A4; background: #FFFAF0; border-radius: 10px; padding: 11px 12px; margin-top: 4px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 12px; font-weight: 500; color: #7A5200; flex-grow: 1;">4.3 index_build.sh</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B26A00" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 8v5M12 16.4h.01"/></svg>
+            </div>
+            <div style="font-size: 11.5px; color: #A05A1E; margin-top: 3px;">shell · never tested · output pasted by hand</div>
+            <div class="btn" style="display: inline-flex; align-items: center; height: 27px; padding: 0 11px; border-radius: 7px; cursor: pointer; font-size: 11.5px; font-weight: 600; color: #FFFFFF; background: #B26A00; margin-top: 9px;">Run it now</div>
+          </div>
+
+          <div style="border: 1px solid #EDF1F4; border-radius: 10px; padding: 11px 12px; margin-top: 4px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 12px; font-weight: 500; color: #1C2B33; flex-grow: 1;">4.4 recall_eval.py</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#31A24C" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+            </div>
+            <div style="font-size: 11.5px; color: #93A2AE; margin-top: 3px;">python · tested · <span style="color: #B26A00; font-weight: 600;">never referenced in the prose</span></div>
+          </div>
+
+          <div style="margin-top: 16px; font-size: 12.5px; line-height: 1.6; color: #7B8B98;">Listings are read from the code repo at build time, so what the reader runs is what you tested.</div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ isTerms }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB; margin-bottom: 11px;">TERMS USED HERE</div>
+
+          <div style="display: flex; gap: 10px; padding: 10px 11px; border-radius: 9px;">
+            <span style="width: 7px; height: 7px; border-radius: 50%; background: #31A24C; margin-top: 6px; flex-shrink: 0;"></span>
+            <div style="flex-grow: 1;">
+              <div style="font-size: 13px; font-weight: 600; color: #1C2B33;">overlap</div>
+              <div style="font-size: 12px; color: #7B8B98; margin-top: 2px;">Defined here, on first use</div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 10px; padding: 10px 11px; border-radius: 9px;">
+            <span style="width: 7px; height: 7px; border-radius: 50%; background: #31A24C; margin-top: 6px; flex-shrink: 0;"></span>
+            <div style="flex-grow: 1;">
+              <div style="font-size: 13px; font-weight: 600; color: #1C2B33;">window</div>
+              <div style="font-size: 12px; color: #7B8B98; margin-top: 2px;">Defined in 4.1</div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 10px; padding: 10px 11px; border-radius: 9px; background: #FFFAF0;">
+            <span style="width: 7px; height: 7px; border-radius: 50%; background: #FFC800; margin-top: 6px; flex-shrink: 0;"></span>
+            <div style="flex-grow: 1;">
+              <div style="font-size: 13px; font-weight: 600; color: #7A5200;">tokenizer</div>
+              <div style="font-size: 12px; color: #A05A1E; margin-top: 2px;">Used 14 times before it is defined in chapter 5</div>
+              <div style="display: flex; gap: 7px; margin-top: 9px;">
+                <div class="btn" style="display: flex; align-items: center; height: 27px; padding: 0 11px; border-radius: 7px; cursor: pointer; font-size: 11.5px; font-weight: 600; color: #FFFFFF; background: #B26A00;">Define it here</div>
+                <div class="ghost" style="display: flex; align-items: center; height: 27px; padding: 0 11px; border: 1px solid #E4D6B4; border-radius: 7px; cursor: pointer; font-size: 11.5px; font-weight: 600; color: #7A5200;">Move chapter 5</div>
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 10px; padding: 10px 11px; border-radius: 9px;">
+            <span style="width: 7px; height: 7px; border-radius: 50%; background: #31A24C; margin-top: 6px; flex-shrink: 0;"></span>
+            <div style="flex-grow: 1;">
+              <div style="font-size: 13px; font-weight: 600; color: #1C2B33;">recall</div>
+              <div style="font-size: 12px; color: #7B8B98; margin-top: 2px;">Defined in 1.2</div>
+            </div>
+          </div>
+
+          <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #EDF1F4; font-size: 12.5px; line-height: 1.62; color: #7B8B98;">The glossary is built from the manuscript itself. A term counts as defined the first time it appears in a definition block.</div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ isChecks }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; color: #A3B0BB; margin-bottom: 11px;">BEFORE THIS CHAPTER SHIPS</div>
+
+          <div style="display: flex; flex-direction: column; gap: 3px;">
+            <div style="display: flex; align-items: center; gap: 10px; padding: 10px 11px; border-radius: 9px; background: #FFFAF0;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B26A00" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 8v5M12 16.4h.01"/></svg>
+              <span style="flex-grow: 1; font-size: 13px; color: #7A5200;">1 listing has never been run</span>
+              <span style="font-size: 12px; font-weight: 600; color: #B26A00;">Run</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; padding: 10px 11px; border-radius: 9px; background: #FFFAF0;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B26A00" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 8v5M12 16.4h.01"/></svg>
+              <span style="flex-grow: 1; font-size: 13px; color: #7A5200;">“tokenizer” used before it is defined</span>
+              <span style="font-size: 12px; font-weight: 600; color: #B26A00;">Fix</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; padding: 10px 11px; border-radius: 9px; background: #FFFAF0;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B26A00" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 8v5M12 16.4h.01"/></svg>
+              <span style="flex-grow: 1; font-size: 13px; color: #7A5200;">Listing 4.4 is never referenced</span>
+              <span style="font-size: 12px; font-weight: 600; color: #B26A00;">Show</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; padding: 10px 11px; border-radius: 9px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#31A24C" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+              <span style="flex-grow: 1; font-size: 13px; color: #22323B;">Every cross-reference resolves</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; padding: 10px 11px; border-radius: 9px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#31A24C" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+              <span style="flex-grow: 1; font-size: 13px; color: #22323B;">No prose reused from chapters 1–3</span>
+            </div>
+          </div>
+
+          <div style="margin-top: 18px; border: 1px solid #DCE3E9; border-radius: 11px; padding: 13px;">
+            <div style="font-size: 12.5px; font-weight: 700; color: #1C2B33; margin-bottom: 9px;">Chapter balance</div>
+            <div style="display: flex; align-items: center; gap: 11px; margin-bottom: 8px;">
+              <span style="width: 54px; font-size: 11.5px; color: #7B8B98; flex-shrink: 0;">Prose</span>
+              <div style="flex-grow: 1; height: 8px; border-radius: 5px; background: #EDF1F4; overflow: hidden;"><div style="height: 8px; width: 64%; border-radius: 5px; background: {{ accent }};"></div></div>
+              <span style="width: 32px; text-align: right; font-size: 11.5px; color: #7B8B98; font-variant-numeric: tabular-nums;">64%</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 11px;">
+              <span style="width: 54px; font-size: 11.5px; color: #7B8B98; flex-shrink: 0;">Code</span>
+              <div style="flex-grow: 1; height: 8px; border-radius: 5px; background: #EDF1F4; overflow: hidden;"><div style="height: 8px; width: 36%; border-radius: 5px; background: #A033FF;"></div></div>
+              <span style="width: 32px; text-align: right; font-size: 11.5px; color: #7B8B98; font-variant-numeric: tabular-nums;">36%</span>
+            </div>
+            <div style="font-size: 12px; line-height: 1.55; color: #93A2AE; margin-top: 10px;">In line with the rest of Part II.</div>
+          </div>
+        </div>
+        </sc-if>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Status bar -->
+  <div style="height: 28px; flex-shrink: 0; display: flex; align-items: center; gap: 16px; padding: 0 14px; background: #F5F7F9; border-top: 1px solid #DCE3E9; font-size: 11.5px; color: #7B8B98;">
+    <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 7px; height: 7px; border-radius: 50%; background: #31A24C;"></span>Ollama · hermes3:8b</span>
+    <span style="font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace;">41 of 42 listings passing · last run 6m ago</span>
+    <span style="display: flex; align-items: center; gap: 6px;">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18.4 6.2A9 9 0 1 0 21 12"/><path d="M3 3l18 18"/></svg>
+      Offline
+    </span>
+    <div style="flex-grow: 1;"></div>
+    <span>62,400 words · 42 listings · 18 figures</span>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#0064E0","options":["#0064E0","#0082FB","#A033FF","#1C2B33"],"section":"Theme"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { ch: 'c43', tab: 'list' };
+  }
+
+  tint(hex, a) {
+    var h = String(hex || '#0064E0').replace('#', '');
+    if (h.length === 3) { h = h.charAt(0) + h.charAt(0) + h.charAt(1) + h.charAt(1) + h.charAt(2) + h.charAt(2); }
+    var n = parseInt(h, 16);
+    if (isNaN(n)) { n = 0x0064E0; }
+    return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+  }
+
+  renderVals() {
+    var self = this;
+    var st = this.state;
+    var accent = this.props.accent || '#0064E0';
+    var soft = this.tint(accent, 0.10);
+
+    var CH = {
+      c1:  { crumb: 'Part I', title: '1 Why exact search stops working', heading: '1  Why exact search stops working', words: '4,180', listings: 3, kind: 'stub',
+             b1: 'The query nobody can spell', b2: 'Where keyword search is still right', b3: 'What "semantic" buys and what it costs' },
+      c2:  { crumb: 'Part I', title: '2 What a vector index is', heading: '2  What a vector index is', words: '5,020', listings: 5, kind: 'stub',
+             b1: 'A list, then a tree, then a graph', b2: 'Recall as a dial, not a property', b3: 'Why every index is a cache' },
+      c21: { crumb: 'Part I / 2', title: '2.1 Distance and its discontents', heading: '2.1  Distance and its discontents', words: '1,340', listings: 1, kind: 'c21' },
+      c3:  { crumb: 'Part I', title: '3 Embeddings you can afford', heading: '3  Embeddings you can afford', words: '0', listings: 0, kind: 'stub',
+             b1: 'Dimension count is a storage decision', b2: 'Quantisation before a bigger machine', b3: 'When to stop swapping models' },
+      c4:  { crumb: 'Part II', title: '4 Chunking for recall', heading: '4  Chunking for recall', words: '6,900', listings: 7, kind: 'stub',
+             b1: 'The unit you retrieve is the unit you chose', b2: 'Three failure modes, one cause', b3: 'What to measure before tuning' },
+      c41: { crumb: 'Part II / 4', title: '4.1 Where to cut', heading: '4.1  Where to cut', words: '2,110', listings: 2, kind: 'stub',
+             b1: 'Sentence boundaries are not free', b2: 'Structure beats heuristics when you have it', b3: 'Headings carry more than they look like they do' },
+      c42: { crumb: 'Part II / 4', title: '4.2 How big is a chunk', heading: '4.2  How big is a chunk', words: '2,640', listings: 2, kind: 'stub',
+             b1: 'The encoder sets the ceiling', b2: 'Recall against length, measured not assumed', b3: 'Why 512 became a default' },
+      c43: { crumb: 'Part II / 4', title: '4.3 Overlap without waste', heading: '4.3  Overlap without waste', words: '2,150', listings: 4, kind: 'c43' },
+      c5:  { crumb: 'Part II', title: '5 Indexing at scale', heading: '5  Indexing at scale', words: '0', listings: 0, kind: 'stub',
+             b1: 'Build time is not query time', b2: 'The tokenizer chapter belongs here', b3: 'Rebuilds are a product decision' },
+      c6:  { crumb: 'Part II', title: '6 Hybrid retrieval', heading: '6  Hybrid retrieval', words: '0', listings: 0, kind: 'stub',
+             b1: 'BM25 is not a legacy system', b2: 'Fusion without a magic constant', b3: 'How to tell which half is working' },
+      c7:  { crumb: 'Part III', title: '7 Measuring what users feel', heading: '7  Measuring what users feel', words: '0', listings: 0, kind: 'stub',
+             b1: 'Recall@10 is not a user outcome', b2: 'Build a judgement set you trust', b3: 'The regression test you actually run' }
+    };
+
+    var pick = {}, sel = {};
+    Object.keys(CH).forEach(function (id) {
+      pick[id] = function () { self.setState({ ch: id }); };
+      var on = st.ch === id;
+      sel[id] = { bg: on ? soft : 'transparent', fg: on ? accent : '#465A69', w: on ? '600' : '450', cls: on ? 'on' : 'off' };
+    });
+
+    function tabStyle(on) {
+      return { fg: on ? accent : '#7B8B98', line: on ? ('inset 0 -2px 0 0 ' + accent) : 'none' };
+    }
+
+    var cur = CH[st.ch] || CH.c43;
+
+    return {
+      accent: accent,
+      accentSoft: soft,
+      ch: cur,
+      pick: pick,
+      sel: sel,
+      isC43: cur.kind === 'c43',
+      isC21: cur.kind === 'c21',
+      isStub: cur.kind === 'stub',
+      isList: st.tab === 'list',
+      isTerms: st.tab === 'terms',
+      isChecks: st.tab === 'checks',
+      goList: function () { self.setState({ tab: 'list' }); },
+      goTerms: function () { self.setState({ tab: 'terms' }); },
+      goChecks: function () { self.setState({ tab: 'checks' }); },
+      tab: { list: tabStyle(st.tab === 'list'), terms: tabStyle(st.tab === 'terms'), checks: tabStyle(st.tab === 'checks') }
+    };
+  }
+}
+</script>
+</body>
+</html>

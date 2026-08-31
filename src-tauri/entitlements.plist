@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <!-- The App Store requires the sandbox. AegisDraft only ever touches the
+       project folder the author picks, so a user-selected read/write scope is
+       the whole of what it needs. -->
+  <key>com.apple.security.app-sandbox</key>
+  <true/>
+  <key>com.apple.security.files.user-selected.read-write</key>
+  <true/>
+  <!-- Reopening a project on launch without asking again. -->
+  <key>com.apple.security.files.bookmarks.app-scope</key>
+  <true/>
+
+  <!-- Deliberately absent: no network entitlement. Phase 1 makes no network
+       calls at all. Phase 3 talks to Ollama on loopback, which needs
+       com.apple.security.network.client; add it then, not before. -->
+</dict>
+</plist>

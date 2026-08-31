@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>AegisDraft</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=Literata:opsz,wght@7..72,400&display=swap"
+    />
+    <style>
+      * { box-sizing: border-box; }
+      html, body { height: 100%; margin: 0; }
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
+        background: transparent;
+        overflow: hidden;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      .card {
+        position: relative;
+        width: 520px;
+        height: 320px;
+        border-radius: 18px;
+        background: #1c2b33;
+        color: #fff;
+        overflow: hidden;
+        box-shadow: 0 24px 60px rgba(10, 18, 24, 0.45);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 0 40px;
+        -webkit-app-region: drag;
+      }
+      .wash {
+        position: absolute;
+        top: -160px;
+        right: -180px;
+        width: 420px;
+        height: 420px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(0, 130, 251, 0.42) 0%,
+          rgba(160, 51, 255, 0.16) 48%,
+          rgba(28, 43, 51, 0) 72%
+        );
+      }
+      .row { position: relative; display: flex; align-items: center; gap: 14px; }
+      .name { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
+      .tagline {
+        position: relative;
+        margin-top: 18px;
+        font-family: Literata, Georgia, serif;
+        font-size: 17px;
+        line-height: 1.45;
+        color: #d6e0e7;
+        max-width: 380px;
+      }
+      .foot {
+        position: relative;
+        margin-top: 26px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 12.5px;
+        color: #93a2ae;
+      }
+      .bar {
+        position: relative;
+        margin-top: 22px;
+        height: 3px;
+        width: 180px;
+        border-radius: 2px;
+        background: rgba(255, 255, 255, 0.12);
+        overflow: hidden;
+      }
+      .bar span {
+        position: absolute;
+        inset: 0;
+        border-radius: 2px;
+        background: linear-gradient(90deg, #0082fb, #0064e0 55%, #a033ff);
+        transform-origin: left center;
+        animation: sweep 1.4s ease-in-out infinite;
+      }
+      @keyframes sweep {
+        0%   { transform: translateX(-100%) scaleX(0.4); }
+        60%  { transform: translateX(40%)  scaleX(0.9); }
+        100% { transform: translateX(100%) scaleX(0.4); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .bar span { animation: none; transform: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="wash"></div>
+      <div class="row">
+        <svg width="40" height="40" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            fill="#fff"
+            fill-rule="evenodd"
+            d="M7 3h10a2 2 0 0 1 2 2v8.4c0 3.6-2.6 6.3-7 8.1-4.4-1.8-7-4.5-7-8.1V5a2 2 0 0 1 2-2zm.9 4.2a1.1 1.1 0 0 0 0 2.2h8.4a1.1 1.1 0 0 0 0-2.2zm0 4.7a1.1 1.1 0 0 0 0 2.2h5.6a1.1 1.1 0 0 0 0-2.2z"
+          />
+        </svg>
+        <span class="name">AegisDraft</span>
+      </div>
+      <div class="tagline">A book studio that keeps the book on your machine.</div>
+      <div class="bar"><span></span></div>
+      <div class="foot">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#31A24C" stroke-width="1.9"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M18.4 6.2A9 9 0 1 0 21 12" /><path d="M3 3l18 18" />
+        </svg>
+        Starting locally — no account, no network
+      </div>
+    </div>
+  </body>
+</html>

@@ -11,3 +11,10 @@ __pycache__/
 .idea/
 .vscode/
 *.log
+
+# Rust / Tauri
+src-tauri/target/
+src-tauri/gen/
+
+# Local projects created while testing
+*.aegis/
