@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <!-- Entitlements for a DMG people download and run, signed with a Developer
+       ID. This is NOT the App Store build: see entitlements.plist for that.
+
+       The difference that matters is the App Sandbox, which is absent here.
+       Outside the App Store it is optional, and switching it on would silently
+       break two things AegisDraft actually does:
+
+         - the wigolo sidecar, which is launched through `npx` (docs/SIDECAR.md)
+         - PDF sources, which shell out to `pdftotext` (docs/KNOWLEDGE-OS.md)
+
+       A sandboxed direct-download build would install cleanly and then fail at
+       both, with no error a person could act on. Shipping the sandbox here
+       would buy nothing and cost those features.
+
+       Everything the sandbox was protecting still holds: the app reads and
+       writes the project folder the author picked, talks to Ollama on
+       loopback, and reaches the network only through the two gated paths in
+       the golden rule (docs/ARCHITECTURE.md#golden-rule). -->
+
+  <!-- Hardened Runtime is required for notarization. -->
+  <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+  <false/>
+
+  <!-- Ollama on 127.0.0.1:11434, and wigolo on 127.0.0.1:3333. -->
+  <key>com.apple.security.network.client</key>
+  <true/>
+
+  <!-- The app listens on nothing. -->
+  <key>com.apple.security.network.server</key>
+  <false/>
+
+  <!-- Deliberately absent: com.apple.security.app-sandbox. -->
+</dict>
+</plist>

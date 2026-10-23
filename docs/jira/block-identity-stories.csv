@@ -1,0 +1,98 @@
+Issue Type,Summary,Epic Name,Epic Link,Description,Acceptance Criteria,Story Points,Priority,Labels,Component,Test IDs
+Epic,Block-level identity for the manuscript,BLOCKS,,"Give every paragraph a stable id that survives rewriting, reordering and editing the file outside AegisDraft. Prerequisite for provenance, evidence links and lineage reporting. Design: docs/BLOCK-IDENTITY.md sections 1-2.",,,Highest,block-identity,core,
+Epic,Append-only provenance ledger,LEDGER,,"Record who or what created, changed, accepted or exported every block, as an append-only hash-chained event log. Design: docs/BLOCK-IDENTITY.md section 3.",,,Highest,block-identity provenance,core,
+Epic,Record provenance from every write path,WIRING,,Every way prose enters the manuscript must produce an event with the right actor. A path that writes without recording is a hole in the ledger; a path that records the wrong actor is worse. Design: section 5.4.,,,Highest,block-identity provenance,core,
+Epic,Authorship reporting and disclosure,REPORT,,"Derive authorship from the event chain rather than detecting it from prose, and report honestly where there is no record. This is the replacement for the AI detection cut in Phase 4. Design: section 3.4.",,,High,block-identity provenance,integrity,
+Epic,Lineage in the interface,UI,,"Show the author what is recorded about their own manuscript: per-block lineage, an editor marker for AI-touched blocks, a project summary, and chain verification. Design: section 5.6.",,,Medium,block-identity provenance,ui,
+Epic,Migration and compatibility,MIGRATE,,Existing projects gain the tables and start with an honest empty ledger. No file on disk changes and an older build can still open the project. Design: section 6.,,,High,block-identity,core,
+Story,Normalise and hash block text,,BLOCKS,"Implement blocks::normalise and blocks::content_hash. Normalisation collapses whitespace runs (including newlines) to a single space and trims; punctuation and capitalisation are content and are left alone. content_hash is sha256 of the normalised text, lowercase hex.","* Hard-wrapping a paragraph at 80 columns produces an identical hash to the same paragraph on one line.
+* Two texts differing by one comma hash differently.
+* Leading and trailing blank lines do not affect the hash.",2,Highest,block-identity,core,"BI-01, BI-02, BI-03, BI-04"
+Story,Split Markdown into typed blocks,,BLOCKS,"Implement blocks::split returning ParsedBlock{kind, text, ordinal} for the eight kinds in design section 2.1. Pure function, no I/O.","* Fenced code containing a blank line stays ONE block.
+* A five-item bullet list is ONE block, not five.
+* A --- fence at position 0 is FrontMatter; a later --- is Rule.
+* Empty input returns zero blocks without panicking.
+* CRLF input gives the same result as LF.",5,Highest,block-identity,core,BI-05 .. BI-13
+Story,Anchor unchanged and reordered blocks by exact match,,BLOCKS,"Implement pass 0 (whole-file hash short circuit) and pass 1 (exact content hash) of blocks::anchor. Duplicate text must match by nearest ordinal, not first-come.","* Reopening an unchanged document produces zero events.
+* Inserting a paragraph leaves every other block's id intact.
+* Swapping two blocks keeps both ids and only changes ordinals.
+* Two identical paragraphs, one edited: the edit anchors to the NEARER original.",5,Highest,block-identity,core,"BI-14, BI-15, BI-16, BI-17, BI-33"
+Story,Anchor edited blocks by similarity,,BLOCKS,Implement pass 2 of blocks::anchor using integrity::shingles Jaccard over 3-word shingles. ANCHOR_THRESHOLD 0.35. Blocks under MIN_FUZZY_WORDS (8) are exempt and exact-match only.,"* A typo fix in a 60-word paragraph keeps the id and bumps the revision.
+* Replacing a paragraph with unrelated prose does NOT force identity: delete plus create.
+* A three-word heading is never fuzzy-matched to another three-word heading.
+* Greedy matching is deterministic: the same inputs always give the same plan.",8,Highest,block-identity,core,BI-18 .. BI-23
+Story,Flag uncertain anchors instead of guessing quietly,,BLOCKS,"An anchor is uncertain when similarity is below CONFIDENT_THRESHOLD (0.60) or a runner-up is within AMBIGUITY_MARGIN (0.10). Uncertain anchors still anchor, but the flag reaches the event and the report.","* Best 0.72 with runner-up 0.31 is certain.
+* Best 0.72 with runner-up 0.66 is UNCERTAIN - the margin decides, not the score.
+* Best 0.40 with no rival is uncertain.
+* Best 0.34 does not anchor at all.",3,High,block-identity,core,"BI-24, BI-25, BI-26, BI-27"
+Story,Persist blocks and soft-delete removals,,BLOCKS,Create the blocks table per design section 2.3 and implement blocks::reconcile to apply an AnchorPlan. Add documents.body_hash. A removed block is soft-deleted and its id is never reused.,"* First reconcile writes one row per parsed block at revision 1.
+* Only changed rows have their revision and updated_at bumped.
+* A deleted block keeps its row with removed_at set.
+* Retyping deleted text verbatim later produces a NEW id.
+* Deleting a document cascades its blocks but its events remain.",5,Highest,block-identity,core,BI-28 .. BI-32
+Story,Append events with a hash chain,,LEDGER,"Create the events table per design section 3.1 and implement provenance::append as the only write path. entry_hash = sha256(prev_hash + seq + object_id + action + actor_id + output_hash + at), joined by a byte that cannot occur in the fields.","* The first event has seq 1 and a prev_hash of 64 zeros.
+* Each event's prev_hash equals the previous entry_hash.
+* Two events with identical field values still hash differently, because seq participates.
+* There is NO update and NO delete function on this table.",5,Highest,block-identity provenance,core,PV-01 .. PV-05
+Story,Verify the chain and locate a break,,LEDGER,"Implement provenance::verify_chain, returning the first ChainBreak or None. Must stream rather than loading the whole ledger.","* An untouched chain of 50 events verifies clean.
+* Editing row 25 directly in SQL is reported as a break AT seq 25.
+* Deleting a row is reported at the gap.
+* An empty ledger verifies clean rather than erroring.
+* 100,000 events verify in under 2s at constant memory.",5,High,block-identity provenance,core,"PV-06 .. PV-09, PERF-04, NEG-16"
+Story,Derive authorship from the event chain,,LEDGER,"Implement provenance::classify as a pure function over events, per the K2P-OS 7.2 table in design section 3.4. Sorts by seq before classifying so the result is independent of input order.","* create(human) is Human-originated.
+* create(human) then rewrite(ai) then accept(human) is Human-originated with AI-assisted editing.
+* create(ai) then accept(human) is AI-originated with human review.
+* Any chain containing an inferred event sets uncertain = true.
+* An EMPTY chain is Unknown with unrecorded = true, and is NEVER reported as Human.",8,Highest,block-identity provenance,integrity,"PV-10 .. PV-17, NEG-09"
+Story,Summarise authorship across a document or project,,LEDGER,"Implement provenance::summarise returning counts by origin plus unrecorded, uncertain, and chain_intact.","* unrecorded is its own count and is never folded into human.
+* Scoping to one document counts only that document's blocks.
+* A broken chain sets chain_intact false and the summary still returns.",3,High,block-identity provenance,integrity,"PV-18, PV-19, PV-20"
+Story,Record in-app edits as observed human events,,WIRING,"Call blocks::reconcile from project::write_body with actor human and confidence Observed, after the atomic write.","* Writing three paragraphs then editing the middle one gives that block revision 2 and the others revision 1.
+* All events are observed.
+* Ordinals stay correct after the edit.",5,Highest,block-identity provenance,core,UF-01
+Story,Reconcile externally edited files as inferred,,WIRING,"On project::open, reconcile any document whose file hash differs from documents.body_hash, with actor External and confidence Inferred. This is the vim case.","* Editing the file outside the app and reopening keeps block ids where the text is recognisably the same.
+* Those events are external and inferred, never human and observed.
+* A reflow-only external edit produces NO event at all.",5,Highest,block-identity provenance,core,"UF-02, NEG-11"
+Story,Record imported prose as tool-authored,,WIRING,Thread actor tool:import through import::run so imported blocks carry a create event with the right actor.,"* Every imported block has create(tool:import, observed).
+* block_authorship reports External, not Human.",3,High,block-identity provenance,core,UF-03
+Story,Record snapshot restores without losing ids or history,,WIRING,Reconcile after snapshots::restore_file and append a restore event.,"* Restored blocks return to the snapshot content and KEEP their ids.
+* The intervening rewrite events are still in the ledger - a restore adds history, it does not erase it.",3,High,block-identity provenance,core,UF-04
+Story,Record compiles as export events,,WIRING,"Append one export event per document included in a compile, so the ledger can answer which edition contained which blocks.","* Compiling appends one export event per included document.
+* Excluded documents get none.",2,Medium,block-identity provenance,compile,UF-05
+Story,Never launder agent writes as human authorship,,WIRING,"Thread the acting model through agent_loop into project::write_body so tool calls that write prose record actor_type ai_model. Without this, every agent edit is recorded as the author's own work - the worst possible failure of this feature.","* After the Phase 5 loop calls save_to_binder, every resulting block's chain shows ai_model with the model name.
+* NO event from an agent run is ever actor_type human.
+* A regression test asserts this directly, not as a side effect.",8,Highest,block-identity provenance,agents,"NEG-14, UF-06"
+Story,Add Use this so accepted AI prose is recorded,,WIRING,"Add assist_accept: insert a model proposal into the manuscript at an optional block and record create(ai_model) plus accept(human) with the model name, parameters and input/output hashes. Closes the hole where the writing loop leaves no record at all.","* Pressing Use this creates a block whose authorship is AI-generated text with human review.
+* The model name and parameters are stored and readable.
+* An empty proposal is refused with a reason and writes nothing.
+* A block id belonging to another document is refused.",5,Highest,block-identity provenance,ai,"UF-07, NEG-12, NEG-13"
+Story,Disclose that manual copy-paste is not observable,,WIRING,The report must state that text pasted by hand from the Assist panel cannot be distinguished from typed prose. A known hole disclosed is honest; a known hole hidden is not.,"* Generating, copying manually and pasting yields a block classified Human.
+* The exported report's method notes state in plain words that manual insertion is not observable.
+* This is asserted by a test, so the sentence cannot be quietly dropped.",2,High,block-identity provenance,integrity,UF-08
+Story,"Expose blocks, history and authorship as commands",,REPORT,"Add blocks_list, block_history, block_authorship, provenance_summary and provenance_verify Tauri commands.","* blocks_list on a folder returns an empty list, not an error.
+* Every command refuses a path that is not an AegisDraft project with the standard message.
+* Project totals equal the sum of per-document summaries.",5,High,block-identity provenance,core,"BB-01 .. BB-06, BB-09, BB-10"
+Story,Add authorship to the integrity packet,,REPORT,Extend integrity_export with an authorship section so the existing packet becomes the provenance report rather than a second artefact. Add provenance_export for a lineage-only report.,"* The HTML report states what is unrecorded and what is inferred, in plain words.
+* A mixed document shows author prose, accepted AI prose and imported quotes separately.
+* An unwritable output path fails cleanly with nothing half-written.",5,High,block-identity provenance,integrity,"BB-07, BB-08, UF-09, NEG-15"
+Story,Show a block's lineage in the inspector,,UI,"New Lineage tab: the selected block's event chain, derived authorship, and whether any of it was inferred rather than observed.","* A block with no events reads as no record kept, never as human-written.
+* Inferred events are visually distinct from observed ones.
+* The chain is readable without knowing what a hash is.",5,Medium,block-identity provenance,ui,"BB-03, BB-04"
+Story,Mark AI-touched blocks in the editor gutter,,UI,"A quiet marker on blocks whose chain contains an ai_model event. A fact the author can see, not a scarlet letter.","* The marker appears only where the ledger has an ai_model event.
+* It never appears from inference about the prose itself.
+* It can be turned off without turning off recording.",3,Medium,block-identity provenance,ui,UF-07
+Story,Show the authorship summary and chain health,,UI,"Authorship counts on the Integrity screen with unrecorded as its own category, and chain verification in Settings with a plain-language result.","* unrecorded is displayed as its own category and never merged into human.
+* A tampered ledger is reported at the right seq and the app still opens and works.",3,Medium,block-identity provenance,ui,"PV-18, UF-10"
+Story,Migrate existing projects to an honest empty ledger,,MIGRATE,"Add blocks and events to the existing additive migration and to store::EXPECTED_TABLES. On first open, each document reconciles once as external/inferred create.","* A project created before this feature opens and gains both tables.
+* Every pre-existing block gets one create(external, inferred) event.
+* The summary counts them unrecorded/Unknown and claims none as human.
+* No file on disk changes, and an older build can still open the project.
+* EXPECTED_TABLES includes both, so an unwired migration fails the existing guard test.",5,High,block-identity,core,MIG-01 .. MIG-04
+Story,Hold anchoring to a performance budget,,MIGRATE,"Assert generous upper bounds so a change that makes anchoring quadratic across the project is caught. These are guards, not benchmarks.","* Reconciling an unchanged 2,000-block book is under 50ms via the pass 0 short circuit.
+* A 60-block scene with one edited paragraph is under 20ms.
+* Worst case 60 blocks all rewritten is under 200ms.",3,Medium,block-identity,core,"PERF-01, PERF-02, PERF-03"
+Story,Harden the parser and ledger against bad input,,MIGRATE,Cover the adversarial cases in test plan section 4 that are not owned by another story.,"* An unterminated code fence splits without hanging.
+* A 5MB single-paragraph document completes without quadratic blow-up.
+* Text containing the hash-chain separator byte cannot forge a colliding entry_hash.
+* Two reconciles racing on one document produce no duplicate ids and no gap in seq.
+* reconcile on a folder errors cleanly, naming the document, with no partial write.",5,High,block-identity,core,"NEG-04 .. NEG-08, NEG-10"

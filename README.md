@@ -35,10 +35,24 @@ See [docs/HERMES-RUNTIME.md](docs/HERMES-RUNTIME.md), [docs/AGENTS.md](docs/AGEN
 | [docs/HERMES-RUNTIME.md](docs/HERMES-RUNTIME.md) | hermes-agent ports, profiles, style, skills |
 | [docs/AGENTS.md](docs/AGENTS.md) | Four agents (Controller, Continuity, Integrity, World-Builder) |
 | [docs/TOOLS.md](docs/TOOLS.md) | Tool catalog and skills → FastAPI bridge |
+| [docs/WRITING-LOOP.md](docs/WRITING-LOOP.md) | Canon, mechanical slop, revision briefs, drafting context |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | Core + v2 implementation roadmap |
+| [docs/STATUS.md](docs/STATUS.md) | Phase-by-phase status, totals, and known gaps |
 | [docs/IMPLEMENTATION.md](docs/IMPLEMENTATION.md) | The code that exists: layout, what works, departures from the plan |
 | [docs/DESIGN-SYSTEM.md](docs/DESIGN-SYSTEM.md) | Palette, type, components, and the honesty rules |
+| [docs/BRAND.md](docs/BRAND.md) | Mark, icon, splash, voice, and the press kit |
+| [docs/APP-STORE.md](docs/APP-STORE.md) | Mac App Store listing copy, privacy answers, signing and submission |
+| [docs/SIDECAR.md](docs/SIDECAR.md) | Running wigolo as a managed sidecar, and why it is not bundled |
 | [docs/NEXT-STEPS.md](docs/NEXT-STEPS.md) | Decisions needed and the ordered backlog |
+
+### Knowledge to Publication
+
+| Doc | Purpose |
+| :--- | :--- |
+| [docs/KNOWLEDGE-OS.md](docs/KNOWLEDGE-OS.md) | Sources, claims, evidence, contradictions and deep research — what was built and why |
+| [docs/BLOCK-IDENTITY.md](docs/BLOCK-IDENTITY.md) | Stable paragraph ids and the provenance ledger, with a gap analysis against the K2P-OS spec |
+| [docs/TEST-PLAN-BLOCKS.md](docs/TEST-PLAN-BLOCKS.md) | The suite — TDD order, positive, negative, black-box, user-flow |
+| [docs/jira/](docs/jira/) | The same work as 6 epics and 26 stories, importable to Jira |
 
 ## Tech stack (snapshot)
 
