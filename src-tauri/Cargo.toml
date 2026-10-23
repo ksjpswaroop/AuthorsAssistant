@@ -34,5 +34,10 @@ objc2-foundation = { version = "0.3", default-features = false, features = [
   "std", "NSURL", "NSString", "NSData", "NSError", "NSArray",
 ] }
 
+# Unix only: killing a process group. `npx wigolo` spawns node as a grandchild,
+# so killing the child we hold a handle to leaves the real daemon orphaned.
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
+
 [features]
 default = []

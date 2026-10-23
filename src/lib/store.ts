@@ -26,7 +26,7 @@ export type Route =
   | 'insights'
   | 'search'
 export type StudioView = 'editor' | 'corkboard' | 'outliner' | 'scrivenings'
-export type InspectorTab = 'synopsis' | 'notes' | 'lineage'
+export type InspectorTab = 'synopsis' | 'notes' | 'voice' | 'lineage'
 
 /** How long typing has to pause before the buffer is written to disk. */
 const AUTOSAVE_MS = 800

@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useApp } from '../lib/store'
 import { color, font, labels, radius, statuses, type LabelName, type StatusName } from '../lib/tokens'
-import { Callout, Chip, Dot, ProgressBar, SectionLabel, SelectLook, Tabs } from './ui'
+import { Button, Callout, Chip, Dot, ProgressBar, SectionLabel, SelectLook, Tabs } from './ui'
 import { Icon, type IconName } from './Icon'
 import { Snapshots } from './Snapshots'
 import { KeywordEditor } from './KeywordEditor'
 import { relativeTime, words } from '../lib/format'
 import { useAsync } from '../lib/useAsync'
-import { lineage, type Origin } from '../lib/phases'
+import { ai, generationModels, lineage, type Origin } from '../lib/phases'
 import { api, isTauri } from '../lib/api'
 
 const LABEL_CYCLE: LabelName[] = ['None', 'Plot', 'Character', 'Setup']
@@ -458,6 +458,179 @@ function NotesTab() {
  * `traces/` — real runs, real tool calls, real results. An agent whose
  * reasoning is invisible is not more trustworthy for being local.
  */
+function VoiceTab() {
+  const path = useApp((s) => s.project?.path)
+  const doc = useApp((s) => s.docs.find((d) => d.id === s.selectedId))
+  const status = useAsync(() => ai.status(), [], isTauri)
+  const models = status.data ? generationModels(status.data) : []
+  const [model, setModel] = useState<string | null>(null)
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const profile = useAsync(() => ai.styleLoad(path!), [path], isTauri && !!path)
+  const distance = useAsync(
+    () => ai.styleDistance(path!, doc!.id),
+    [path, doc?.id, doc?.updatedAt, profile.data?.builtAt],
+    isTauri && !!path && !!doc,
+  )
+
+  const build = async () => {
+    if (!path) return
+    setBusy(true)
+    setError(null)
+    try {
+      await ai.styleBuild(path, model ?? models[0]?.name ?? null)
+      profile.reload()
+      distance.reload()
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e))
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const p = profile.data
+  const d = distance.data
+
+  return (
+    <div>
+      <SectionLabel>Your voice</SectionLabel>
+      {!p ? (
+        <Callout tone="quiet" icon="sparkle" style={{ marginTop: 8 }}>
+          No style profile yet. Building one measures the prose you have marked{' '}
+          <strong style={{ fontWeight: 650 }}>Done</strong> — sentence length and rhythm, vocabulary
+          range, dialogue balance — and gives Rewrite something concrete to match instead of the
+          phrase &ldquo;your voice&rdquo;.
+        </Callout>
+      ) : (
+        <div style={{ marginTop: 8, fontSize: 12.5, color: color.ink3, lineHeight: 1.6 }}>
+          Measured from {words(p.sampleWords)} across {p.sampleDocuments}{' '}
+          {p.sampleDocuments === 1 ? 'document' : 'documents'}
+          {p.fromFinishedWork ? ' marked Done' : ''}, {relativeTime(p.builtAt)}.
+          {!p.fromFinishedWork && (
+            <div style={{ marginTop: 6, color: color.ink4 }}>
+              Nothing is marked Done, so this was built from drafts. Mark the prose you are happy
+              with and rebuild for a sharper profile.
+            </div>
+          )}
+        </div>
+      )}
+
+      {p?.voice && (
+        <div
+          style={{
+            marginTop: 10,
+            padding: '9px 11px',
+            border: `1px solid ${color.lineSoft}`,
+            borderRadius: radius.md,
+            background: color.surfaceSoft,
+            fontSize: 12.5,
+            lineHeight: 1.6,
+            color: color.inkProse,
+          }}
+        >
+          {p.voice}
+          <div style={{ marginTop: 6, fontSize: 11, color: color.ink4 }}>
+            Written by {p.voiceModel} — a model&rsquo;s reading, not a measurement.
+          </div>
+        </div>
+      )}
+
+      {p && d && (
+        <div style={{ marginTop: 16 }}>
+          <SectionLabel>This document</SectionLabel>
+          {d.tooShort ? (
+            <div style={{ marginTop: 8, fontSize: 12.5, color: color.ink4, lineHeight: 1.6 }}>
+              Too short to measure. A paragraph or two is not a style.
+            </div>
+          ) : (
+            <>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginTop: 8 }}>
+                <span style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em' }}>
+                  {d.overall}
+                </span>
+                <span style={{ fontSize: 12, color: color.ink4 }}>of 100 to your usual</span>
+              </div>
+              <ProgressBar pct={d.overall} />
+              <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 9 }}>
+                {d.notes.map((n) => (
+                  <div key={n.dimension}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <Dot
+                        tone={
+                          n.closeness >= 70
+                            ? color.green
+                            : n.closeness >= 40
+                              ? color.orange
+                              : color.accent
+                        }
+                      />
+                      <span style={{ fontSize: 12.5, fontWeight: 600 }}>{n.dimension}</span>
+                      <div style={{ flexGrow: 1 }} />
+                      <span style={{ fontSize: 11.5, color: color.ink4, fontFamily: font.mono }}>
+                        {n.closeness}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: 12, color: color.ink3, marginLeft: 15, lineHeight: 1.5 }}>
+                      {n.note}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      <div style={{ marginTop: 18, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <Button onClick={() => void build()} disabled={busy || !path}>
+          {busy ? 'Measuring…' : p ? 'Rebuild profile' : 'Build profile'}
+        </Button>
+        {models.length > 0 && (
+          <SelectLook>
+            <select
+              value={model ?? models[0].name}
+              onChange={(e) => setModel(e.target.value)}
+              style={{ font: 'inherit', color: 'inherit', background: 'transparent', border: 0 }}
+            >
+              {models.map((m) => (
+                <option key={m.name} value={m.name}>
+                  {m.name}
+                </option>
+              ))}
+            </select>
+          </SelectLook>
+        )}
+      </div>
+      <div style={{ marginTop: 6, fontSize: 11.5, color: color.ink4, lineHeight: 1.5 }}>
+        {models.length > 0
+          ? 'The measurements need no model. The model only adds a short description of the voice.'
+          : 'No local model is available, so the profile will be measurements only — which is the half that matters.'}
+      </div>
+
+      {error && (
+        <Callout tone="warn" style={{ marginTop: 12 }}>
+          {error}
+        </Callout>
+      )}
+    </div>
+  )
+}
+
+/**
+ * Where an author sees what is actually recorded about their own paragraphs.
+ *
+ * Two rules govern everything on this tab.
+ *
+ * **No record is not evidence.** A paragraph with an empty chain reads as "no
+ * record kept", never as "written by you". Silence is not authorship, and a tool
+ * that quietly converts one into the other is the thing this whole feature
+ * exists to avoid.
+ *
+ * **Observed and inferred look different.** An event AegisDraft watched happen
+ * is a fact. One reconstructed by matching text after an edit made elsewhere is
+ * a reconstruction, and it is marked as one.
+ */
 function LineageTab() {
   const path = useApp((s) => s.project?.path)
   const doc = useApp((s) => s.docs.find((d) => d.id === s.selectedId))
@@ -645,6 +818,7 @@ export function Inspector() {
         options={[
           { id: 'synopsis', label: 'Synopsis' },
           { id: 'notes', label: 'Notes' },
+          { id: 'voice', label: 'Voice' },
           { id: 'lineage', label: 'Lineage' },
         ]}
       />
@@ -657,6 +831,8 @@ export function Inspector() {
           <SynopsisTab />
         ) : tab === 'notes' ? (
           <NotesTab />
+        ) : tab === 'voice' ? (
+          <VoiceTab />
         ) : (
           <LineageTab />
         )}

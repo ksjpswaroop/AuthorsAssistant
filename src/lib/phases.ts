@@ -228,6 +228,137 @@ export function embeddingModels(status: OllamaStatus): ModelInfo[] {
     .sort((a, b) => a.size - b.size)
 }
 
+/* --- Phase 4: integrity ---------------------------------------------------- */
+
+export interface SimilarityMatch {
+  sourceId: string
+  sourceTitle: string
+  excerpt: string
+  score: number
+}
+
+export interface WritingSignals {
+  wordCount: number
+  sentenceCount: number
+  meanSentenceLength: number
+  sentenceLengthVariance: number
+  typeTokenRatio: number
+  abstractDensity: number
+}
+
+export interface RubricScore {
+  criterion: string
+  score: number
+  note: string
+}
+
+/** Is the author's wigolo daemon reachable? Absent is a state, not an error. */
+export interface WigoloStatus {
+  running: boolean
+  base: string
+  health: string | null
+  detail: string | null
+  authenticated: boolean
+}
+
+export interface WebMatch {
+  title: string
+  url: string
+  excerpt: string
+  /** wigolo's citation id, when its version sends one. */
+  citationId: string | null
+  sourceSpan: [number, number] | null
+  /** wigolo's confidence in the *result*. Not a similarity score. */
+  evidenceScore: number | null
+  /** Measured here: how much of the sent phrase appears in the excerpt. */
+  overlap: number
+}
+
+export interface WebSearchResult {
+  query: string
+  matches: WebMatch[]
+  engines: string[]
+  published: string | null
+  warning: string | null
+}
+
+/** One phrase that left the machine, and what came back. */
+export interface TraceEntry {
+  at: number
+  query: string
+  wordCount: number
+  base: string
+  resultCount: number
+  urls: string[]
+}
+
+export interface IntegrityPacket {
+  generatedAt: number
+  project: string
+  documentId: string
+  documentTitle: string
+  wordCount: number
+  internalMatches: SimilarityMatch[]
+  threshold: number
+  signals: WritingSignals
+  rubric: RubricScore[]
+  webChecks: TraceEntry[]
+  /** What the numbers are, and what they are not. */
+  method: string[]
+}
+
+/** How wigolo could be launched on this machine, or why it cannot be. */
+export type WigoloLauncher =
+  | { via: 'explicit'; path: string }
+  | { via: 'onPath'; path: string }
+  | { via: 'npx'; npx: string; node: string }
+
+export interface WigoloResolution {
+  launcher: WigoloLauncher | null
+  /** What was found, or what is missing and how to fix it. Never bare. */
+  detail: string
+}
+
+export interface SidecarStatus {
+  running: boolean
+  /** True only when AegisDraft started it — and it stops only what it started. */
+  managed: boolean
+  base: string
+  health: string | null
+  resolution: WigoloResolution
+  detail: string | null
+}
+
+export const sidecar = {
+  status: () => call<SidecarStatus>('wigolo_sidecar_status'),
+  /** Starts wigolo, or adopts one already answering. Never called on launch. */
+  start: () => call<SidecarStatus>('wigolo_sidecar_start'),
+  stop: () => call<SidecarStatus>('wigolo_sidecar_stop'),
+}
+
+export const integrity = {
+  similarity: (path: string, id: string, threshold = 0.5) =>
+    call<SimilarityMatch[]>('integrity_similarity', { path, id, threshold }),
+  signals: (path: string, id: string) => call<WritingSignals>('integrity_signals', { path, id }),
+  rubric: (path: string, id: string) => call<RubricScore[]>('integrity_rubric', { path, id }),
+
+  wigolo: () => call<WigoloStatus>('wigolo_status'),
+  /**
+   * Sends one phrase off the machine, through the author's own wigolo.
+   * `confirmed` must be a real answer from a person — the Rust side refuses
+   * without it, so passing `true` from code that did not ask would be a lie
+   * told to the only guard there is.
+   */
+  webSimilarity: (path: string, phrase: string, confirmed: boolean, maxResults = 5) =>
+    call<WebSearchResult>('web_similarity', { path, phrase, maxResults, confirmed }),
+  trace: (path: string) => call<TraceEntry[]>('research_trace', { path }),
+  packet: (path: string, id: string, threshold = 0.5) =>
+    call<IntegrityPacket>('integrity_packet', { path, id, threshold }),
+  /** Writes the packet as a JSON + HTML pair. Returns both paths. */
+  exportPacket: (path: string, id: string, threshold: number, outPath: string) =>
+    call<[string, string]>('integrity_export', { path, id, threshold, outPath }),
+}
+
 /** Writing targets, stored with the project rather than in app preferences. */
 export interface Goals {
   projectTarget: number | null

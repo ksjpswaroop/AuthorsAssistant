@@ -13,6 +13,7 @@ name = "aegisdraft"
 version = "0.1.0"
 dependencies = [
  "git2",
+ "libc",
  "objc2",
  "objc2-foundation",
  "rusqlite",

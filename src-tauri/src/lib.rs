@@ -18,6 +18,7 @@ pub mod project;
 pub mod provenance;
 pub mod rag;
 pub mod scrivenings;
+pub mod sidecar;
 pub mod snapshots;
 pub mod store;
 pub mod style;
@@ -27,7 +28,8 @@ pub mod websearch;
 use error::{AppError, AppResult};
 use model::{
     Collection, CollectionKind, CompileFilters, CompilePreset, DocKind, DocumentRow, ExportFormat,
-    OllamaStatus, ProjectSummary, RecentProject, RetrievedChunk, SaveReceipt, Snapshot,
+    OllamaStatus, ProjectSummary, RecentProject, RetrievedChunk, RubricScore, SaveReceipt,
+    SimilarityMatch, Snapshot, WritingSignals,
 };
 use tauri::Manager;
 
@@ -471,6 +473,148 @@ fn model_pools() -> AppResult<(Vec<model::ModelInfo>, Vec<model::ModelInfo>, Vec
     Ok((ollama::generation_models(&s), ollama::embedding_models(&s), cloud))
 }
 
+// --- Phase 4: integrity -----------------------------------------------------
+
+#[tauri::command]
+fn integrity_similarity(path: String, id: String, threshold: f32) -> AppResult<Vec<SimilarityMatch>> {
+    let root = project::to_path(&path);
+    let subject = project::read_body(&root, &id)?;
+    let docs = project::documents(&root)?;
+    let mut sources = Vec::new();
+    for d in docs.iter().filter(|d| d.id != id && d.path.is_some()) {
+        sources.push((d.id.clone(), d.title.clone(), project::read_body(&root, &d.id)?));
+    }
+    Ok(integrity::internal_similarity(&id, &subject, &sources, threshold, 5))
+}
+
+#[tauri::command]
+fn integrity_signals(path: String, id: String) -> AppResult<WritingSignals> {
+    Ok(integrity::writing_signals(&project::read_body(&project::to_path(&path), &id)?))
+}
+
+#[tauri::command]
+fn integrity_rubric(path: String, id: String) -> AppResult<Vec<RubricScore>> {
+    Ok(integrity::rubric(&project::read_body(&project::to_path(&path), &id)?))
+}
+
+/// How wigolo could be started here, and whether it is running now.
+#[tauri::command]
+fn wigolo_sidecar_status() -> sidecar::SidecarStatus {
+    sidecar::status()
+}
+
+/// Start wigolo, or adopt one that is already answering.
+///
+/// Deliberately not called on launch. Starting wigolo starts something that
+/// reaches the internet on the author's behalf, and per the golden rule that is
+/// a choice they make, not a step the app takes for them.
+#[tauri::command]
+fn wigolo_sidecar_start() -> AppResult<sidecar::SidecarStatus> {
+    sidecar::start()
+}
+
+/// Stop the wigolo this app started. One it did not start is left alone.
+#[tauri::command]
+fn wigolo_sidecar_stop() -> AppResult<sidecar::SidecarStatus> {
+    sidecar::stop()
+}
+
+/// Is the author's wigolo daemon running? Never an error — absent is a state.
+#[tauri::command]
+fn wigolo_status() -> websearch::WigoloStatus {
+    websearch::status()
+}
+
+/// Check one phrase against the web, through wigolo.
+///
+/// `confirmed` is not a formality. This is the only path in the app that sends
+/// the author's words off the machine, so it refuses to run without an explicit
+/// yes from a person, exactly like `delete_document` and `compile_manuscript`.
+#[tauri::command]
+fn web_similarity(
+    path: String,
+    phrase: String,
+    max_results: Option<usize>,
+    confirmed: bool,
+) -> AppResult<websearch::WebSearchResult> {
+    if !confirmed {
+        return err_str(
+            "a web check sends this phrase off your machine, through your own wigolo. It needs your explicit yes.",
+        );
+    }
+    let root = project::to_path(&path);
+    let found = websearch::search(&phrase, max_results.unwrap_or(5))?;
+    websearch::record(
+        &root,
+        &websearch::TraceEntry {
+            at: project::now_ms(),
+            query: found.query.clone(),
+            word_count: found.query.split_whitespace().count() as i64,
+            base: websearch::base(),
+            result_count: found.matches.len() as i64,
+            urls: found.matches.iter().map(|m| m.url.clone()).collect(),
+        },
+    )?;
+    Ok(found)
+}
+
+/// Every phrase this project has ever sent off the machine.
+#[tauri::command]
+fn research_trace(path: String) -> Vec<websearch::TraceEntry> {
+    websearch::trace(&project::to_path(&path))
+}
+
+/// Build the integrity packet for one document.
+#[tauri::command]
+fn integrity_packet(
+    path: String,
+    id: String,
+    threshold: f32,
+) -> AppResult<integrity::IntegrityPacket> {
+    let root = project::to_path(&path);
+    let subject = project::read_body(&root, &id)?;
+    let docs = project::documents(&root)?;
+    let doc = docs
+        .iter()
+        .find(|d| d.id == id)
+        .ok_or_else(|| error::AppError(format!("no document {id}")))?;
+
+    let mut sources = Vec::new();
+    for other in docs.iter().filter(|d| d.id != id && d.path.is_some()) {
+        sources.push((other.id.clone(), other.title.clone(), project::read_body(&root, &other.id)?));
+    }
+
+    Ok(integrity::IntegrityPacket {
+        generated_at: project::now_ms(),
+        project: root.display().to_string(),
+        document_id: id.clone(),
+        document_title: doc.title.clone(),
+        word_count: project::count_words(&subject),
+        internal_matches: integrity::internal_similarity(&id, &subject, &sources, threshold, 5),
+        threshold,
+        signals: integrity::writing_signals(&subject),
+        rubric: integrity::rubric(&subject),
+        web_checks: websearch::trace(&root),
+        method: integrity::method_notes(),
+    })
+}
+
+/// Write the packet as a JSON + HTML pair beside each other.
+#[tauri::command]
+fn integrity_export(
+    path: String,
+    id: String,
+    threshold: f32,
+    out_path: String,
+) -> AppResult<(String, String)> {
+    let packet = integrity_packet(path, id, threshold)?;
+    let json_path = std::path::PathBuf::from(&out_path);
+    let html_path = json_path.with_extension("html");
+    std::fs::write(&json_path, serde_json::to_string_pretty(&packet)?)?;
+    std::fs::write(&html_path, integrity::packet_html(&packet))?;
+    Ok((json_path.display().to_string(), html_path.display().to_string()))
+}
+
 // --- Knowledge to Publication: blocks, provenance, sources, research --------
 
 #[tauri::command]
@@ -635,26 +779,6 @@ fn set_document_icon(path: String, id: String, icon: Option<String>) -> AppResul
     project::set_icon(&project::to_path(&path), &id, icon.as_deref())
 }
 
-#[tauri::command]
-fn import_survey(source: String) -> AppResult<(usize, usize)> {
-    import::survey(&project::to_path(&source))
-}
-
-#[tauri::command]
-fn import_folder(
-    path: String,
-    source: String,
-    parent_id: Option<String>,
-    kind: Option<String>,
-) -> AppResult<import::ImportReport> {
-    import::run(
-        &project::to_path(&path),
-        &project::to_path(&source),
-        parent_id.as_deref(),
-        kind.map(|k| DocKind::parse(&k)).unwrap_or(DocKind::Scene),
-    )
-}
-
 // --- Phase 3: writing style profile ----------------------------------------
 
 #[tauri::command]
@@ -688,6 +812,26 @@ fn style_distance(path: String, id: String) -> AppResult<Option<style::StyleDist
     };
     let body = project::read_body(&root, &id)?;
     Ok(Some(style::distance(&profile, &body)))
+}
+
+#[tauri::command]
+fn import_survey(source: String) -> AppResult<(usize, usize)> {
+    import::survey(&project::to_path(&source))
+}
+
+#[tauri::command]
+fn import_folder(
+    path: String,
+    source: String,
+    parent_id: Option<String>,
+    kind: Option<String>,
+) -> AppResult<import::ImportReport> {
+    import::run(
+        &project::to_path(&path),
+        &project::to_path(&source),
+        parent_id.as_deref(),
+        kind.map(|k| DocKind::parse(&k)).unwrap_or(DocKind::Scene),
+    )
 }
 
 #[tauri::command]
@@ -794,6 +938,17 @@ pub fn run() {
             index_stats,
             assist,
             model_pools,
+            integrity_similarity,
+            integrity_signals,
+            integrity_rubric,
+            wigolo_sidecar_status,
+            wigolo_sidecar_start,
+            wigolo_sidecar_stop,
+            wigolo_status,
+            web_similarity,
+            research_trace,
+            integrity_packet,
+            integrity_export,
             blocks_list,
             block_history,
             block_authorship,
@@ -823,6 +978,14 @@ pub fn run() {
             startup_project,
             startup_route
         ])
-        .run(tauri::generate_context!())
-        .expect("error while running AegisDraft");
+        .build(tauri::generate_context!())
+        .expect("error while running AegisDraft")
+        .run(|_app, event| {
+            // A daemon this app started must not outlive it. Without this the
+            // wigolo sidecar is reparented to init and keeps serving — and
+            // keeps holding the port — after the window is gone.
+            if let tauri::RunEvent::Exit = event {
+                sidecar::shutdown();
+            }
+        });
 }
