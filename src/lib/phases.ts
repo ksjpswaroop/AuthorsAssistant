@@ -714,6 +714,132 @@ export interface ChainBreak {
 }
 
 
+export type SourceKind = 'pdf' | 'docx' | 'markdown' | 'text' | 'html' | 'web' | 'manual'
+
+export interface Source {
+  id: string
+  kind: SourceKind
+  title: string
+  authors: string[]
+  year: number | null
+  doi: string | null
+  isbn: string | null
+  url: string | null
+  origin: string | null
+  textPath: string | null
+  contentHash: string
+  wordCount: number
+  addedAt: number
+  rights: string | null
+  note: string | null
+}
+
+export interface Claim {
+  id: string
+  text: string
+  kind: 'assertion' | 'definition' | 'method' | 'result'
+  sourceId: string
+  /** Verbatim from the source. Verified, or the claim was dropped. */
+  excerpt: string
+  concepts: string[]
+  extractedBy: string
+  at: number
+}
+
+export interface Concept {
+  id: string
+  name: string
+  aliases: string[]
+  description: string | null
+  mentions: number
+}
+
+export interface ClaimLink {
+  fromClaim: string
+  toClaim: string
+  relation: 'supports' | 'contradicts' | 'refines'
+  reason: string
+  foundBy: string
+  at: number
+}
+
+export interface Extraction {
+  concepts: Concept[]
+  claims: Claim[]
+  /** Everything thrown away, with the reason. */
+  dropped: string[]
+}
+
+export interface ContradictionReport {
+  links: ClaimLink[]
+  examined: number
+  claims: number
+  /** What was searched and what was not. */
+  method: string
+}
+
+export interface Gap {
+  kind: string
+  subject: string
+  detail: string
+}
+
+export interface Passage {
+  sourceId: string
+  sourceTitle: string
+  fromWeb: boolean
+  text: string
+  score: number
+}
+
+export interface Finding {
+  question: string
+  passages: Passage[]
+  claims: Claim[]
+  dropped: string[]
+}
+
+export interface Brief {
+  question: string
+  plan: { text: string; rationale: string | null }[]
+  findings: Finding[]
+  contradictions: ClaimLink[]
+  /** Null when nothing could be grounded — the brief says so. */
+  synthesis: string | null
+  bibliography: [string, string][]
+  model: string
+  usedWeb: boolean
+  at: number
+  method: string
+}
+
+export const research = {
+  sources: (path: string) => call<Source[]>('sources_list', { path }),
+  /** Returns the source and whether it was already registered. */
+  register: (path: string, file: string) => call<[Source, boolean]>('source_register', { path, file }),
+  sourceText: (path: string, sourceId: string) => call<string>('source_text', { path, sourceId }),
+  forget: (path: string, sourceId: string) => call<void>('source_forget', { path, sourceId }),
+  /** The retraction query: which paragraphs rest on this source. */
+  dependents: (path: string, sourceId: string) =>
+    call<string[]>('source_dependents', { path, sourceId }),
+
+  claims: (path: string, sourceId: string | null) => call<Claim[]>('claims_list', { path, sourceId }),
+  concepts: (path: string) => call<Concept[]>('concepts_list', { path }),
+  links: (path: string) => call<ClaimLink[]>('claim_links', { path }),
+  extract: (path: string, sourceId: string, model: string, allowCloud = false) =>
+    call<Extraction>('knowledge_extract', { path, sourceId, model, allowCloud }),
+  contradictions: (path: string, model: string, allowCloud = false) =>
+    call<ContradictionReport>('knowledge_contradictions', { path, model, allowCloud }),
+  gaps: (path: string) => call<Gap[]>('knowledge_gaps', { path }),
+  cite: (path: string, blockId: string, claimId: string) =>
+    call<void>('claim_cite', { path, blockId, claimId }),
+
+  /** A full research pass. `useWeb` sends phrases off this machine. */
+  run: (path: string, question: string, model: string, useWeb = false, allowCloud = false) =>
+    call<Brief>('research_run', { path, question, model, useWeb, allowCloud }),
+  save: (path: string, brief: Brief) => call<DocumentRow>('research_save', { path, brief }),
+}
+
 export const lineage = {
   /** Takes a model's proposal into the manuscript and records that it did.
    *  The alternative — the author copying it by hand — cannot be observed. */

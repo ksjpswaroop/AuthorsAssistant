@@ -92,6 +92,8 @@ fn migrate(conn: &Connection) -> AppResult<()> {
     crate::collections::migrate(conn)?;
     crate::rag::migrate(conn)?;
     crate::provenance::migrate(conn)?;
+    crate::sources::migrate(conn)?;
+    crate::knowledge::migrate(conn)?;
 
     conn.execute(
         "INSERT INTO meta (key, value) VALUES ('schema_version', ?1)
@@ -127,6 +129,12 @@ pub const EXPECTED_TABLES: &[&str] = &[
     "chunks",
     "blocks",
     "events",
+    "sources",
+    "concepts",
+    "claims",
+    "claim_concepts",
+    "claim_links",
+    "block_claims",
 ];
 
 pub fn table_names(conn: &Connection) -> AppResult<Vec<String>> {

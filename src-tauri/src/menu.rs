@@ -91,6 +91,7 @@ pub fn build<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<tauri::menu::Menu<
     let project_menu = SubmenuBuilder::new(app, "Project")
         .item(&item("command_bar", "Ask…", Some("CmdOrCtrl+K"), true)?)
         .separator()
+        .item(&item("research", "Research…", Some("CmdOrCtrl+Shift+R"), true)?)
         .item(&item("integrity", "Integrity Report", None, true)?)
         .item(&item("story", "Story Visualization", None, true)?)
         .item(&item("insights", "Insights and Analytics", None, true)?)

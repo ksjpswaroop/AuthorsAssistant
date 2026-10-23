@@ -15,15 +15,18 @@ pub mod continuity;
 pub mod diagrams;
 pub mod import;
 pub mod integrity;
+pub mod knowledge;
 mod menu;
 pub mod model;
 pub mod ollama;
 pub mod project;
 pub mod provenance;
 pub mod rag;
+pub mod research;
 pub mod scrivenings;
 pub mod sidecar;
 pub mod snapshots;
+pub mod sources;
 pub mod store;
 pub mod style;
 pub mod templates;
@@ -800,6 +803,136 @@ fn debt_resolve(path: String, id: String) -> AppResult<()> {
     continuity::resolve_debt(&project::to_path(&path), &id, project::now_ms())
 }
 
+// --- Sources ----------------------------------------------------------------
+
+#[tauri::command]
+fn sources_list(path: String) -> AppResult<Vec<sources::Source>> {
+    let conn = store::open(&project::to_path(&path))?;
+    sources::list(&conn)
+}
+
+/// Register a file as a source. Returns the source and whether it was already
+/// registered — re-adding the same paper is not an error.
+#[tauri::command]
+fn source_register(path: String, file: String) -> AppResult<(sources::Source, bool)> {
+    sources::register_file(
+        &project::to_path(&path),
+        &project::to_path(&file),
+        project::now_ms(),
+    )
+}
+
+#[tauri::command]
+fn source_text(path: String, source_id: String) -> AppResult<String> {
+    let root = project::to_path(&path);
+    let conn = store::open(&root)?;
+    match sources::get(&conn, &source_id)? {
+        Some(s) => sources::read_text(&root, &s),
+        None => err_str("no such source"),
+    }
+}
+
+#[tauri::command]
+fn source_forget(path: String, source_id: String) -> AppResult<()> {
+    let conn = store::open(&project::to_path(&path))?;
+    sources::forget(&conn, &source_id)
+}
+
+/// Which manuscript paragraphs rest on this source — the retraction query.
+#[tauri::command]
+fn source_dependents(path: String, source_id: String) -> AppResult<Vec<String>> {
+    let conn = store::open(&project::to_path(&path))?;
+    knowledge::blocks_depending_on(&conn, &source_id)
+}
+
+// --- Knowledge --------------------------------------------------------------
+
+#[tauri::command]
+fn claims_list(path: String, source_id: Option<String>) -> AppResult<Vec<knowledge::Claim>> {
+    let conn = store::open(&project::to_path(&path))?;
+    knowledge::claims(&conn, source_id.as_deref())
+}
+
+#[tauri::command]
+fn concepts_list(path: String) -> AppResult<Vec<knowledge::Concept>> {
+    let conn = store::open(&project::to_path(&path))?;
+    knowledge::concepts(&conn)
+}
+
+#[tauri::command]
+fn claim_links(path: String) -> AppResult<Vec<knowledge::ClaimLink>> {
+    let conn = store::open(&project::to_path(&path))?;
+    knowledge::links(&conn)
+}
+
+#[tauri::command]
+fn knowledge_extract(
+    path: String,
+    source_id: String,
+    model: String,
+    allow_cloud: Option<bool>,
+    max_windows: Option<usize>,
+) -> AppResult<knowledge::Extraction> {
+    knowledge::extract_from_source(
+        &project::to_path(&path),
+        &source_id,
+        &model,
+        allow_cloud.unwrap_or(false),
+        max_windows.unwrap_or(12),
+    )
+}
+
+#[tauri::command]
+fn knowledge_contradictions(
+    path: String,
+    model: String,
+    allow_cloud: Option<bool>,
+) -> AppResult<knowledge::ContradictionReport> {
+    knowledge::find_contradictions(&project::to_path(&path), &model, allow_cloud.unwrap_or(false))
+}
+
+#[tauri::command]
+fn knowledge_gaps(path: String) -> AppResult<Vec<knowledge::Gap>> {
+    let conn = store::open(&project::to_path(&path))?;
+    knowledge::gaps(&conn)
+}
+
+/// Record that a manuscript paragraph rests on a claim.
+#[tauri::command]
+fn claim_cite(path: String, block_id: String, claim_id: String) -> AppResult<()> {
+    let conn = store::open(&project::to_path(&path))?;
+    knowledge::cite(&conn, &block_id, &claim_id, project::now_ms())
+}
+
+// --- Deep research ----------------------------------------------------------
+
+/// Run a full research pass: decompose, gather, extract, check, synthesise.
+///
+/// `use_web` is not a convenience flag. It sends phrases off this machine
+/// through the author's own wigolo, so it is a decision the author makes per
+/// run, and the brief records which of its sources came from the web.
+#[tauri::command]
+fn research_run(
+    path: String,
+    question: String,
+    model: String,
+    use_web: Option<bool>,
+    allow_cloud: Option<bool>,
+) -> AppResult<research::Brief> {
+    research::run(
+        &project::to_path(&path),
+        &question,
+        &model,
+        use_web.unwrap_or(false),
+        allow_cloud.unwrap_or(false),
+    )
+}
+
+#[tauri::command]
+fn research_save(path: String, brief: research::Brief) -> AppResult<DocumentRow> {
+    research::save_to_binder(&project::to_path(&path), &brief)
+}
+
 // --- Phase 9: generated diagrams --------------------------------------------
 
 /// Ask a model for a mind map, flowchart or reference sheet about `query`.
@@ -1041,14 +1174,6 @@ fn reveal_main(app: &tauri::AppHandle) {
     }
 }
 
-/// Development convenience: `AEGISDRAFT_OPEN=/path/to/Book.aegis npm run app`
-/// opens that project straight away instead of stopping at the launcher.
-/// Useful for testing a screen without clicking through the launch flow.
-#[tauri::command]
-fn startup_project() -> Option<String> {
-    std::env::var("AEGISDRAFT_OPEN").ok().filter(|p| !p.is_empty())
-}
-
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -1145,6 +1270,20 @@ pub fn run() {
             debts_list,
             debt_log,
             debt_resolve,
+            sources_list,
+            source_register,
+            source_text,
+            source_forget,
+            source_dependents,
+            claims_list,
+            concepts_list,
+            claim_links,
+            knowledge_extract,
+            knowledge_contradictions,
+            knowledge_gaps,
+            claim_cite,
+            research_run,
+            research_save,
             diagram_generate,
             diagram_save,
             canvas_load,
@@ -1171,8 +1310,7 @@ pub fn run() {
             import_survey,
             import_folder,
             recent_projects,
-            frontend_ready,
-            startup_project
+            frontend_ready
         ])
         .build(tauri::generate_context!())
         .expect("error while running AegisDraft")
