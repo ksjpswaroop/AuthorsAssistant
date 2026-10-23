@@ -70,7 +70,7 @@ pub fn build<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<tauri::menu::Menu<
         .item(&PredefinedMenuItem::paste(app, None)?)
         .item(&PredefinedMenuItem::select_all(app, None)?)
         .separator()
-        .item(&item("find", "Find in Project…", Some("CmdOrCtrl+Shift+F"), false)?)
+        .item(&item("find", "Search the Book…", Some("CmdOrCtrl+Shift+F"), true)?)
         .build()?;
 
     let view_menu = SubmenuBuilder::new(app, "View")

@@ -13,19 +13,21 @@ pub mod import;
 pub mod integrity;
 mod menu;
 pub mod model;
+pub mod ollama;
 pub mod project;
 pub mod provenance;
+pub mod rag;
 pub mod scrivenings;
 pub mod snapshots;
 pub mod store;
+pub mod style;
 pub mod templates;
 pub mod websearch;
 
 use error::{AppError, AppResult};
 use model::{
     Collection, CollectionKind, CompileFilters, CompilePreset, DocKind, DocumentRow, ExportFormat,
-    ProjectSummary,
-    RecentProject, SaveReceipt, Snapshot,
+    OllamaStatus, ProjectSummary, RecentProject, RetrievedChunk, SaveReceipt, Snapshot,
 };
 use tauri::Manager;
 
@@ -379,6 +381,96 @@ fn err_str<T>(m: &str) -> AppResult<T> {
     Err(error::AppError(m.to_string()))
 }
 
+// --- Phase 3: local AI and retrieval ---------------------------------------
+
+#[tauri::command]
+fn ollama_status() -> OllamaStatus {
+    ollama::status()
+}
+
+#[tauri::command]
+fn index_project(path: String, model: String) -> AppResult<(usize, usize)> {
+    let root = project::to_path(&path);
+    let docs = project::documents(&root)?;
+    let mut conn = store::open(&root)?;
+    let mut chunk_total = 0usize;
+    let mut doc_total = 0usize;
+    for doc in docs.iter().filter(|d| d.path.is_some() && d.word_count > 0) {
+        let body = project::read_body(&root, &doc.id)?;
+        let texts = rag::chunk(&body, 220, 40)?;
+        if texts.is_empty() {
+            continue;
+        }
+        let vectors = ollama::embed(&model, &texts)?;
+        let pairs: Vec<(String, Vec<f32>)> = texts.into_iter().zip(vectors).collect();
+        chunk_total += rag::index_document(&mut conn, &doc.id, &pairs, &model, project::now_ms())?;
+        doc_total += 1;
+    }
+    Ok((doc_total, chunk_total))
+}
+
+#[tauri::command]
+fn search_index(path: String, model: String, query: String, k: usize, exclude: Option<String>) -> AppResult<Vec<RetrievedChunk>> {
+    let root = project::to_path(&path);
+    let q = ollama::embed(&model, &[query])?;
+    let conn = store::open(&root)?;
+    rag::search(&conn, &q[0], k, exclude.as_deref())
+}
+
+#[tauri::command]
+fn index_stats(path: String) -> AppResult<(i64, i64)> {
+    rag::index_stats(&store::open(&project::to_path(&path))?)
+}
+
+#[tauri::command]
+fn assist(
+    path: String,
+    model: String,
+    id: String,
+    mode: String,
+    instruction: Option<String>,
+    allow_cloud: Option<bool>,
+) -> AppResult<String> {
+    let root = project::to_path(&path);
+    let body = project::read_body(&root, &id)?;
+    if body.trim().is_empty() && mode != "continue" {
+        return err_str("there is nothing to work with in this document yet");
+    }
+    let (system, prompt) = match mode.as_str() {
+        "rewrite" => (
+            "You are an editor. Rewrite the passage in the author's own voice. Return only the rewritten prose.".to_string(),
+            format!("{}\n\nPassage:\n{body}", instruction.unwrap_or_else(|| "Tighten this.".into())),
+        ),
+        "critique" => (
+            "You are a demanding reader. Name concrete problems. Do not rewrite anything.".to_string(),
+            format!("Critique this passage:\n{body}"),
+        ),
+        _ => (
+            "You are a novelist continuing an existing scene. Match the voice exactly. Return only prose.".to_string(),
+            format!("Continue this scene:\n{body}"),
+        ),
+    };
+    // "In the author's own voice" is a label unless the model is told what that
+    // voice measures. When a style profile exists it goes into the system
+    // prompt for the two modes that write prose; critique is left alone, since
+    // a critic should react to the page, not to a target.
+    let system = match (mode.as_str(), style::load(&root)) {
+        ("critique", _) | (_, None) => system,
+        (_, Some(profile)) => format!("{system}\n\n{}", style::prompt_fragment(&profile)),
+    };
+    ollama::generate_guarded(&model, &prompt, Some(&system), 900, 0.7, allow_cloud.unwrap_or(false))
+}
+
+/// Splits the installed models into what each can actually do, so the UI never
+/// has to guess and never offers a model for the wrong job.
+#[tauri::command]
+fn model_pools() -> AppResult<(Vec<model::ModelInfo>, Vec<model::ModelInfo>, Vec<model::ModelInfo>)> {
+    let s = ollama::status();
+    let cloud: Vec<model::ModelInfo> =
+        s.models.iter().filter(|m| ollama::is_cloud_model(&m.name)).cloned().collect();
+    Ok((ollama::generation_models(&s), ollama::embedding_models(&s), cloud))
+}
+
 // --- Knowledge to Publication: blocks, provenance, sources, research --------
 
 #[tauri::command]
@@ -563,6 +655,41 @@ fn import_folder(
     )
 }
 
+// --- Phase 3: writing style profile ----------------------------------------
+
+#[tauri::command]
+fn style_load(path: String) -> Option<style::StyleProfile> {
+    style::load(&project::to_path(&path))
+}
+
+#[tauri::command]
+fn style_build(
+    path: String,
+    model: Option<String>,
+    allow_cloud: Option<bool>,
+) -> AppResult<style::StyleProfile> {
+    let root = project::to_path(&path);
+    let now = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_millis() as i64)
+        .unwrap_or(0);
+    let profile = style::build(&root, model.as_deref(), allow_cloud.unwrap_or(false), now)?;
+    style::save(&root, &profile)?;
+    Ok(profile)
+}
+
+/// How far the open document sits from the profile. `None` when no profile has
+/// been built — the inspector says so rather than showing a zero.
+#[tauri::command]
+fn style_distance(path: String, id: String) -> AppResult<Option<style::StyleDistance>> {
+    let root = project::to_path(&path);
+    let Some(profile) = style::load(&root) else {
+        return Ok(None);
+    };
+    let body = project::read_body(&root, &id)?;
+    Ok(Some(style::distance(&profile, &body)))
+}
+
 #[tauri::command]
 fn recent_projects(app: tauri::AppHandle) -> AppResult<Vec<RecentProject>> {
     Ok(project::read_recents(&config_dir(&app)?))
@@ -661,6 +788,12 @@ pub fn run() {
             scrivenings_save,
             compile_preview,
             compile_export,
+            ollama_status,
+            index_project,
+            search_index,
+            index_stats,
+            assist,
+            model_pools,
             blocks_list,
             block_history,
             block_authorship,
@@ -680,6 +813,9 @@ pub fn run() {
             goals_session_progress,
             set_document_position,
             set_document_icon,
+            style_load,
+            style_build,
+            style_distance,
             import_survey,
             import_folder,
             recent_projects,

@@ -333,6 +333,46 @@ impl CompilePreset {
 }
 
 // ---------------------------------------------------------------------------
+// Phase 3: retrieval
+// ---------------------------------------------------------------------------
+
+#[derive(Debug, Clone)]
+pub struct Chunk {
+    pub id: String,
+    pub document_id: String,
+    pub ordinal: i64,
+    pub text: String,
+    pub embedding: Vec<f32>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RetrievedChunk {
+    pub id: String,
+    pub document_id: String,
+    pub ordinal: i64,
+    pub text: String,
+    pub score: f32,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ModelInfo {
+    pub name: String,
+    pub size: u64,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct OllamaStatus {
+    pub reachable: bool,
+    pub host: String,
+    pub models: Vec<ModelInfo>,
+    /// Why it is not reachable, in words an author can act on.
+    pub message: Option<String>,
+}
+
+// ---------------------------------------------------------------------------
 // Phase 4: integrity
 // ---------------------------------------------------------------------------
 

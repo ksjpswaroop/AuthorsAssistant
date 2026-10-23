@@ -2,6 +2,9 @@ import type { ReactNode } from 'react'
 import { AppMark, Icon } from './Icon'
 import { Dot } from './ui'
 import { chrome, color, font } from '../lib/tokens'
+import { useAsync } from '../lib/useAsync'
+import { ai, localModels } from '../lib/phases'
+import { isTauri } from '../lib/api'
 
 /** macOS draws its traffic lights over our title bar; leave room for them. */
 const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.userAgent)
@@ -96,15 +99,45 @@ export function StatusItem({ children, tone }: { children: ReactNode; tone?: str
 }
 
 /**
- * Phase 1 has no model runtime. Saying so is better than a green dot that means
- * nothing — the mock's "Ollama · hermes3:8b" arrives in Phase 3.
+ * Live Ollama state. This was hardcoded to "not connected" while Phase 3 was
+ * unbuilt; leaving it that way once the client existed made the status bar lie
+ * about a running daemon, which is exactly the failure the honesty rules exist
+ * to prevent.
  */
 export function OllamaStatus() {
+  const status = useAsync(() => ai.status(), [], isTauri)
+  const models = status.data ? localModels(status.data) : []
+
+  if (!isTauri) {
+    return (
+      <StatusItem>
+        <Dot tone={color.disabled} />
+        <span>Browser preview — no local models</span>
+      </StatusItem>
+    )
+  }
+  if (status.loading) {
+    return (
+      <StatusItem>
+        <Dot tone={color.disabled} />
+        <span>Checking for Ollama…</span>
+      </StatusItem>
+    )
+  }
+  if (!status.data?.reachable) {
+    return (
+      <StatusItem>
+        <Dot tone={color.disabled} />
+        <span>Ollama not running</span>
+      </StatusItem>
+    )
+  }
   return (
     <StatusItem>
-      <Dot tone={color.disabled} />
-      <span>Ollama not connected</span>
-      <span style={{ color: color.ink5 }}>· Phase 3</span>
+      <Dot tone={models.length ? color.green : color.yellow} />
+      <span>
+        Ollama · {models.length ? `${models.length} local model${models.length === 1 ? '' : 's'}` : 'no local models'}
+      </span>
     </StatusItem>
   )
 }
