@@ -202,6 +202,137 @@ pub struct SaveReceipt {
     pub updated_at: i64,
 }
 // ---------------------------------------------------------------------------
+// Phase 7: compile and export
+// ---------------------------------------------------------------------------
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum ExportFormat {
+    Markdown,
+    Html,
+    Pdf,
+    Epub,
+    Docx,
+    Fountain,
+}
+
+impl ExportFormat {
+    pub fn parse(s: &str) -> Self {
+        match s {
+            "html" => ExportFormat::Html,
+            "pdf" => ExportFormat::Pdf,
+            "epub" => ExportFormat::Epub,
+            "docx" => ExportFormat::Docx,
+            "fountain" => ExportFormat::Fountain,
+            _ => ExportFormat::Markdown,
+        }
+    }
+    pub fn extension(self) -> &'static str {
+        match self {
+            ExportFormat::Markdown => "md",
+            ExportFormat::Html | ExportFormat::Pdf => "html",
+            ExportFormat::Epub => "epub",
+            ExportFormat::Docx => "docx",
+            ExportFormat::Fountain => "fountain",
+        }
+    }
+}
+
+/// What to include. Every field is a narrowing rule, never a widening one.
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CompileFilters {
+    /// Binder folder or collection to compile. None means the whole project.
+    pub root: Option<String>,
+    pub collection: Option<String>,
+    /// Only these statuses, when set.
+    pub statuses: Option<Vec<String>>,
+    pub exclude_statuses: Option<Vec<String>>,
+    pub exclude_labels: Option<Vec<String>>,
+    pub exclude_section_types: Option<Vec<String>>,
+    pub include_research: bool,
+    pub include_sheets: bool,
+    pub skip_empty: bool,
+}
+
+/// How it is laid out.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CompilePreset {
+    pub name: String,
+    pub title_page: Option<String>,
+    pub author: Option<String>,
+    /// Printed between scenes inside a chapter.
+    pub scene_separator: String,
+    /// Print each scene's title. Off for manuscripts, on for working drafts.
+    pub scene_titles: bool,
+    pub include_synopsis: bool,
+    pub double_spaced: bool,
+}
+
+impl Default for CompilePreset {
+    fn default() -> Self {
+        Self {
+            name: "Standard Manuscript".into(),
+            title_page: None,
+            author: None,
+            scene_separator: "#".into(),
+            scene_titles: false,
+            include_synopsis: false,
+            double_spaced: true,
+        }
+    }
+}
+
+impl CompilePreset {
+    /// The five presets Phase 7 names.
+    pub fn named(name: &str) -> Self {
+        match name {
+            "Paperback" => Self {
+                name: name.into(),
+                scene_separator: "* * *".into(),
+                double_spaced: false,
+                ..Default::default()
+            },
+            "Ebook" => Self {
+                name: name.into(),
+                scene_separator: "* * *".into(),
+                double_spaced: false,
+                ..Default::default()
+            },
+            "Academic" => Self {
+                name: name.into(),
+                scene_titles: true,
+                scene_separator: String::new(),
+                double_spaced: true,
+                ..Default::default()
+            },
+            "Working Draft" => Self {
+                name: name.into(),
+                scene_titles: true,
+                include_synopsis: true,
+                scene_separator: "#".into(),
+                double_spaced: true,
+                ..Default::default()
+            },
+            _ => Self::default(),
+        }
+    }
+
+    pub fn stylesheet(&self) -> String {
+        let spacing = if self.double_spaced { "2.0" } else { "1.5" };
+        format!(
+            "body {{ font-family: Georgia, serif; font-size: 12pt; line-height: {spacing};              max-width: 6.5in; margin: 1in auto; }}
+             h1 {{ page-break-before: always; }}
+             h2 {{ page-break-before: always; }}
+             p {{ text-indent: 1.5em; margin: 0; }}
+             p:first-of-type {{ text-indent: 0; }}
+             @page {{ size: letter; margin: 1in; }}"
+        )
+    }
+}
+
+// ---------------------------------------------------------------------------
 // Phase 4: integrity
 // ---------------------------------------------------------------------------
 
