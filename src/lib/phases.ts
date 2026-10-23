@@ -882,3 +882,91 @@ export const project6 = {
   setIcon: (path: string, id: string, icon: string | null) =>
     call<DocumentRow>('set_document_icon', { path, id, icon }),
 }
+
+/* --- Phase 5: agents ------------------------------------------------------- */
+
+export interface AgentStatus {
+  reachable: boolean
+  host: string
+  tools: string[]
+  message: string | null
+}
+
+export interface ToolResult {
+  tool: string
+  ok: boolean
+  value: unknown
+}
+
+/** One co-author role: a system prompt plus the tools it may reach. */
+export interface AgentProfile {
+  id: string
+  name: string
+  blurb: string
+  system: string
+  /** The real constraint — a profile cannot call a tool that is not listed. */
+  tools: string[]
+}
+
+/** One tool call the loop made, with what came back. */
+export interface Hop {
+  tool: string
+  args: Record<string, unknown>
+  ok: boolean
+  result: unknown
+}
+
+/** A run stopped at a guarded tool. Nothing has run; a person has to answer. */
+export interface Pending {
+  profile: string
+  model: string
+  prompt: string
+  startedAt: number
+  messages: unknown[]
+  hops: Hop[]
+  callId: string
+  tool: string
+  args: Record<string, unknown>
+  why: string
+}
+
+export type AgentOutcome =
+  | { kind: 'finished'; answer: string }
+  | { kind: 'needsApproval'; pending: Pending }
+  | { kind: 'exhausted'; hops: number }
+
+export interface AgentRun {
+  profile: string
+  model: string
+  prompt: string
+  startedAt: number
+  finishedAt: number
+  hops: Hop[]
+  outcome: AgentOutcome
+}
+
+
+export const agentLoop = {
+  profiles: () => call<AgentProfile[]>('agent_profiles'),
+  run: (path: string, model: string, profile: string, prompt: string, allowCloud = false) =>
+    call<AgentRun>('agent_run', { path, model, profile, prompt, allowCloud }),
+  /**
+   * Continue a paused run. `approved` is the author's actual answer — declining
+   * is not a cancellation, it goes back to the model as the tool's result.
+   */
+  resume: (path: string, pending: Pending, approved: boolean) =>
+    call<AgentRun>('agent_resume', { path, pending, approved }),
+  traces: (path: string, limit = 20) => call<AgentRun[]>('agent_traces', { path, limit }),
+}
+
+export const agents = {
+  status: () => call<AgentStatus>('agent_status'),
+  catalogue: () => call<[string, string][]>('agent_catalogue'),
+  dispatch: (path: string, tool: string, args: Record<string, unknown>) =>
+    call<ToolResult>('agent_dispatch', { path, tool, args }),
+}
+
+/** Tools that change the author's work or leave the machine. */
+export const GUARDED_TOOLS = ['delete_document', 'compile_manuscript', 'search_web', 'restore_snapshot']
+
+export const isGuarded = (tool: string) => GUARDED_TOOLS.includes(tool)

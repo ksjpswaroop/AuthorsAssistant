@@ -5,6 +5,8 @@
 //! which keeps one place responsible for the manuscript.
 
 mod error;
+pub mod agent;
+pub mod agent_loop;
 pub mod analysis;
 pub mod bookmarks;
 pub mod blocks;
@@ -34,10 +36,10 @@ pub mod websearch;
 
 use error::{AppError, AppResult};
 use model::{
-    Beat, ClusterProposal, Collection, CollectionKind, CompileFilters, CompilePreset, DocKind,
-    DocumentRow, ExportFormat, OllamaStatus, PacingPoint, ProjectSummary, RecentProject,
+    AgentStatus, Beat, ClusterProposal, Collection, CollectionKind, CompileFilters, CompilePreset,
+    DocKind, DocumentRow, ExportFormat, OllamaStatus, PacingPoint, ProjectSummary, RecentProject,
     RetrievedChunk, RubricScore, SaveReceipt, SimilarityMatch, Snapshot, StoryGraph, TimelineEntry,
-    WritingSignals,
+    ToolResult, WritingSignals,
 };
 use std::collections::HashMap;
 use tauri::Manager;
@@ -1151,6 +1153,70 @@ fn import_folder(
 }
 
 #[tauri::command]
+fn agent_status() -> AgentStatus {
+    agent::status()
+}
+
+#[tauri::command]
+fn agent_catalogue() -> Vec<(String, String)> {
+    agent::catalogue().into_iter().map(|(a, b)| (a.to_string(), b.to_string())).collect()
+}
+
+/// The four co-author roles, each with the tools it may reach.
+#[tauri::command]
+fn agent_profiles() -> Vec<agent_loop::Profile> {
+    agent_loop::profiles()
+}
+
+/// Run an agent. Every run is written into the project's `traces/` folder
+/// before it returns, including one that paused for confirmation — a run that
+/// asked to delete something is exactly the kind you want a record of.
+#[tauri::command]
+fn agent_run(
+    path: String,
+    model: String,
+    profile: String,
+    prompt: String,
+    allow_cloud: Option<bool>,
+) -> AppResult<agent_loop::Run> {
+    let root = project::to_path(&path);
+    let run = agent_loop::run(
+        &root,
+        ollama::DEFAULT_HOST,
+        &model,
+        &profile,
+        &prompt,
+        allow_cloud.unwrap_or(false),
+    )?;
+    let _ = agent_loop::record(&root, &run);
+    Ok(run)
+}
+
+/// Continue a paused run with the author's answer.
+#[tauri::command]
+fn agent_resume(
+    path: String,
+    pending: agent_loop::Pending,
+    approved: bool,
+) -> AppResult<agent_loop::Run> {
+    let root = project::to_path(&path);
+    let run = agent_loop::resume(&root, ollama::DEFAULT_HOST, &pending, approved)?;
+    let _ = agent_loop::record(&root, &run);
+    Ok(run)
+}
+
+/// Past runs, newest first.
+#[tauri::command]
+fn agent_traces(path: String, limit: Option<usize>) -> Vec<agent_loop::Run> {
+    agent_loop::traces(&project::to_path(&path), limit.unwrap_or(20))
+}
+
+#[tauri::command]
+fn agent_dispatch(path: String, tool: String, args: serde_json::Value) -> AppResult<ToolResult> {
+    agent::dispatch(&project::to_path(&path), &tool, &args)
+}
+
+#[tauri::command]
 fn recent_projects(app: tauri::AppHandle) -> AppResult<Vec<RecentProject>> {
     Ok(project::read_recents(&config_dir(&app)?))
 }
@@ -1162,6 +1228,21 @@ fn recent_projects(app: tauri::AppHandle) -> AppResult<Vec<RecentProject>> {
 #[tauri::command]
 fn frontend_ready(app: tauri::AppHandle) {
     reveal_main(&app);
+}
+
+/// Development convenience: `AEGISDRAFT_OPEN=/path/to/Book.aegis npm run app`
+/// opens that project straight away instead of stopping at the launcher.
+/// Useful for testing a screen without clicking through the launch flow.
+#[tauri::command]
+fn startup_project() -> Option<String> {
+    std::env::var("AEGISDRAFT_OPEN").ok().filter(|p| !p.is_empty())
+}
+
+/// Development convenience: `AEGISDRAFT_ROUTE=story` opens straight onto a
+/// screen. Used to capture and review each one without clicking through.
+#[tauri::command]
+fn startup_route() -> Option<String> {
+    std::env::var("AEGISDRAFT_ROUTE").ok().filter(|r| !r.is_empty())
 }
 
 fn reveal_main(app: &tauri::AppHandle) {
@@ -1309,8 +1390,17 @@ pub fn run() {
             style_distance,
             import_survey,
             import_folder,
+            agent_status,
+            agent_catalogue,
+            agent_profiles,
+            agent_run,
+            agent_resume,
+            agent_traces,
+            agent_dispatch,
             recent_projects,
-            frontend_ready
+            frontend_ready,
+            startup_project,
+            startup_route,
         ])
         .build(tauri::generate_context!())
         .expect("error while running AegisDraft")
