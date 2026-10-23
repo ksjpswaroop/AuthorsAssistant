@@ -409,4 +409,84 @@ pub struct RubricScore {
     pub note: String,
 }
 
+// ---------------------------------------------------------------------------
+// Phases 8 and 9: story analysis
+// ---------------------------------------------------------------------------
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Beat {
+    pub document_id: String,
+    pub title: String,
+    /// Where this scene starts, as a fraction of the manuscript by word count.
+    pub position: f32,
+    pub label: String,
+    pub confidence: f32,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TimelineEntry {
+    pub document_id: String,
+    pub title: String,
+    pub narrative_order: i64,
+    pub story_day: Option<i64>,
+    pub out_of_order: bool,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GraphNode {
+    pub id: String,
+    pub label: String,
+    pub weight: i64,
+    pub kind: String,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GraphEdge {
+    pub from: String,
+    pub to: String,
+    pub weight: i64,
+    pub relation: String,
+    /// Scenes since these two last shared one, in binder order. `None` when
+    /// they share the most recent scene either appears in.
+    ///
+    /// A relationship that has not been on the page for forty scenes is either
+    /// forgotten or deliberately dormant, and the author is the only one who
+    /// knows which — so this is a number, never a warning.
+    #[serde(default)]
+    pub scenes_since: Option<i64>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct StoryGraph {
+    pub nodes: Vec<GraphNode>,
+    pub edges: Vec<GraphEdge>,
+    /// The labels this graph could be filtered by, from the scenes themselves.
+    #[serde(default)]
+    pub labels: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PacingPoint {
+    pub index: i64,
+    pub document_id: String,
+    pub title: String,
+    pub word_count: i64,
+    pub tempo: f32,
+    pub variance: f32,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ClusterProposal {
+    pub name: String,
+    pub document_ids: Vec<String>,
+    pub titles: Vec<String>,
+    pub score: f32,
+}
 

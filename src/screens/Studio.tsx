@@ -377,6 +377,8 @@ export function Studio() {
             />
             <IconButton icon="search" title="Search the whole book by meaning" onClick={() => go('search')} />
             <IconButton icon="database" title="Research — sources, claims and evidence" onClick={() => go('research')} />
+            <IconButton icon="chart" title="Story visualization" onClick={() => go('story')} />
+            <IconButton icon="pulse" title="Insights and analytics" onClick={() => go('insights')} />
             <IconButton icon="shield" title="Integrity" onClick={() => go('integrity')} />
             <IconButton icon="settings" title="Settings" onClick={() => go('settings')} />
             <IconButton

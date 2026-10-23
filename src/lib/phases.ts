@@ -359,6 +359,242 @@ export const integrity = {
     call<[string, string]>('integrity_export', { path, id, threshold, outPath }),
 }
 
+/* --- Phases 8 and 9: analysis ---------------------------------------------- */
+
+export interface Beat {
+  documentId: string
+  title: string
+  position: number
+  label: string
+  confidence: number
+}
+
+export interface TimelineEntry {
+  documentId: string
+  title: string
+  narrativeOrder: number
+  storyDay: number | null
+  outOfOrder: boolean
+}
+
+export interface GraphNode {
+  id: string
+  label: string
+  weight: number
+  kind: string
+}
+
+export interface GraphEdge {
+  from: string
+  to: string
+  weight: number
+  relation: string
+  /** Scenes since these two last shared one. Null means they still do. A
+   *  number, never a warning: only the author knows if a gap is deliberate. */
+  scenesSince: number | null
+}
+
+export interface StoryGraph {
+  nodes: GraphNode[]
+  edges: GraphEdge[]
+  /** The labels this graph can be filtered by, taken from the scenes. */
+  labels: string[]
+}
+
+export interface PacingPoint {
+  index: number
+  documentId: string
+  title: string
+  wordCount: number
+  tempo: number
+  variance: number
+}
+
+export interface ClusterProposal {
+  name: string
+  documentIds: string[]
+  titles: string[]
+  score: number
+}
+
+export const story = {
+  beats: (path: string, method = 'three_act') => call<Beat[]>('story_beats', { path, method }),
+  timeline: (path: string, chronological: boolean) =>
+    call<TimelineEntry[]>('story_timeline', { path, chronological }),
+  /** `label` narrows the graph to scenes carrying it. Null is the whole book. */
+  graph: (path: string, label: string | null = null) =>
+    call<StoryGraph>('story_graph', { path, label }),
+  pacing: (path: string) => call<PacingPoint[]>('story_pacing', { path }),
+  clusters: (path: string, threshold = 0.6) => call<ClusterProposal[]>('story_clusters', { path, threshold }),
+}
+
+/** A note the author put on the board. Never a document. */
+export interface CanvasNote {
+  id: string
+  x: number
+  y: number
+  text: string
+  tone: string | null
+}
+
+export interface CanvasArrow {
+  id: string
+  from: string
+  to: string
+  label: string | null
+}
+
+export interface CanvasCard {
+  id: string
+  x: number
+  y: number
+  group: string | null
+}
+
+export interface Canvas {
+  cards: CanvasCard[]
+  /** Notes and arrows are not part of the reading order and never commit. */
+  notes: CanvasNote[]
+  arrows: CanvasArrow[]
+  updatedAt: number
+}
+
+export interface MoveStep {
+  id: string
+  title: string
+  from: number
+  to: number
+}
+
+/** What committing the canvas would do to the binder. */
+export interface CommitPlan {
+  parentId: string | null
+  parentTitle: string
+  /** Only the documents that would actually move. */
+  moves: MoveStep[]
+  /** Placed cards that live in another folder — named, never dragged in. */
+  orphans: string[]
+  /** Documents never placed. They keep their order and follow. */
+  unplaced: string[]
+}
+
+export type DiagramKind = 'mind_map' | 'flowchart' | 'chrono_flowchart' | 'infographic'
+
+export interface DiagramNode {
+  id: string
+  label: string
+  group: string | null
+  /** The binder document this node is about, resolved against the real binder. */
+  documentId: string | null
+}
+
+export interface DiagramEdge {
+  from: string
+  to: string
+  label: string | null
+}
+
+export interface Diagram {
+  kind: DiagramKind
+  title: string
+  nodes: DiagramNode[]
+  edges: DiagramEdge[]
+  model: string
+  generatedAt: number
+  /** What validation threw away, each with the reason. Never a silent loss. */
+  dropped: string[]
+}
+
+export const diagrams = {
+  /** Asks a model for a graph. Fails loudly when the reply is not one. */
+  generate: (path: string, model: string, kind: DiagramKind, query: string, allowCloud = false) =>
+    call<Diagram>('diagram_generate', { path, model, kind, query, allowCloud }),
+  /** Saves it into the binder as Markdown with a Mermaid block. */
+  save: (path: string, diagram: Diagram) => call<DocumentRow>('diagram_save', { path, diagram }),
+}
+
+export interface Entity {
+  name: string
+  kind: 'character' | 'location' | 'date' | 'unknown'
+  documentId: string | null
+  mentions: number
+}
+
+export interface CanonCandidate {
+  fact: string
+  source: string
+  passageExcerpt: string
+  overlap: number
+}
+
+export interface CanonCheck {
+  candidates: CanonCandidate[]
+  canonEntries: number
+  /** What was examined and what was not. Retrieval, never a verdict. */
+  method: string
+}
+
+export interface Thread {
+  id: string
+  plantedIn: [string, string][]
+  paidOffIn: [string, string][]
+}
+
+export interface LedgerReport {
+  /** Planted, never paid off — a promise the book has not kept. */
+  unpaid: Thread[]
+  /** Paid off with nothing planted. */
+  unplanted: Thread[]
+  complete: Thread[]
+}
+
+export interface Debt {
+  id: string
+  gap: string
+  foundIn: string
+  foundBy: string
+  at: number
+  resolvedAt: number | null
+}
+
+export interface ContinuityReport {
+  documentId: string
+  entities: Entity[]
+  canon: CanonCheck
+  ledger: LedgerReport
+  openDebts: Debt[]
+}
+
+export const continuity = {
+  /** Everything the check gathers about one document. No model involved. */
+  report: (path: string, id: string) => call<ContinuityReport>('continuity_report', { path, id }),
+  ledger: (path: string) => call<LedgerReport>('foreshadowing_ledger', { path }),
+  debts: (path: string) => call<Debt[]>('debts_list', { path }),
+  /** Record a hole in the world rather than inventing something to fill it. */
+  logDebt: (path: string, gap: string, foundIn: string, foundBy?: string) =>
+    call<Debt>('debt_log', { path, gap, foundIn, foundBy: foundBy ?? null }),
+  resolveDebt: (path: string, id: string) => call<void>('debt_resolve', { path, id }),
+}
+
+export const canvas = {
+  load: (path: string) => call<Canvas>('canvas_load', { path }),
+  place: (path: string, id: string, x: number, y: number) =>
+    call<Canvas>('canvas_place', { path, id, x, y }),
+  clear: (path: string) => call<void>('canvas_clear', { path }),
+  /** Dry run. Changes nothing — the author sees the reorder before it happens. */
+  plan: (path: string, parentId: string | null) =>
+    call<CommitPlan>('canvas_plan', { path, parentId }),
+  commit: (path: string, parentId: string | null) =>
+    call<CommitPlan>('canvas_commit', { path, parentId }),
+
+  note: (path: string, id: string | null, x: number, y: number, text: string, tone: string | null = null) =>
+    call<CanvasNote>('canvas_note', { path, id, x, y, text, tone }),
+  removeNote: (path: string, id: string) => call<void>('canvas_note_remove', { path, id }),
+  arrow: (path: string, from: string, to: string, label: string | null = null) =>
+    call<CanvasArrow>('canvas_arrow', { path, from, to, label }),
+  removeArrow: (path: string, id: string) => call<void>('canvas_arrow_remove', { path, id }),
+}
+
 /** Writing targets, stored with the project rather than in app preferences. */
 export interface Goals {
   projectTarget: number | null

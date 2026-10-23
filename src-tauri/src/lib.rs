@@ -5,10 +5,14 @@
 //! which keeps one place responsible for the manuscript.
 
 mod error;
+pub mod analysis;
 pub mod bookmarks;
 pub mod blocks;
+pub mod canvas;
 pub mod collections;
 pub mod compile;
+pub mod continuity;
+pub mod diagrams;
 pub mod import;
 pub mod integrity;
 mod menu;
@@ -27,10 +31,12 @@ pub mod websearch;
 
 use error::{AppError, AppResult};
 use model::{
-    Collection, CollectionKind, CompileFilters, CompilePreset, DocKind, DocumentRow, ExportFormat,
-    OllamaStatus, ProjectSummary, RecentProject, RetrievedChunk, RubricScore, SaveReceipt,
-    SimilarityMatch, Snapshot, WritingSignals,
+    Beat, ClusterProposal, Collection, CollectionKind, CompileFilters, CompilePreset, DocKind,
+    DocumentRow, ExportFormat, OllamaStatus, PacingPoint, ProjectSummary, RecentProject,
+    RetrievedChunk, RubricScore, SaveReceipt, SimilarityMatch, Snapshot, StoryGraph, TimelineEntry,
+    WritingSignals,
 };
+use std::collections::HashMap;
 use tauri::Manager;
 
 fn config_dir(app: &tauri::AppHandle) -> AppResult<std::path::PathBuf> {
@@ -719,6 +725,183 @@ fn create_sheet_from_template(
     )
 }
 
+// --- Canvas notes and arrows ------------------------------------------------
+
+#[tauri::command]
+fn canvas_note(
+    path: String,
+    id: Option<String>,
+    x: f32,
+    y: f32,
+    text: String,
+    tone: Option<String>,
+) -> AppResult<canvas::CanvasNote> {
+    canvas::place_note(&project::to_path(&path), id.as_deref(), x, y, &text, tone.as_deref())
+}
+
+#[tauri::command]
+fn canvas_note_remove(path: String, id: String) -> AppResult<()> {
+    canvas::remove_note(&project::to_path(&path), &id)
+}
+
+#[tauri::command]
+fn canvas_arrow(
+    path: String,
+    from: String,
+    to: String,
+    label: Option<String>,
+) -> AppResult<canvas::CanvasArrow> {
+    canvas::draw_arrow(&project::to_path(&path), &from, &to, label.as_deref())
+}
+
+#[tauri::command]
+fn canvas_arrow_remove(path: String, id: String) -> AppResult<()> {
+    canvas::remove_arrow(&project::to_path(&path), &id)
+}
+
+// --- Continuity -------------------------------------------------------------
+
+/// Everything the Continuity check gathers about one document, with no model.
+#[tauri::command]
+fn continuity_report(path: String, id: String) -> AppResult<continuity::ContinuityReport> {
+    continuity::report(&project::to_path(&path), &id)
+}
+
+/// Plants without payoffs, across the whole project.
+#[tauri::command]
+fn foreshadowing_ledger(path: String) -> AppResult<continuity::LedgerReport> {
+    Ok(continuity::check_foreshadowing_ledger(&project::documents(&project::to_path(&path))?))
+}
+
+#[tauri::command]
+fn debts_list(path: String) -> Vec<continuity::Debt> {
+    continuity::debts(&project::to_path(&path))
+}
+
+/// Record a hole in the world rather than inventing something to fill it.
+#[tauri::command]
+fn debt_log(
+    path: String,
+    gap: String,
+    found_in: String,
+    found_by: Option<String>,
+) -> AppResult<continuity::Debt> {
+    continuity::log_propagation_debt(
+        &project::to_path(&path),
+        &gap,
+        &found_in,
+        found_by.as_deref().unwrap_or("the author"),
+        project::now_ms(),
+    )
+}
+
+#[tauri::command]
+fn debt_resolve(path: String, id: String) -> AppResult<()> {
+    continuity::resolve_debt(&project::to_path(&path), &id, project::now_ms())
+}
+
+// --- Phase 9: generated diagrams --------------------------------------------
+
+/// Ask a model for a mind map, flowchart or reference sheet about `query`.
+///
+/// Fails loudly when the reply is not a graph. A half-parsed diagram would look
+/// like a picture of the book and be a picture of nothing.
+#[tauri::command]
+fn diagram_generate(
+    path: String,
+    model: String,
+    kind: String,
+    query: String,
+    allow_cloud: Option<bool>,
+) -> AppResult<diagrams::Diagram> {
+    diagrams::generate(
+        &project::to_path(&path),
+        &model,
+        diagrams::DiagramKind::parse(&kind)?,
+        &query,
+        allow_cloud.unwrap_or(false),
+    )
+}
+
+/// Save a generated diagram into the binder as Markdown with a Mermaid block —
+/// a document the author owns and any editor can open.
+#[tauri::command]
+fn diagram_save(path: String, diagram: diagrams::Diagram) -> AppResult<DocumentRow> {
+    diagrams::save_to_binder(&project::to_path(&path), &diagram)
+}
+
+// --- Phase 8: the canvas ----------------------------------------------------
+
+#[tauri::command]
+fn canvas_load(path: String) -> canvas::Canvas {
+    canvas::load(&project::to_path(&path))
+}
+
+#[tauri::command]
+fn canvas_place(path: String, id: String, x: f32, y: f32) -> AppResult<canvas::Canvas> {
+    canvas::place(&project::to_path(&path), &id, x, y)
+}
+
+#[tauri::command]
+fn canvas_clear(path: String) -> AppResult<()> {
+    canvas::clear(&project::to_path(&path))
+}
+
+/// What committing would do. Changes nothing — the author sees the reorder
+/// before it happens, which is the whole reason the canvas can write back at all.
+#[tauri::command]
+fn canvas_plan(path: String, parent_id: Option<String>) -> AppResult<canvas::CommitPlan> {
+    canvas::plan(&project::to_path(&path), parent_id.as_deref())
+}
+
+#[tauri::command]
+fn canvas_commit(path: String, parent_id: Option<String>) -> AppResult<canvas::CommitPlan> {
+    canvas::commit(&project::to_path(&path), parent_id.as_deref())
+}
+
+// --- Phases 8 and 9: analysis ----------------------------------------------
+
+#[tauri::command]
+fn story_beats(path: String, method: String) -> AppResult<Vec<Beat>> {
+    Ok(analysis::plot_beats(&project::documents(&project::to_path(&path))?, &method))
+}
+
+#[tauri::command]
+fn story_timeline(path: String, chronological: bool) -> AppResult<Vec<TimelineEntry>> {
+    Ok(analysis::timeline(&project::documents(&project::to_path(&path))?, chronological))
+}
+
+#[tauri::command]
+fn story_graph(path: String, label: Option<String>) -> AppResult<StoryGraph> {
+    Ok(analysis::character_graph_filtered(
+        &project::documents(&project::to_path(&path))?,
+        label.as_deref(),
+    ))
+}
+
+fn bodies_of(root: &std::path::Path) -> AppResult<(Vec<DocumentRow>, HashMap<String, String>)> {
+    let docs = project::documents(root)?;
+    let mut bodies = HashMap::new();
+    for d in docs.iter().filter(|d| d.path.is_some()) {
+        bodies.insert(d.id.clone(), project::read_body(root, &d.id)?);
+    }
+    Ok((docs, bodies))
+}
+
+#[tauri::command]
+fn story_pacing(path: String) -> AppResult<Vec<PacingPoint>> {
+    let root = project::to_path(&path);
+    let (docs, bodies) = bodies_of(&root)?;
+    Ok(analysis::pacing(&docs, &bodies))
+}
+
+#[tauri::command]
+fn story_clusters(path: String, threshold: f32) -> AppResult<Vec<ClusterProposal>> {
+    let root = project::to_path(&path);
+    let (docs, bodies) = bodies_of(&root)?;
+    Ok(analysis::suggest_clusters(&docs, &bodies, threshold))
+}
+
 // --- Phase 5: agents --------------------------------------------------------
 
 // --- Phase 6: templates, goals, freeform board, icons -----------------------
@@ -866,13 +1049,6 @@ fn startup_project() -> Option<String> {
     std::env::var("AEGISDRAFT_OPEN").ok().filter(|p| !p.is_empty())
 }
 
-/// Development convenience: `AEGISDRAFT_ROUTE=story` opens straight onto a
-/// screen. Used to capture and review each one without clicking through.
-#[tauri::command]
-fn startup_route() -> Option<String> {
-    std::env::var("AEGISDRAFT_ROUTE").ok().filter(|r| !r.is_empty())
-}
-
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -960,6 +1136,27 @@ pub fn run() {
             sheet_template_save,
             sheet_template_forget,
             create_sheet_from_template,
+            canvas_note,
+            canvas_note_remove,
+            canvas_arrow,
+            canvas_arrow_remove,
+            continuity_report,
+            foreshadowing_ledger,
+            debts_list,
+            debt_log,
+            debt_resolve,
+            diagram_generate,
+            diagram_save,
+            canvas_load,
+            canvas_place,
+            canvas_clear,
+            canvas_plan,
+            canvas_commit,
+            story_beats,
+            story_timeline,
+            story_graph,
+            story_pacing,
+            story_clusters,
             project_templates,
             create_project_from_template,
             goals_read,
@@ -975,8 +1172,7 @@ pub fn run() {
             import_folder,
             recent_projects,
             frontend_ready,
-            startup_project,
-            startup_route
+            startup_project
         ])
         .build(tauri::generate_context!())
         .expect("error while running AegisDraft")
