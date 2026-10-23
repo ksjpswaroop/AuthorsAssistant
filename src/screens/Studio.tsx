@@ -8,6 +8,7 @@ import { Inspector } from '../components/Inspector'
 import { Scrivenings } from '../components/Scrivenings'
 import { CollectionsRail } from '../components/Collections'
 import { BulkBar } from '../components/BulkBar'
+import { Assist } from '../components/Assist'
 import { MonoStatus, OfflineStatus, OllamaStatus, StatusBar, StatusItem, TitleBar, Divider } from '../components/Chrome'
 import { useCallback, useEffect, useState } from 'react'
 import { Button, Dot, EmptyState, IconButton, Kbd, Segmented } from '../components/ui'
@@ -318,6 +319,8 @@ export function Studio() {
   const selectedId = useApp((s) => s.selectedId)
   const setSplit = useApp((s) => s.setSplit)
   const takeSnapshot = useApp((s) => s.takeSnapshot)
+  const assistOpen = useApp((s) => s.assistOpen)
+  const setAssist = useApp((s) => s.setAssist)
   const project = useApp((s) => s.project)
   const docs = useApp((s) => s.docs)
   const view = useApp((s) => s.view)
@@ -372,9 +375,16 @@ export function Studio() {
               title="Take a snapshot of the project"
               onClick={() => void takeSnapshot('Snapshot')}
             />
-            <IconButton icon="database" title="Research" onClick={() => go('research')} />
+            <IconButton icon="search" title="Search the whole book by meaning" onClick={() => go('search')} />
+            <IconButton icon="database" title="Research — sources, claims and evidence" onClick={() => go('research')} />
             <IconButton icon="shield" title="Integrity" onClick={() => go('integrity')} />
             <IconButton icon="settings" title="Settings" onClick={() => go('settings')} />
+            <IconButton
+              icon="sparkle"
+              title="Assist — continue, rewrite or critique with a local model"
+              active={assistOpen}
+              onClick={() => setAssist(!assistOpen)}
+            />
             <button
               className="ghost"
               onClick={() => setCommandBar(true)}
@@ -432,6 +442,17 @@ export function Studio() {
           <Panel id="center" minSize="30">
             <CenterPane />
           </Panel>
+
+          {assistOpen && (
+            <>
+              <Separator style={{ width: 1, background: color.line, cursor: 'col-resize' }} />
+              <Panel id="assist" defaultSize="26" minSize="18" maxSize="42">
+                <div style={{ height: '100%', borderLeft: `1px solid ${color.line}` }}>
+                  <Assist onClose={() => setAssist(false)} />
+                </div>
+              </Panel>
+            </>
+          )}
 
           {splitId && (
             <>

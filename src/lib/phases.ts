@@ -8,7 +8,7 @@
  */
 
 import { isTauri } from './api'
-import type { DocKind, DocumentRow, ProjectSummary } from './types'
+import type { DocKind, DocumentRow, ProjectSummary, StyleDistance, StyleProfile } from './types'
 
 async function call<T>(command: string, args: Record<string, unknown> = {}): Promise<T> {
   if (!isTauri) throw new Error('This needs the desktop app.')
@@ -121,6 +121,111 @@ export const compile = {
       title: title ?? null,
       author: author ?? null,
     }),
+}
+
+/* --- Phase 3: local models and retrieval ---------------------------------- */
+
+export interface ModelInfo {
+  name: string
+  size: number
+}
+
+export interface OllamaStatus {
+  reachable: boolean
+  host: string
+  models: ModelInfo[]
+  message: string | null
+}
+
+export interface RetrievedChunk {
+  id: string
+  documentId: string
+  ordinal: number
+  text: string
+  score: number
+}
+
+export const ai = {
+  status: () => call<OllamaStatus>('ollama_status'),
+  index: (path: string, model: string) => call<[number, number]>('index_project', { path, model }),
+  indexStats: (path: string) => call<[number, number]>('index_stats', { path }),
+  search: (path: string, model: string, query: string, k = 5, exclude?: string) =>
+    call<RetrievedChunk[]>('search_index', { path, model, query, k, exclude: exclude ?? null }),
+  assist: (
+    path: string,
+    model: string,
+    id: string,
+    mode: 'continue' | 'rewrite' | 'critique',
+    opts: { instruction?: string; allowCloud?: boolean } = {},
+  ) =>
+    call<string>('assist', {
+      path,
+      model,
+      id,
+      mode,
+      instruction: opts.instruction ?? null,
+      allowCloud: opts.allowCloud ?? false,
+    }),
+  pools: () => call<[ModelInfo[], ModelInfo[], ModelInfo[]]>('model_pools'),
+
+  /** The stored style profile, or null when none has been built. */
+  styleLoad: (path: string) => call<StyleProfile | null>('style_load', { path }),
+  /** Rebuilds and saves it. Without a model only the measured half is built. */
+  styleBuild: (path: string, model: string | null, allowCloud = false) =>
+    call<StyleProfile>('style_build', { path, model, allowCloud }),
+  /** How far one document sits from the profile. Null when there is no profile. */
+  styleDistance: (path: string, id: string) =>
+    call<StyleDistance | null>('style_distance', { path, id }),
+}
+
+/**
+ * A model that can actually run here. `:cloud` tags are remote models Ollama
+ * proxies — they report a tiny size and produce nothing locally, so offering
+ * one would look like a working choice that silently fails.
+ */
+export function localModels(status: OllamaStatus): ModelInfo[] {
+  return status.models.filter((m) => !m.name.includes(':cloud') && m.size >= 100_000_000)
+}
+
+/**
+ * Embedding models and generation models are not interchangeable, and picking
+ * the wrong one fails in a way that looks like the feature is broken: an
+ * embedding model returns an empty string when asked for prose, and a chat
+ * model refuses to embed with a message that blames the server. Ollama exposes
+ * no flag for this, so the distinction is made by name.
+ */
+const EMBEDDING_HINTS = ['embed', 'bge', 'gte', 'e5-', 'minilm']
+
+export function isEmbeddingModel(name: string): boolean {
+  const n = name.toLowerCase()
+  return EMBEDDING_HINTS.some((h) => n.includes(h))
+}
+
+/** Models that can write prose. Sorted cheapest first. */
+export function generationModels(status: OllamaStatus): ModelInfo[] {
+  return localModels(status)
+    .filter((m) => !isEmbeddingModel(m.name))
+    .sort((a, b) => a.size - b.size)
+}
+
+/** Models that can produce embeddings, for indexing and search. */
+/**
+ * A `:cloud` tag is proxied to a remote service. Using one sends the prompt —
+ * and therefore the manuscript — off the machine, which is the single thing
+ * this product promises not to do. Never a default; always labelled.
+ */
+export function isCloudModel(name: string): boolean {
+  return name.includes(':cloud') || name.endsWith('-cloud')
+}
+
+export function cloudModels(status: OllamaStatus): ModelInfo[] {
+  return status.models.filter((m) => isCloudModel(m.name))
+}
+
+export function embeddingModels(status: OllamaStatus): ModelInfo[] {
+  return status.models
+    .filter((m) => !m.name.includes(':cloud') && isEmbeddingModel(m.name))
+    .sort((a, b) => a.size - b.size)
 }
 
 /** Writing targets, stored with the project rather than in app preferences. */

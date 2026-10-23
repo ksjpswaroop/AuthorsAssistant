@@ -90,6 +90,7 @@ fn migrate(conn: &Connection) -> AppResult<()> {
     )?;
 
     crate::collections::migrate(conn)?;
+    crate::rag::migrate(conn)?;
     crate::provenance::migrate(conn)?;
 
     conn.execute(
@@ -123,6 +124,7 @@ pub const EXPECTED_TABLES: &[&str] = &[
     "document_links",
     "collections",
     "collection_items",
+    "chunks",
     "blocks",
     "events",
 ];

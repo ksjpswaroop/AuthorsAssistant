@@ -5,6 +5,7 @@ import { Studio } from './screens/Studio'
 import { Integrity } from './screens/Integrity'
 import { Settings } from './screens/Settings'
 import { Research } from './screens/Research'
+import { Search } from './screens/Search'
 import { Library } from './screens/Library'
 import { Paper } from './screens/Paper'
 import { TechBook } from './screens/TechBook'
@@ -185,6 +186,8 @@ export default function App() {
       <Integrity />
     ) : route === 'settings' ? (
       <Settings />
+    ) : route === 'search' ? (
+      <Search />
     ) : route === 'research' ? (
       <Research />
     ) : route === 'library' ? (

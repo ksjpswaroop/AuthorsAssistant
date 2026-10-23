@@ -13,8 +13,10 @@
   <key>com.apple.security.files.bookmarks.app-scope</key>
   <true/>
 
-  <!-- Deliberately absent: no network entitlement. Phase 1 makes no network
-       calls at all. Phase 3 talks to Ollama on loopback, which needs
-       com.apple.security.network.client; add it then, not before. -->
+  <!-- Phase 3 shipped, so this is now needed: the sandbox blocks outgoing
+       connections without it, loopback included, and Ollama runs on
+       127.0.0.1:11434. Client only — the app listens on nothing. -->
+  <key>com.apple.security.network.client</key>
+  <true/>
 </dict>
 </plist>
