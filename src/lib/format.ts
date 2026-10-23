@@ -25,3 +25,16 @@ export function tildePath(path: string): string {
 export function countWords(text: string): number {
   return text.split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length
 }
+
+const KIND_LABEL: Record<string, string> = {
+  folder: 'Folder',
+  scene: 'Scene',
+  sheet: 'Character sheet',
+  lore: 'Lore',
+  research: 'Research',
+  canon: 'Canon',
+}
+
+export function kindLabel(kind: string): string {
+  return KIND_LABEL[kind] ?? 'Document'
+}

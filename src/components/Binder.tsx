@@ -1,7 +1,8 @@
-import { useState } from 'react'
-import { Icon, type IconName } from './Icon'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Tree, type NodeRendererProps, type MoveHandler, type RenameHandler } from 'react-arborist'
+import { Icon, isIconName, type IconName } from './Icon'
 import { IconButton, SectionLabel } from './ui'
-import { childrenOf, useApp } from '../lib/store'
+import { useApp } from '../lib/store'
 import type { DocKind, DocumentRow } from '../lib/types'
 import { chrome, color, radius, tint } from '../lib/tokens'
 
@@ -9,113 +10,140 @@ const KIND_ICON: Record<DocKind, IconName> = {
   folder: 'folder',
   scene: 'doc',
   sheet: 'person',
+  location: 'globe',
   lore: 'globe',
   research: 'doc',
+  canon: 'shieldCheck',
 }
 
-function Row({ doc, depth }: { doc: DocumentRow; depth: number }) {
+/** react-arborist wants a nested shape; the store keeps a flat parent list. */
+interface TreeNode extends DocumentRow {
+  children?: TreeNode[]
+}
+
+function nest(docs: DocumentRow[], parentId: string | null): TreeNode[] {
+  return docs
+    .filter((d) => d.parentId === parentId)
+    .sort((a, b) => a.position - b.position || a.title.localeCompare(b.title))
+    .map((d) => (d.kind === 'folder' ? { ...d, children: nest(docs, d.id) } : { ...d }))
+}
+
+/** Tracks a box's height so the virtualized tree can fill it. */
+function useHeight<T extends HTMLElement>() {
+  const ref = useRef<T | null>(null)
+  const [height, setHeight] = useState(320)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const ro = new ResizeObserver(([entry]) => setHeight(entry.contentRect.height))
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+  return { ref, height }
+}
+
+function Row({ node, style, dragHandle }: NodeRendererProps<TreeNode>) {
   const selectedId = useApp((s) => s.selectedId)
+  const marked = useApp((s) => s.marked)
+  const toggleMark = useApp((s) => s.toggleMark)
   const select = useApp((s) => s.select)
-  const rename = useApp((s) => s.rename)
-  const docs = useApp((s) => s.docs)
-  const [collapsed, setCollapsed] = useState(false)
-  const [editing, setEditing] = useState(false)
-  const [draft, setDraft] = useState(doc.title)
 
-  const kids = childrenOf(docs, doc.id)
-  const isFolder = doc.kind === 'folder'
+  const doc = node.data
   const on = selectedId === doc.id
-
-  const commit = () => {
-    setEditing(false)
-    if (draft.trim() && draft !== doc.title) void rename(doc.id, draft)
-    else setDraft(doc.title)
-  }
+  const isMarked = marked.includes(doc.id)
+  const isFolder = doc.kind === 'folder'
 
   return (
-    <>
-      <div
-        className={`row ${on ? 'on' : ''}`}
-        onClick={() => void select(doc.id)}
-        onDoubleClick={() => {
-          setDraft(doc.title)
-          setEditing(true)
-        }}
-        title={`${doc.title} — double-click to rename`}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 7,
-          height: 27,
-          paddingLeft: 8 + depth * 15,
-          paddingRight: 8,
-          borderRadius: radius.md - 1,
-          cursor: 'pointer',
-          fontSize: 12.5,
-          background: on ? tint(color.accent, 0.1) : 'transparent',
-          color: on ? color.accent : color.ink2,
-          fontWeight: on || isFolder ? 600 : 450,
-        }}
-      >
-        {isFolder ? (
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              setCollapsed((c) => !c)
-            }}
-            aria-label={collapsed ? 'Expand' : 'Collapse'}
-            style={{ display: 'flex', color: color.ink4, cursor: 'pointer' }}
-          >
-            <Icon
-              name="chevronDown"
-              size={13}
-              strokeWidth={2.4}
-              style={{ transform: collapsed ? 'rotate(-90deg)' : 'none', transition: 'transform 120ms ease' }}
-            />
-          </button>
-        ) : (
-          <span style={{ width: 13, flexShrink: 0 }} />
-        )}
-
-        <Icon name={KIND_ICON[doc.kind]} size={13} strokeWidth={1.7} opacity={0.65} />
-
-        {editing ? (
-          <input
-            autoFocus
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onBlur={commit}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') commit()
-              if (e.key === 'Escape') {
-                setDraft(doc.title)
-                setEditing(false)
-              }
-            }}
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              flexGrow: 1,
-              minWidth: 0,
-              border: `1px solid ${color.accent}`,
-              borderRadius: 4,
-              padding: '1px 4px',
-              fontSize: 12.5,
-              background: color.surface,
-            }}
+    <div
+      ref={dragHandle}
+      className={`row ${on ? 'on' : ''}`}
+      style={{
+        ...style,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 7,
+        height: 27,
+        paddingRight: 8,
+        borderRadius: radius.md - 1,
+        cursor: 'pointer',
+        fontSize: 12.5,
+        background: on ? tint(color.accent, 0.1) : isMarked ? tint(color.accent, 0.05) : 'transparent',
+        color: on ? color.accent : color.ink2,
+        fontWeight: on || isFolder ? 600 : 450,
+        boxShadow: isMarked && !on ? `inset 0 0 0 1px ${color.line}` : 'none',
+      }}
+      onClick={(e) => {
+        // Cmd/Ctrl-click marks for a bulk edit instead of opening.
+        if (e.metaKey || e.ctrlKey) {
+          e.preventDefault()
+          toggleMark(doc.id)
+          return
+        }
+        void select(doc.id)
+      }}
+      onDoubleClick={() => node.edit()}
+      title={`${doc.title} — double-click to rename, drag to move`}
+    >
+      {isFolder ? (
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            node.toggle()
+          }}
+          aria-label={node.isOpen ? 'Collapse' : 'Expand'}
+          style={{ display: 'flex', color: color.ink4, cursor: 'pointer' }}
+        >
+          <Icon
+            name="chevronDown"
+            size={13}
+            strokeWidth={2.4}
+            style={{ transform: node.isOpen ? 'none' : 'rotate(-90deg)', transition: 'transform 120ms ease' }}
           />
-        ) : (
-          <span style={{ flexGrow: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {doc.title}
-          </span>
-        )}
+        </button>
+      ) : (
+        <span style={{ width: 13, flexShrink: 0 }} />
+      )}
 
-        {doc.status === 'Draft' && !editing && (
-          <span style={{ width: 6, height: 6, borderRadius: '50%', background: color.orange, flexShrink: 0 }} />
-        )}
-      </div>
+      {/* An author's own icon wins over the kind's default, which is the
+          point of setting one. An unknown name falls back rather than
+          rendering an empty gap. */}
+      <Icon
+        name={isIconName(doc.icon) ? doc.icon : (KIND_ICON[doc.kind] ?? 'doc')}
+        size={13}
+        strokeWidth={1.7}
+        opacity={0.65}
+      />
 
-      {isFolder && !collapsed && kids.map((k) => <Row key={k.id} doc={k} depth={depth + 1} />)}
-    </>
+      {node.isEditing ? (
+        <input
+          autoFocus
+          defaultValue={doc.title}
+          onBlur={(e) => node.submit(e.currentTarget.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') node.submit(e.currentTarget.value)
+            if (e.key === 'Escape') node.reset()
+          }}
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            flexGrow: 1,
+            minWidth: 0,
+            border: `1px solid ${color.accent}`,
+            borderRadius: 4,
+            padding: '1px 4px',
+            fontSize: 12.5,
+            background: color.surface,
+          }}
+        />
+      ) : (
+        <span style={{ flexGrow: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {doc.title}
+        </span>
+      )}
+
+      {doc.status === 'Draft' && !node.isEditing && (
+        <span style={{ width: 6, height: 6, borderRadius: '50%', background: color.orange, flexShrink: 0 }} />
+      )}
+    </div>
   )
 }
 
@@ -124,7 +152,20 @@ export function Binder() {
   const selectedId = useApp((s) => s.selectedId)
   const addDocument = useApp((s) => s.addDocument)
   const remove = useApp((s) => s.remove)
-  const roots = childrenOf(docs, null)
+  const rename = useApp((s) => s.rename)
+  const moveDocument = useApp((s) => s.moveDocument)
+  const { ref, height } = useHeight<HTMLDivElement>()
+
+  const data = useMemo(() => nest(docs, null), [docs])
+
+  const onMove: MoveHandler<TreeNode> = ({ dragIds, parentId, index }) => {
+    // Dragging several rows keeps their relative order at the drop point.
+    dragIds.forEach((id, i) => void moveDocument(id, parentId ?? null, index + i))
+  }
+
+  const onRename: RenameHandler<TreeNode> = ({ id, name }) => {
+    void rename(id, name)
+  }
 
   const addSibling = (kind: DocKind) => {
     const selected = docs.find((d) => d.id === selectedId)
@@ -158,10 +199,23 @@ export function Binder() {
         />
       </div>
 
-      <div style={{ flexGrow: 1, overflowY: 'auto', padding: '0 8px 16px 8px' }}>
-        {roots.map((d) => (
-          <Row key={d.id} doc={d} depth={0} />
-        ))}
+      <div ref={ref} style={{ flexGrow: 1, minHeight: 0, padding: '0 8px' }}>
+        <Tree<TreeNode>
+          data={data}
+          idAccessor="id"
+          childrenAccessor={(d) => d.children ?? null}
+          openByDefault
+          width="100%"
+          height={height}
+          indent={15}
+          rowHeight={27}
+          onMove={onMove}
+          onRename={onRename}
+          disableMultiSelection={false}
+          aria-label="Binder"
+        >
+          {Row}
+        </Tree>
       </div>
 
       <div

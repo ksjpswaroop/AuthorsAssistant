@@ -1,11 +1,32 @@
 import { create } from 'zustand'
 import { api } from './api'
-import type { DocKind, DocumentRow, MetaPatch, ProjectSummary, RecentProject } from './types'
+import type {
+  DocKind,
+  DocumentRow,
+  ExtendedPatch,
+  ImportReport,
+  MetaPatch,
+  ProjectSummary,
+  RecentProject,
+  Snapshot,
+} from './types'
 import { countWords } from './format'
+import { bulkSetMetadata, project6 } from './phases'
 
-export type Route = 'welcome' | 'studio' | 'integrity' | 'research' | 'library' | 'paper' | 'techbook' | 'settings'
-export type StudioView = 'editor' | 'corkboard' | 'outliner'
-export type InspectorTab = 'synopsis' | 'notes' | 'agent'
+export type Route =
+  | 'welcome'
+  | 'studio'
+  | 'integrity'
+  | 'research'
+  | 'library'
+  | 'paper'
+  | 'techbook'
+  | 'settings'
+  | 'story'
+  | 'insights'
+  | 'search'
+export type StudioView = 'editor' | 'corkboard' | 'outliner' | 'scrivenings'
+export type InspectorTab = 'synopsis' | 'notes' | 'lineage'
 
 /** How long typing has to pause before the buffer is written to disk. */
 const AUTOSAVE_MS = 800
@@ -14,6 +35,8 @@ interface AppState {
   route: Route
   commandBarOpen: boolean
   compileOpen: boolean
+  /** Phase 6 project dialogs, one at a time. */
+  dialog: null | 'templates' | 'goals' | 'snapshot' | 'import' | 'sheetTemplates'
 
   project: ProjectSummary | null
   recents: RecentProject[]
@@ -28,16 +51,39 @@ interface AppState {
   lastSavedAt: number | null
 
   view: StudioView
+  /** Distraction-free writing: hides every pane but the manuscript column. */
+  composition: boolean
+  /** Multi-select for bulk metadata (Phase 6). Empty means single-selection. */
+  marked: string[]
   showBinder: boolean
   showInspector: boolean
   inspectorTab: InspectorTab
   busy: boolean
   error: string | null
 
+  // --- Phase 2 ---
+  /** Second document shown beside the editor. Null means a single pane. */
+  splitId: string | null
+  snapshots: Snapshot[]
+  snapshotsFor: string | null
+  snapshotBusy: boolean
+  /** Phase 3 assist panel, beside the editor. */
+  assistOpen: boolean
+
+  /** What an import would bring in, surveyed before anything is created. */
+  importPlan: { source: string; name: string; folders: number; files: number } | null
+  /** What the last import actually did. Null until one has run. */
+  importReport: ImportReport | null
+  importBusy: boolean
+
   go: (route: Route) => void
   setCommandBar: (open: boolean) => void
   setCompile: (open: boolean) => void
+  setDialog: (dialog: null | 'templates' | 'goals' | 'snapshot' | 'import' | 'sheetTemplates') => void
   setView: (view: StudioView) => void
+  setComposition: (on: boolean) => void
+  toggleMark: (id: string) => void
+  clearMarks: () => void
   setInspectorTab: (tab: InspectorTab) => void
   toggleBinder: () => void
   toggleInspector: () => void
@@ -50,6 +96,10 @@ interface AppState {
   openProjectViaDialog: () => Promise<void>
   closeProject: () => void
 
+  pickImportFolder: () => Promise<void>
+  runImport: () => Promise<void>
+  dismissImport: () => void
+
   select: (id: string) => Promise<void>
   edit: (body: string) => void
   saveNow: () => Promise<void>
@@ -57,6 +107,26 @@ interface AppState {
   rename: (id: string, title: string) => Promise<void>
   patchMeta: (id: string, patch: MetaPatch) => Promise<void>
   remove: (id: string) => Promise<void>
+
+  setSplit: (id: string | null) => void
+  setAssist: (open: boolean) => void
+  moveDocument: (id: string, newParent: string | null, index: number) => Promise<void>
+  patchExtended: (id: string, patch: ExtendedPatch) => Promise<void>
+  setKeywords: (id: string, keywords: string[]) => Promise<void>
+  /** Place a freeform corkboard card, or pass nulls to return it to the grid. */
+  placeCard: (id: string, x: number | null, y: number | null) => Promise<void>
+  /** Re-read the binder after something outside the main editor changed a file. */
+  refreshDocs: () => Promise<void>
+  setIcon: (id: string, icon: string | null) => Promise<void>
+  /** Set metadata across documents. One id is the single-document case. */
+  bulkSet: (
+    ids: string[],
+    fields: { status?: string; label?: string; sectionType?: string; pov?: string },
+  ) => Promise<void>
+  createSheet: (name: string, kind: DocKind, linkTo: string | null) => Promise<void>
+  loadSnapshots: (docPath: string | null) => Promise<void>
+  takeSnapshot: (message: string) => Promise<void>
+  restoreSnapshot: (commit: string, docPath: string) => Promise<void>
 }
 
 let saveTimer: ReturnType<typeof setTimeout> | null = null
@@ -69,6 +139,10 @@ export const useApp = create<AppState>((set, get) => ({
   route: 'welcome',
   commandBarOpen: false,
   compileOpen: false,
+  dialog: null,
+  importPlan: null,
+  importReport: null,
+  importBusy: false,
 
   project: null,
   recents: [],
@@ -82,16 +156,29 @@ export const useApp = create<AppState>((set, get) => ({
   lastSavedAt: null,
 
   view: 'editor',
+  composition: false,
+  marked: [],
   showBinder: true,
   showInspector: true,
   inspectorTab: 'synopsis',
   busy: false,
   error: null,
 
+  splitId: null,
+  snapshots: [],
+  snapshotsFor: null,
+  snapshotBusy: false,
+  assistOpen: false,
+
   go: (route) => set({ route }),
   setCommandBar: (commandBarOpen) => set({ commandBarOpen }),
   setCompile: (compileOpen) => set({ compileOpen }),
+  setDialog: (dialog) => set({ dialog }),
   setView: (view) => set({ view }),
+  setComposition: (composition) => set({ composition }),
+  toggleMark: (id) =>
+    set((s) => ({ marked: s.marked.includes(id) ? s.marked.filter((m) => m !== id) : [...s.marked, id] })),
+  clearMarks: () => set({ marked: [] }),
   setInspectorTab: (inspectorTab) => set({ inspectorTab }),
   toggleBinder: () => set({ showBinder: !get().showBinder }),
   toggleInspector: () => set({ showInspector: !get().showInspector }),
@@ -110,6 +197,8 @@ export const useApp = create<AppState>((set, get) => ({
     try {
       const path = await api.startupProject()
       if (path) await get().openProjectAt(path)
+      const route = await api.startupRoute()
+      if (route && path) set({ route: route as Route })
     } catch {
       // Not being able to auto-open is never worth an error toast.
     }
@@ -137,6 +226,44 @@ export const useApp = create<AppState>((set, get) => ({
       fail(set, e)
     }
   },
+
+  // Import runs in two steps on purpose. The survey happens first and creates
+  // nothing, so the author sees how many documents are about to appear — and
+  // hears about a folder that cannot be imported — before committing to it.
+  async pickImportFolder() {
+    try {
+      const path = await api.pickFolder('Import a folder of Markdown')
+      if (!path) return
+      set({ importBusy: true, error: null })
+      const [folders, files] = await api.importSurvey(path)
+      const name = path.split('/').filter(Boolean).pop() ?? path
+      set({
+        importPlan: { source: path, name, folders, files },
+        importReport: null,
+        importBusy: false,
+        dialog: 'import',
+      })
+    } catch (e) {
+      set({ importBusy: false, importPlan: null })
+      fail(set, e)
+    }
+  },
+
+  async runImport() {
+    const { project, importPlan } = get()
+    if (!project || !importPlan) return
+    try {
+      set({ importBusy: true, error: null })
+      const report = await api.importFolder(project.path, importPlan.source, null, 'scene')
+      const docs = await api.listDocuments(project.path)
+      set({ docs, importReport: report, importPlan: null, importBusy: false })
+    } catch (e) {
+      set({ importBusy: false })
+      fail(set, e)
+    }
+  },
+
+  dismissImport: () => set({ dialog: null, importPlan: null, importReport: null }),
 
   async openProjectAt(path) {
     try {
@@ -261,6 +388,142 @@ export const useApp = create<AppState>((set, get) => ({
     try {
       const doc = await api.updateDocumentMeta(project.path, id, patch)
       set((s) => ({ docs: s.docs.map((d) => (d.id === id ? doc : d)) }))
+    } catch (e) {
+      fail(set, e)
+    }
+  },
+
+  setSplit: (splitId) => set({ splitId }),
+  setAssist: (assistOpen) => set({ assistOpen }),
+
+  async moveDocument(id, newParent, index) {
+    const { project } = get()
+    if (!project) return
+    try {
+      await api.moveDocument(project.path, id, newParent, index)
+      set({ docs: await api.listDocuments(project.path) })
+    } catch (e) {
+      fail(set, e)
+    }
+  },
+
+  async patchExtended(id, patch) {
+    const { project } = get()
+    if (!project) return
+    try {
+      const doc = await api.updateExtended(project.path, id, patch)
+      set((s) => ({ docs: s.docs.map((d) => (d.id === id ? doc : d)) }))
+    } catch (e) {
+      fail(set, e)
+    }
+  },
+
+  async setKeywords(id, keywords) {
+    const { project } = get()
+    if (!project) return
+    try {
+      const doc = await api.setKeywords(project.path, id, keywords)
+      set((s) => ({ docs: s.docs.map((d) => (d.id === id ? doc : d)) }))
+    } catch (e) {
+      fail(set, e)
+    }
+  },
+
+  // Freeform placement writes through immediately: a board the author has to
+  // remember to save is a board that loses work.
+  async bulkSet(ids, fields) {
+    const { project } = get()
+    if (!project || ids.length === 0) return
+    try {
+      await bulkSetMetadata(project.path, ids, fields)
+      await get().refreshDocs()
+    } catch (e) {
+      fail(set, e)
+    }
+  },
+
+  async refreshDocs() {
+    const { project } = get()
+    if (!project) return
+    try {
+      set({ docs: await api.listDocuments(project.path) })
+    } catch (e) {
+      fail(set, e)
+    }
+  },
+
+  async placeCard(id, x, y) {
+    const { project } = get()
+    if (!project) return
+    try {
+      await project6.setPosition(project.path, id, x, y)
+      set((s) => ({ docs: s.docs.map((d) => (d.id === id ? { ...d, x, y } : d)) }))
+    } catch (e) {
+      fail(set, e)
+    }
+  },
+
+  async setIcon(id, icon) {
+    const { project } = get()
+    if (!project) return
+    try {
+      const doc = await project6.setIcon(project.path, id, icon)
+      set((s) => ({ docs: s.docs.map((d) => (d.id === id ? doc : d)) }))
+    } catch (e) {
+      fail(set, e)
+    }
+  },
+
+  async createSheet(name, kind, linkTo) {
+    const { project } = get()
+    if (!project) return
+    try {
+      await api.createSheet(project.path, name, kind, null, linkTo)
+      set({ docs: await api.listDocuments(project.path) })
+    } catch (e) {
+      fail(set, e)
+    }
+  },
+
+  async loadSnapshots(docPath) {
+    const { project } = get()
+    if (!project) return
+    try {
+      const snapshots = await api.snapshotList(project.path, docPath, 50)
+      set({ snapshots, snapshotsFor: docPath })
+    } catch (e) {
+      fail(set, e)
+    }
+  },
+
+  async takeSnapshot(message) {
+    const { project, dirty } = get()
+    if (!project) return
+    try {
+      set({ snapshotBusy: true })
+      // Anything in the editor buffer must reach disk before it is committed.
+      if (dirty) await get().saveNow()
+      const snap = await api.snapshotCreate(project.path, message)
+      set({ snapshotBusy: false, error: snap ? null : 'Nothing has changed since the last snapshot.' })
+      await get().loadSnapshots(get().snapshotsFor)
+    } catch (e) {
+      fail(set, e)
+    }
+  },
+
+  async restoreSnapshot(commit, docPath) {
+    const { project, selectedId } = get()
+    if (!project) return
+    try {
+      set({ snapshotBusy: true })
+      await api.snapshotRestoreFile(project.path, commit, docPath)
+      set({ snapshotBusy: false, docs: await api.listDocuments(project.path) })
+      // Reload the open document so the editor shows what is now on disk.
+      if (selectedId) {
+        const body = await api.readDocument(project.path, selectedId)
+        set({ body, bodyLoadedFor: `${selectedId}:${Date.now()}`, dirty: false })
+      }
+      await get().loadSnapshots(docPath)
     } catch (e) {
       fail(set, e)
     }

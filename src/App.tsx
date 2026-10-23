@@ -10,6 +10,8 @@ import { Paper } from './screens/Paper'
 import { TechBook } from './screens/TechBook'
 import { CommandBar } from './screens/CommandBar'
 import { CompileDialog } from './screens/CompileDialog'
+import { ProjectDialogs } from './screens/ProjectDialogs'
+import { api, onMenu } from './lib/api'
 import { Icon } from './components/Icon'
 import { color, radius } from './lib/tokens'
 
@@ -57,6 +59,97 @@ export default function App() {
 
   useEffect(() => {
     void useApp.getState().openStartupProject()
+    // Dismiss the splash window once React has painted something real.
+    void api.frontendReady()
+  }, [])
+
+  // The native menu bar. Menu items never act directly — they route to the same
+  // store actions the in-app controls use, so both paths behave identically.
+  useEffect(() => {
+    let dispose: (() => void) | undefined
+    void onMenu((id) => {
+      const s = useApp.getState()
+      switch (id) {
+        case 'new_project':
+          void s.newProject()
+          break
+        case 'open_project':
+          void s.openProjectViaDialog()
+          break
+        case 'import_markdown':
+          if (s.project) void s.pickImportFolder()
+          break
+        case 'new_scene':
+          if (s.project) void s.addDocument(null, 'Untitled scene', 'scene')
+          break
+        case 'new_folder':
+          if (s.project) void s.addDocument(null, 'New folder', 'folder')
+          break
+        case 'new_character':
+          if (s.project) void s.createSheet('New character', 'sheet', s.selectedId)
+          break
+        case 'new_location':
+          if (s.project) void s.createSheet('New location', 'location', s.selectedId)
+          break
+        case 'sheet_templates':
+          if (s.project) s.setDialog('sheetTemplates')
+          break
+        case 'snapshot':
+          if (s.project) void s.takeSnapshot('Snapshot')
+          break
+        case 'view_scrivenings':
+          s.setView('scrivenings')
+          break
+        case 'toggle_split':
+          s.setSplit(s.splitId ? null : s.selectedId)
+          break
+        case 'save':
+          void s.saveNow()
+          break
+        case 'close_project':
+          s.closeProject()
+          break
+        case 'compile':
+          if (s.project) s.setCompile(true)
+          break
+        case 'command_bar':
+          if (s.project) s.setCommandBar(!s.commandBarOpen)
+          break
+        case 'settings':
+          if (s.project) s.go('settings')
+          break
+        case 'view_editor':
+          s.setView('editor')
+          break
+        case 'view_corkboard':
+          s.setView('corkboard')
+          break
+        case 'view_outliner':
+          s.setView('outliner')
+          break
+        case 'toggle_binder':
+          s.toggleBinder()
+          break
+        case 'toggle_inspector':
+          s.toggleInspector()
+          break
+        case 'research':
+          if (s.project) s.go('research')
+          break
+        case 'integrity':
+          if (s.project) s.go('integrity')
+          break
+        case 'help_docs':
+        case 'help_privacy':
+          if (s.project) s.go('settings')
+          break
+        default:
+          break
+      }
+    }).then((un) => {
+      dispose = un
+    })
+    return () => dispose?.()
   }, [])
 
   // Global shortcuts. The editor owns Cmd-S; everything here is navigation.
@@ -107,6 +200,7 @@ export default function App() {
       {screen}
       {project && commandBarOpen && <CommandBar />}
       {project && compileOpen && <CompileDialog />}
+      {project && <ProjectDialogs />}
       <ErrorToast />
     </>
   )

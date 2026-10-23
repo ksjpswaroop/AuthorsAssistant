@@ -59,6 +59,17 @@ Left-handed. Scar across the right palm from chapter 1. Cannot swim. Refers to t
   basin: '',
   salt: '',
   clippings: '',
+  'canon-tamsin': `## Continuity facts
+
+- Tamsin Reyes is left-handed. Source: Characters/Tamsin Reyes; 1. The Well at Kharsa.
+- Tamsin has a scar across the right palm. Source: 1. The Well at Kharsa.
+- Tamsin cannot swim. Source: Characters/Tamsin Reyes.
+- Tamsin does not use the cartographer's name until chapter 9. Source: Characters/Tamsin Reyes.`,
+  'canon-tariff': `## Continuity facts
+
+- The Kharsa well is going dry. Source: 1. The Well at Kharsa.
+- The basin tariff is nine days. Source: 3. Salt and Debt.
+- The cartographer's leg was broken on the descent and splinted. Source: 2. What the Cartographer Kept.`,
 }
 
 function doc(
@@ -75,13 +86,24 @@ function doc(
     parentId,
     title,
     kind,
-    path: kind === 'folder' ? null : `manuscript/scenes/${id}.md`,
+    path: kind === 'folder' ? null : extra.path ?? `manuscript/scenes/${id}.md`,
     position,
     synopsis: null,
     label: null,
     status: null,
     wordCount: countWords(body),
     updatedAt: Date.now() - 86_400_000,
+    notes: null,
+    target: null,
+    pov: null,
+    plants: null,
+    payoffs: null,
+    keywords: [],
+    links: [],
+    sectionType: null,
+    icon: null,
+    x: null,
+    y: null,
     ...extra,
   }
 }
@@ -125,4 +147,13 @@ export const DEMO_DOCS: DocumentRow[] = [
   doc('salt', 'worldbuilding', 'Salt Roads and Tariffs', 'lore', 14),
   doc('research', null, 'Research', 'folder', 15),
   doc('clippings', 'research', 'Evaporite geology (clippings)', 'research', 16),
+  doc('canon', null, 'Canon', 'folder', 17),
+  doc('canon-tamsin', 'canon', 'Tamsin — facts', 'canon', 18, {
+    path: 'manuscript/canon/0001-tamsin-facts.md',
+    synopsis: 'Handedness, scar, swimming, naming the cartographer.',
+  }),
+  doc('canon-tariff', 'canon', 'Basin — facts', 'canon', 19, {
+    path: 'manuscript/canon/0002-basin-facts.md',
+    synopsis: 'The well, the nine-day tariff, the broken leg.',
+  }),
 ]
