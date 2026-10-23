@@ -1,10 +1,15 @@
-import type { CSSProperties, ReactNode } from 'react'
+import type { CSSProperties } from 'react'
 
 /**
  * Every icon in the app, on one 24px grid, stroke-based so they scale and
  * recolour. Adding an icon means adding it here — never inline SVG in a screen.
+ *
+ * Deliberately *not* annotated `Record<string, ReactNode>`: that widened
+ * `IconName` to `string`, so `icon="export"` typechecked and then rendered an
+ * empty box at runtime. Letting the keys be inferred is what makes `IconName`
+ * mean something.
  */
-const PATHS: Record<string, ReactNode> = {
+const PATHS = {
   chevronDown: <path d="M6 9l6 6 6-6" />,
   chevronRight: <path d="M9 5l7 7-7 7" />,
   plus: <path d="M12 5v14M5 12h14" />,
@@ -138,6 +143,150 @@ const PATHS: Record<string, ReactNode> = {
       <path d="M3 9h18M8 5v4M14 5v4" />
     </>
   ),
+  // --- Phase 6: collections, Scrivenings, structure -----------------------
+  layers: (
+    <>
+      <path d="M12 3.2 3.6 7.5 12 11.8l8.4-4.3z" />
+      <path d="M3.6 12 12 16.3 20.4 12" />
+      <path d="M3.6 16.4 12 20.7l8.4-4.3" />
+    </>
+  ),
+  filter: <path d="M4 5h16l-6.2 7.4v5.3l-3.6 2v-7.3z" />,
+  stack: (
+    <>
+      <rect x="4" y="3.5" width="16" height="5" rx="1.4" />
+      <rect x="4" y="10.5" width="16" height="5" rx="1.4" />
+      <path d="M4 18.5h16" />
+    </>
+  ),
+  heading: (
+    <>
+      <path d="M5 5v14M13 5v14M5 12h8" />
+      <path d="M17 10.5h3M18.5 10.5V19" />
+    </>
+  ),
+  split: (
+    <>
+      <rect x="3" y="4" width="18" height="16" rx="2.5" />
+      <path d="M12 4v16" />
+    </>
+  ),
+  checklist: (
+    <>
+      <path d="M4 6.5 5.6 8l2.6-2.6M4 12.5 5.6 14l2.6-2.6M4 18.5 5.6 20l2.6-2.6" />
+      <path d="M12 6.7h8M12 12.7h8M12 18.7h8" />
+    </>
+  ),
+  compare: (
+    <>
+      <rect x="3" y="4.5" width="7.5" height="15" rx="1.6" />
+      <rect x="13.5" y="4.5" width="7.5" height="15" rx="1.6" />
+    </>
+  ),
+  target: (
+    <>
+      <circle cx="12" cy="12" r="8.4" />
+      <circle cx="12" cy="12" r="4.4" />
+      <circle cx="12" cy="12" r="0.9" />
+    </>
+  ),
+  template: (
+    <>
+      <rect x="3.5" y="4" width="17" height="16" rx="2.2" />
+      <path d="M3.5 9.2h17M9.5 9.2V20" />
+    </>
+  ),
+  bookmark: <path d="M7 3.6h10a1 1 0 0 1 1 1v15.4l-6-3.6-6 3.6V4.6a1 1 0 0 1 1-1z" />,
+  tag: (
+    <>
+      <path d="M11.2 3.6H20a.6.6 0 0 1 .6.6v8.8L11.5 22a1 1 0 0 1-1.4 0L2.5 14.4a1 1 0 0 1 0-1.4z" />
+      <circle cx="16.4" cy="7.8" r="1.3" />
+    </>
+  ),
+  // --- Phase 8: story visualization ---------------------------------------
+  timeline: (
+    <>
+      <path d="M3 12h18" />
+      <circle cx="7" cy="12" r="2.1" />
+      <circle cx="14.5" cy="12" r="2.1" />
+      <path d="M7 9.9V5.5M14.5 14.1v4.4" />
+    </>
+  ),
+  network: (
+    <>
+      <circle cx="6" cy="6.5" r="2.4" />
+      <circle cx="18" cy="8.5" r="2.4" />
+      <circle cx="11" cy="18" r="2.4" />
+      <path d="M8.1 7.6 15.7 8.2M7.2 8.6l2.7 7.2M16.6 10.6l-4 5.6" />
+    </>
+  ),
+  canvas: (
+    <>
+      <rect x="3" y="4.5" width="18" height="15" rx="2.2" />
+      <rect x="6" y="7.5" width="5" height="4" rx="1" />
+      <rect x="13.5" y="12" width="4.5" height="4.5" rx="1" />
+      <path d="M11 9.5h2.5v4" />
+    </>
+  ),
+  // --- Phase 9: advanced visualization and analytics ----------------------
+  mindmap: (
+    <>
+      <circle cx="5" cy="12" r="2.2" />
+      <circle cx="18.5" cy="6" r="2" />
+      <circle cx="18.5" cy="12" r="2" />
+      <circle cx="18.5" cy="18" r="2" />
+      <path d="M7.2 12h2.3M9.5 12V7.2h7M9.5 12h7M9.5 12v4.8h7" />
+    </>
+  ),
+  flowchart: (
+    <>
+      <rect x="8.5" y="3" width="7" height="4.5" rx="1.2" />
+      <rect x="2.5" y="16.5" width="7" height="4.5" rx="1.2" />
+      <rect x="14.5" y="16.5" width="7" height="4.5" rx="1.2" />
+      <path d="M12 7.5v3.5M6 16.5V11h12v5.5" />
+    </>
+  ),
+  infographic: (
+    <>
+      <rect x="3.5" y="3.5" width="17" height="17" rx="2.2" />
+      <path d="M7.5 16.5v-4M12 16.5V8M16.5 16.5v-6" />
+    </>
+  ),
+  cluster: (
+    <>
+      <circle cx="7.5" cy="8" r="1.6" />
+      <circle cx="11" cy="6" r="1.6" />
+      <circle cx="10.2" cy="10.6" r="1.6" />
+      <circle cx="16.8" cy="16" r="1.6" />
+      <circle cx="19" cy="12.4" r="1.6" />
+      <path d="M4.5 13.5a7 7 0 0 1 8-8" opacity="0.5" />
+    </>
+  ),
+  pulse: <path d="M3 12.5h3.6l2.2-6 3.4 11 2.6-7.4 1.7 2.4H21" />,
+  link: (
+    <>
+      <path d="M10.4 13.6a3.6 3.6 0 0 0 5.1 0l2.6-2.6a3.6 3.6 0 0 0-5.1-5.1l-1.3 1.3" />
+      <path d="M13.6 10.4a3.6 3.6 0 0 0-5.1 0l-2.6 2.6a3.6 3.6 0 0 0 5.1 5.1l1.3-1.3" />
+    </>
+  ),
+  eye: (
+    <>
+      <path d="M2.6 12S6 6.4 12 6.4 21.4 12 21.4 12 18 17.6 12 17.6 2.6 12 2.6 12z" />
+      <circle cx="12" cy="12" r="2.6" />
+    </>
+  ),
+  copy: (
+    <>
+      <rect x="8.5" y="8.5" width="12" height="12" rx="2" />
+      <path d="M15.5 5.5H5.5a2 2 0 0 0-2 2v10" />
+    </>
+  ),
+  wand: (
+    <>
+      <path d="M14.5 4.5 19.5 9.5M4 20 15.6 8.4a1.4 1.4 0 0 1 2 0l2 2a1.4 1.4 0 0 1 0 2L8 24" />
+      <path d="M5.5 4v3M4 5.5h3M18 16v2.4M16.8 17.2h2.4" />
+    </>
+  ),
   trash: (
     <>
       <path d="M4 7h16M9.5 7V5.5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1V7" />
@@ -147,6 +296,12 @@ const PATHS: Record<string, ReactNode> = {
 }
 
 export type IconName = keyof typeof PATHS
+
+/** True when a string names a real icon. Icon overrides are stored in the
+ *  project database, so a name can outlive the icon it referred to. */
+export function isIconName(name: string | null | undefined): name is IconName {
+  return !!name && name in PATHS
+}
 
 export function Icon({
   name,
@@ -175,7 +330,10 @@ export function Icon({
       style={{ flexShrink: 0, ...style }}
       aria-hidden="true"
     >
-      {PATHS[name]}
+      {/* An unknown name renders the generic document rather than an empty
+          box: icon names come from the project database and can outlive a
+          rename, and a silent gap in the binder is worse than a wrong icon. */}
+      {PATHS[name] ?? PATHS.doc}
     </svg>
   )
 }

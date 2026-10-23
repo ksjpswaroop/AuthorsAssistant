@@ -18,7 +18,7 @@ fn main() {
     let summary = project::create(&parent, &name, "novel").expect("could not create the project");
     let root = PathBuf::from(&summary.path);
 
-    // create() already made Manuscript / Characters / Worldbuilding / Research.
+    // create() already made Manuscript / Characters / Worldbuilding / Canon / Research.
     // Nest inside them rather than adding a second set at the root.
     let existing = project::documents(&root).unwrap();
     let folder_named = |name: &str| {
@@ -68,6 +68,60 @@ fn main() {
         "## Role\n\nProtagonist. Salt-factor, formerly bonded.\n\n## Continuity facts\n\nLeft-handed. Scar across the right palm. Cannot swim.",
     )
     .unwrap();
+
+    let canon = folder_named("Canon");
+    let facts = project::create_document(&root, canon.as_deref(), "Tamsin — facts", DocKind::Canon).unwrap();
+    project::write_body(
+        &root,
+        &facts.id,
+        "## Continuity facts\n\n- Tamsin Reyes is left-handed. Source: Characters/Tamsin Reyes.\n- Tamsin has a scar across the right palm. Source: 1. The Well at Kharsa.\n",
+    )
+    .unwrap();
+
+    // Link sheets to the scenes they appear in, so the character graph has real
+    // edges rather than an empty canvas.
+    let scene_ids: Vec<String> = project::documents(&root)
+        .unwrap()
+        .into_iter()
+        .filter(|d| d.kind == DocKind::Scene && d.word_count > 0)
+        .map(|d| d.id)
+        .collect();
+
+    for id in &scene_ids {
+        project::link(&root, &tamsin.id, id, "appears_in").unwrap();
+    }
+    let carto = project::create_sheet(&root, "The Cartographer", DocKind::Sheet, None, None).unwrap();
+    for id in scene_ids.iter().take(2) {
+        project::link(&root, &carto.id, id, "appears_in").unwrap();
+    }
+    let basin =
+        project::create_sheet(&root, "The Kharsa Basin", DocKind::Location, None, scene_ids.first().map(|s| s.as_str()))
+            .unwrap();
+    let _ = basin;
+
+    // Story dates in the notes, so the chronological timeline has something to
+    // reorder — day 12 before day 4 is deliberately out of narrative order.
+    for (id, day) in scene_ids.iter().zip([1i64, 12, 4]) {
+        project::update_extended(&root, id, Some(&format!("Takes place on Day {day}.")), Some(2000), Some("Tamsin"), None, None)
+            .unwrap();
+        project::set_keywords(&root, id, &["tamsin".to_string(), "kharsa".to_string()]).unwrap();
+    }
+
+    // A deliberately reused paragraph, so integrity and clustering have a real
+    // finding rather than an empty result.
+    if let Some(first) = scene_ids.first() {
+        let echo = project::create_document(&root, None, "7. The Second Well", DocKind::Scene).unwrap();
+        let original = project::read_body(&root, first).unwrap();
+        let opening = original.split("\n\n").next().unwrap_or_default().to_string();
+        project::write_body(
+            &root,
+            &echo.id,
+            &format!("{opening}\n\nShe had written the same sentence about the same well twice, a year apart."),
+        )
+        .unwrap();
+        project::update_meta(&root, &echo.id, Some("An echo of chapter one, probably to cut."), Some("Plot"), Some("Draft"))
+            .unwrap();
+    }
 
     println!("{}", summary.path);
 }
