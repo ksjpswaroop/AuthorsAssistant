@@ -6,6 +6,8 @@ import { Integrity } from './screens/Integrity'
 import { Settings } from './screens/Settings'
 import { Research } from './screens/Research'
 import { Search } from './screens/Search'
+import { Story } from './screens/Story'
+import { Insights } from './screens/Insights'
 import { Library } from './screens/Library'
 import { Paper } from './screens/Paper'
 import { TechBook } from './screens/TechBook'
@@ -137,6 +139,12 @@ export default function App() {
         case 'research':
           if (s.project) s.go('research')
           break
+        case 'story':
+          if (s.project) s.go('story')
+          break
+        case 'insights':
+          if (s.project) s.go('insights')
+          break
         case 'integrity':
           if (s.project) s.go('integrity')
           break
@@ -188,6 +196,10 @@ export default function App() {
       <Settings />
     ) : route === 'search' ? (
       <Search />
+    ) : route === 'story' ? (
+      <Story />
+    ) : route === 'insights' ? (
+      <Insights />
     ) : route === 'research' ? (
       <Research />
     ) : route === 'library' ? (
