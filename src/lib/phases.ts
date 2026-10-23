@@ -72,6 +72,57 @@ export const scrivenings = {
 }
 
 
+/* --- Phase 7: compile ------------------------------------------------------ */
+
+export type ExportFormat = 'markdown' | 'html' | 'pdf' | 'epub' | 'docx' | 'fountain'
+
+export interface CompileFilters {
+  root?: string | null
+  collection?: string | null
+  statuses?: string[] | null
+  excludeStatuses?: string[] | null
+  excludeLabels?: string[] | null
+  excludeSectionTypes?: string[] | null
+  includeResearch: boolean
+  includeSheets: boolean
+  skipEmpty: boolean
+}
+
+export const defaultFilters = (): CompileFilters => ({
+  root: null,
+  collection: null,
+  statuses: null,
+  excludeStatuses: null,
+  excludeLabels: null,
+  excludeSectionTypes: null,
+  includeResearch: false,
+  includeSheets: false,
+  skipEmpty: true,
+})
+
+export const compile = {
+  preview: (path: string, preset: string, filters: CompileFilters) =>
+    call<string>('compile_preview', { path, preset, filters }),
+  export: (
+    path: string,
+    preset: string,
+    format: ExportFormat,
+    filters: CompileFilters,
+    destination: string,
+    title?: string,
+    author?: string,
+  ) =>
+    call<string>('compile_export', {
+      path,
+      preset,
+      format,
+      filters,
+      destination,
+      title: title ?? null,
+      author: author ?? null,
+    }),
+}
+
 /** Writing targets, stored with the project rather than in app preferences. */
 export interface Goals {
   projectTarget: number | null

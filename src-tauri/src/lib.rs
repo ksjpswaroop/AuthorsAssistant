@@ -8,6 +8,7 @@ mod error;
 pub mod bookmarks;
 pub mod blocks;
 pub mod collections;
+pub mod compile;
 pub mod import;
 pub mod integrity;
 mod menu;
@@ -22,8 +23,9 @@ pub mod websearch;
 
 use error::{AppError, AppResult};
 use model::{
-    Collection, CollectionKind, DocKind, DocumentRow, ProjectSummary, RecentProject, SaveReceipt,
-    Snapshot,
+    Collection, CollectionKind, CompileFilters, CompilePreset, DocKind, DocumentRow, ExportFormat,
+    ProjectSummary,
+    RecentProject, SaveReceipt, Snapshot,
 };
 use tauri::Manager;
 
@@ -301,6 +303,80 @@ fn scrivenings_save(path: String, combined: String, ids: Vec<String>) -> AppResu
         project::write_body(&root, &p.id, &p.body)?;
     }
     Ok(pieces.len())
+}
+
+// --- Phase 7: compile -------------------------------------------------------
+
+#[tauri::command]
+fn compile_preview(path: String, preset: String, filters: CompileFilters) -> AppResult<String> {
+    let root = project::to_path(&path);
+    let items = compile_items(&root, &filters)?;
+    Ok(compile::to_markdown(&items, &CompilePreset::named(&preset)))
+}
+
+fn compile_items(root: &std::path::Path, filters: &CompileFilters) -> AppResult<Vec<compile::Item>> {
+    let docs = if let Some(cid) = &filters.collection {
+        collections::members(&store::open(root)?, cid)?
+    } else {
+        let mut d = project::documents(root)?;
+        if let Some(rid) = &filters.root {
+            let keep: Vec<String> = descendants(&d, rid);
+            d.retain(|x| keep.contains(&x.id));
+        }
+        d.sort_by_key(|x| x.position);
+        d
+    };
+    let mut items = Vec::new();
+    for doc in docs {
+        if !compile::included(&doc, filters) {
+            continue;
+        }
+        let body = project::read_body(root, &doc.id)?;
+        items.push(compile::Item { doc, body });
+    }
+    Ok(items)
+}
+
+fn descendants(docs: &[DocumentRow], root_id: &str) -> Vec<String> {
+    let mut out = Vec::new();
+    let mut frontier = vec![root_id.to_string()];
+    while let Some(id) = frontier.pop() {
+        out.push(id.clone());
+        for child in docs.iter().filter(|d| d.parent_id.as_deref() == Some(id.as_str())) {
+            frontier.push(child.id.clone());
+        }
+    }
+    out
+}
+
+#[tauri::command]
+fn compile_export(
+    path: String,
+    preset: String,
+    format: String,
+    filters: CompileFilters,
+    destination: String,
+    title: Option<String>,
+    author: Option<String>,
+) -> AppResult<String> {
+    let root = project::to_path(&path);
+    let items = compile_items(&root, &filters)?;
+    let mut p = CompilePreset::named(&preset);
+    p.title_page = title;
+    p.author = author;
+    let fmt = ExportFormat::parse(&format);
+    let bytes = compile::render(&items, &p, fmt)?;
+
+    let dest = std::path::PathBuf::from(&destination);
+    if dest.extension().is_none() {
+        return err_str("the destination needs a file name");
+    }
+    std::fs::write(&dest, bytes)?;
+    Ok(dest.to_string_lossy().to_string())
+}
+
+fn err_str<T>(m: &str) -> AppResult<T> {
+    Err(error::AppError(m.to_string()))
 }
 
 // --- Knowledge to Publication: blocks, provenance, sources, research --------
@@ -583,6 +659,8 @@ pub fn run() {
             bulk_set_metadata,
             scrivenings_open,
             scrivenings_save,
+            compile_preview,
+            compile_export,
             blocks_list,
             block_history,
             block_authorship,
