@@ -2,7 +2,7 @@
 
 Purpose: how AegisDraft runs **Nous Research hermes-agent** as the local agent runtime (replacing LangGraph)—ports, profiles, skills, writing-style memory, and self-evolution.
 
-Related: [AGENTS.md](AGENTS.md), [TOOLS.md](TOOLS.md), [ARCHITECTURE.md](ARCHITECTURE.md), [phases/05-hermes-agents.md](phases/05-hermes-agents.md).
+Related: [AGENTS.md](AGENTS.md), [TOOLS.md](TOOLS.md), [ARCHITECTURE.md](ARCHITECTURE.md), [WRITING-LOOP.md](WRITING-LOOP.md), [phases/05-hermes-agents.md](phases/05-hermes-agents.md).
 
 ## Why hermes-agent
 
@@ -43,9 +43,9 @@ Health: `GET http://127.0.0.1:18765/health` → ok before enabling the command b
 | Product agent | hermes-agent profile / skill pack |
 | :--- | :--- |
 | App Controller | Binder mutation skills (`create_folder`, `create_chapter`, …) |
-| Deep Continuity | `extract_entities`, `search_binder`, highlights |
-| Integrity | Similarity + detection tools; confirm on `search_web` |
-| World-Builder | `generate_lore`, `save_to_binder`, `draft_scene` |
+| Deep Continuity | `extract_entities`, `search_binder`, `check_against_canon`, highlights |
+| Integrity | Similarity + detection + `run_slop_scan`; confirm on `search_web` and apply-cuts |
+| World-Builder | `generate_lore`, `save_to_binder`, `draft_scene` / `rewrite_range` with brief |
 
 Command bar and inspector pick the profile (or let a router skill choose). Details: [AGENTS.md](AGENTS.md).
 
@@ -57,14 +57,16 @@ Do not give hermes-agent unconstrained shell/FS over the whole disk—skills are
 
 ## Writing-style profile
 
-As the author writes and accepts prose:
+Voice is two parts ([WRITING-LOOP.md](WRITING-LOOP.md#voice-two-parts)):
 
-1. Sample accepted scenes (local only)
-2. Extract voice traits: tone, sentence rhythm, dialogue habits, vocabulary preferences
-3. Store a **style profile** under the project (e.g. `MyBook.aegis/agent/style-profile.json`) plus hermes memory
-4. Inject the profile into draft / rewrite / World-Builder context (“rewrite in my voice”)
+1. **Guardrails (Part 1)** — built-in mechanical slop rubric. Not learned. Injected into every `draft_scene` / rewrite.
+2. **Identity (Part 2)** — as the author writes and **accepts** prose:
+   - Sample accepted scenes (local only), including KEEP sentences from revision briefs
+   - Extract tone, sentence rhythm, dialogue habits, vocabulary wells, exemplars and anti-exemplars
+   - Store under the project (e.g. `MyBook.aegis/agent/style-profile.json`) plus hermes memory
+   - Inject into draft / rewrite / World-Builder (“rewrite in my voice”)
 
-The style profile never leaves the machine. Authors can reset or edit it in Settings → Voice & skills.
+The style profile never leaves the machine. Authors can reset or edit Part 2 in Settings → Voice & skills. Bulk agent writes take an optional LibGit2 snapshot first; the inspector offers Keep / Discard.
 
 ## Self-evolution
 

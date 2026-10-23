@@ -5,14 +5,14 @@ Purpose: implementation plan for AegisDraft. **Core phases 1–5** deliver the s
 | Phase | Months | Status | Doc |
 | :--- | :--- | :--- | :--- |
 | 1. Core editor | 1–2 | **Complete** | [phases/01-core-editor.md](phases/01-core-editor.md) |
-| 2. Scrivener features | 3–4 | Not started | [phases/02-scrivener-features.md](phases/02-scrivener-features.md) |
-| 3. Local AI + RAG | 5–6 | Not started | [phases/03-ai-integration.md](phases/03-ai-integration.md) |
-| 4. Integrity engine | 7–8 | Not started | [phases/04-integrity-engine.md](phases/04-integrity-engine.md) |
-| 5. Hermes agents | 9–10 | Not started | [phases/05-hermes-agents.md](phases/05-hermes-agents.md) |
-| 6. Scrivener completeness (v2) | 11–12 | Not started | [phases/06-scrivener-completeness.md](phases/06-scrivener-completeness.md) |
-| 7. Compile and export (v2) | 13–14 | Not started | [phases/07-compile-export.md](phases/07-compile-export.md) |
-| 8. AI story visualization (v2) | 15–16 | Not started | [phases/08-ai-story-visualization.md](phases/08-ai-story-visualization.md) |
-| 9. AI viz advanced (v2) | 17–18 | Not started | [phases/09-ai-viz-advanced.md](phases/09-ai-viz-advanced.md) |
+| 2. Scrivener features | 3–4 | **Complete** | [phases/02-scrivener-features.md](phases/02-scrivener-features.md) |
+| 3. Local AI + RAG | 5–6 | **Mostly complete** | [phases/03-ai-integration.md](phases/03-ai-integration.md) |
+| 4. Integrity engine | 7–8 | Partly complete | [phases/04-integrity-engine.md](phases/04-integrity-engine.md) |
+| 5. Hermes agents | 9–10 | Partly complete | [phases/05-hermes-agents.md](phases/05-hermes-agents.md) |
+| 6. Scrivener completeness (v2) | 11–12 | Partly complete | [phases/06-scrivener-completeness.md](phases/06-scrivener-completeness.md) |
+| 7. Compile and export (v2) | 13–14 | **Complete** | [phases/07-compile-export.md](phases/07-compile-export.md) |
+| 8. AI story visualization (v2) | 15–16 | Partly complete | [phases/08-ai-story-visualization.md](phases/08-ai-story-visualization.md) |
+| 9. AI viz advanced (v2) | 17–18 | Partly complete | [phases/09-ai-viz-advanced.md](phases/09-ai-viz-advanced.md) |
 
 ## Phase 1 — Core editor (Months 1–2)
 
@@ -34,13 +34,13 @@ Purpose: implementation plan for AegisDraft. **Core phases 1–5** deliver the s
 
 ## Phase 4 — Integrity engine (Months 7–8)
 
-**Outcomes:** Internal similarity; opt-in web similarity (SearXNG + Trafilatura); local AI detection; rubric evaluator. Each check is a **callable tool** for Phase 5.
+**Outcomes:** Internal similarity; opt-in web similarity (SearXNG + Trafilatura); local AI detection; rubric evaluator **including mechanical slop**; optional classified cuts. Each check is a **callable tool** for Phase 5.
 
 **Depends on:** Phase 3 (embeddings / local model host).
 
 ## Phase 5 — hermes-agent workflows (Months 9–10)
 
-**Outcomes:** hermes-agent on `:18765` + FastAPI tool gateway on `:8765` + Tauri IPC; profiles for App Controller, Deep Continuity, Integrity, World-Builder; command bar; integrity report UI; **writing-style profile** and **evolving skills**. See [HERMES-RUNTIME.md](HERMES-RUNTIME.md).
+**Outcomes:** hermes-agent on `:18765` + FastAPI tool gateway on `:8765` + Tauri IPC; profiles for App Controller, Deep Continuity, Integrity, World-Builder; command bar; integrity report UI; **writing-style profile**, **canon + debts**, **revision briefs**, and **evolving skills**. See [HERMES-RUNTIME.md](HERMES-RUNTIME.md), [WRITING-LOOP.md](WRITING-LOOP.md).
 
 **Depends on:** Phases 2–4 (binder, RAG, integrity as tools). Agents only matter once those capabilities exist.
 
@@ -91,5 +91,6 @@ Enhancements layered on core. Phase docs 01–05 are not rewritten; v2 files sta
 - [PRODUCT.md](PRODUCT.md) — what authors experience
 - [ARCHITECTURE.md](ARCHITECTURE.md) — how processes fit
 - [AGENTS.md](AGENTS.md) / [TOOLS.md](TOOLS.md) — Phase 5 contracts (+ [v2 tools](TOOLS.md#v2-tools))
+- [WRITING-LOOP.md](WRITING-LOOP.md) — canon, slop rubric, revision briefs, context pack
 - [HERMES-RUNTIME.md](HERMES-RUNTIME.md) — hermes-agent ports, style, skills
 - [TECH-STACK.md](TECH-STACK.md) — locked choices

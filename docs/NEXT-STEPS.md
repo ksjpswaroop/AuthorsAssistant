@@ -11,6 +11,11 @@ These are yours, not the compiler's. Each one is cheap now and expensive later.
 3. **Project types.** Papers and technical books are designed as project types with their own binder shapes, inspectors and compile targets. That changes the `documents.kind` vocabulary and the compile pipeline. Decide whether they are Phase 4 or a separate track.
 4. **A fifth agent.** Deep Research is not one of the four in [AGENTS.md](AGENTS.md). If it ships, AGENTS.md and TOOLS.md need `plan_research`, `fetch_source` and `extract_claims`.
 
+## Blocking a Mac App Store build
+
+- [ ] **Security-scoped bookmarks for recent projects.** `recent-projects.json` stores plain paths. Under the App Sandbox a plain path does not grant access on the next launch, so every recent project would fail to reopen. The bookmark must be created when the folder is picked and resolved on open — `project::read_recents` and `project::remember`. This is the single largest gap between the current build and a submittable one. Full context: [APP-STORE.md](APP-STORE.md).
+- [ ] Test a signed, sandboxed build rather than `tauri dev` — the sandbox is not active in development, so this class of bug is invisible until packaged.
+
 ## Finishing Phase 1 properly
 
 Small, worth doing before moving on:
@@ -28,6 +33,7 @@ Small, worth doing before moving on:
 
 - Binder drag-and-drop (`react-arborist`), corkboard drag (`dnd-kit`), outliner columns (TanStack Table)
 - Document notes and keywords (the inspector tabs are built and waiting)
+- **Canon** folder and `kind: canon` (seeded on new projects; inspector/editing in this phase)
 - Snapshots via LibGit2, and the snapshot list already sketched in the inspector
 - Compile for real, Markdown first — the dialog already counts what it would include
 - Import Markdown and existing folders
@@ -37,19 +43,19 @@ Small, worth doing before moving on:
 - An Ollama client, and the model list the Settings screen is shaped for
 - Persist model role assignments
 - `nomic-embed-text` + Qdrant, indexing on save
-- Continue, rewrite, critique — the editor's empty state already has the affordance, disabled
+- Continue, rewrite, critique — the editor's empty state already has the affordance, disabled; rewrite uses a KEEP list when replacing more than a sentence
 
 ## Phase 4 — Integrity, papers, technical books
 
 - Internal similarity against the author's own drafts
 - On-device AI detection through ONNX Runtime
-- Rubric editor and the exportable packet
+- Rubric editor (including mechanical slop) and the exportable packet
 - The paper and technical-book project types, the library, and LaTeX compile
 
 ## Phase 5 — hermes-agent
 
 - hermes-agent on `:18765`, FastAPI tool gateway on `:8765`, the four agent profiles
-- Skills wrapping TOOLS.md; style profile + evolving project skills
+- Skills wrapping TOOLS.md; style profile + evolving project skills; **canon, slop, revision briefs** ([WRITING-LOOP.md](WRITING-LOOP.md))
 - Agent traces / memory written into the project folder, surfaced in the inspector tab that already exists
 - Deep Research, if decision 2 above says yes
 - Details: [HERMES-RUNTIME.md](HERMES-RUNTIME.md), [phases/05-hermes-agents.md](phases/05-hermes-agents.md)

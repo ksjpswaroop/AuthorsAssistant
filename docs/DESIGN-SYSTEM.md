@@ -103,3 +103,43 @@ Standalone `.dc.html` artboards are the source of truth for agent/runtime copy (
 Agent logs and skill chips use **IBM Plex Mono** (same as model tags and paths).
 
 The sample manuscript in the canvas is the same one the browser preview uses (`src/lib/demoProject.ts`), so a design review and a code review are looking at the same book.
+
+## Components added for phases 6–9
+
+All built from the same primitives and marked with `PhaseBanner` / `Chip` so a viewer always knows what is real.
+
+| Component | Phase | File |
+| :--- | :--- | :--- |
+| `CollectionsRail` — manual, smart and saved-search collections | 6 | `components/Collections.tsx` |
+| `Scrivenings` — a folder's children as one continuous read, seams visible | 6 | `components/Scrivenings.tsx` |
+| `BulkBar` — floating multi-select metadata bar | 6 | `components/BulkBar.tsx` |
+| `CompositionMode` — chrome-free writing, Escape to leave | 6 | inside `screens/Studio.tsx` |
+| Section type, bookmarks, project keywords | 6 | `components/Inspector.tsx` |
+| `ProjectDialogs` — templates, writing goals, snapshot compare | 6 | `screens/ProjectDialogs.tsx` |
+| `Story` — plot diagram, timeline, character graph, infinite canvas | 8 | `screens/Story.tsx` |
+| `Insights` — pacing, clusters, mind map, flowchart, story bible | 9 | `screens/Insights.tsx` |
+
+The Studio's view switcher now carries four views (Editor, Corkboard, Outliner, Scrivenings), and the title bar reaches Story and Insights directly.
+
+## Charts
+
+Chart parameters live in `src/lib/viz.ts`, deliberately separate from the UI palette.
+
+The meaning colours are reserved — blue is an internal match, orange is the network, purple is AI writing, yellow is continuity — so a chart series may not borrow them. A purple line in a pacing chart would be asserting something untrue. Charts use their own ramp:
+
+```
+#0064E0  #E8701F  #7A1FB8  #1A9AA6  #C2185B
+```
+
+Stepped from the same families and checked with the palette validator: lightness band, chroma floor, colour-vision separation (worst adjacent pair ΔE 11.8 deutan), normal-vision floor and contrast against the light surface all pass. Assign in fixed order by entity — never cycle, never reorder when a filter changes the series count.
+
+Rules the charts follow: one axis only, never two scales; a legend whenever there are two or more series; direct labels on the structural extremes rather than every point; hit targets larger than the marks; grid and axes recessive.
+
+**Dark mode is absent on purpose.** Dark chart steps have to be re-validated against a dark surface — flipping these would fail the lightness band immediately. The app is light-only today; when dark mode is designed, the ramp gets its own validated steps.
+
+## Assets
+
+The mark, icon, splash and voice are specified in [BRAND.md](BRAND.md). Two rules that touch code:
+
+- The mark in the UI is the `AppMark` component, never an image file, so the title bar and splash cannot drift apart.
+- Chrome heights and the macOS traffic-light inset are tokens in `chrome`, not per-screen numbers.

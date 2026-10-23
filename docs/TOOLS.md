@@ -2,7 +2,7 @@
 
 Purpose: OpenAPI-style catalog of tools the FastAPI tool gateway exposes; **hermes-agent skills** call these endpoints. Agents do not invent binder mutations in prose alone.
 
-Agent roles: [AGENTS.md](AGENTS.md). Runtime: [HERMES-RUNTIME.md](HERMES-RUNTIME.md). Architecture: [ARCHITECTURE.md](ARCHITECTURE.md).
+Agent roles: [AGENTS.md](AGENTS.md). Runtime: [HERMES-RUNTIME.md](HERMES-RUNTIME.md). Architecture: [ARCHITECTURE.md](ARCHITECTURE.md). Writing loop (canon, slop, briefs): [WRITING-LOOP.md](WRITING-LOOP.md).
 
 ## Schema shape
 
@@ -22,6 +22,19 @@ Every tool is described with a name, description, and typed parameters (OpenAPI-
 
 Implementations live on the **tool gateway** (`127.0.0.1:8765`) and/or thin TypeScript wrappers that invoke Rust commands. hermes-agent skills HTTP-call the gateway; results feed back into the hermes tool loop.
 
+Revision briefs, canon entries, slop scans, and the drafting context pack: [WRITING-LOOP.md](WRITING-LOOP.md). `draft_scene` / `rewrite_range` `brief` object:
+
+```json
+{
+  "kind": "tighten",
+  "problem": "string",
+  "keep": ["exact sentences that must survive"],
+  "change": [{ "action": "cut", "quote": "…", "instruction": "…" }],
+  "voice_rules": ["string"],
+  "target_word_count": 2800
+}
+```
+
 ---
 
 ## Binder tools
@@ -31,8 +44,11 @@ Implementations live on the **tool gateway** (`127.0.0.1:8765`) and/or thin Type
 | `create_folder` | Create a binder folder/collection | `name`, `parent?` | App Controller, World-Builder |
 | `create_chapter` | Create one or more empty chapter/scene docs | `parent`, `count?`, `title_prefix?` | App Controller |
 | `create_character_sheet` | Create character metadata + sheet file | `name`, `parent?`, `role?` | App Controller |
-| `save_to_binder` | Write content into a binder path/category | `category`, `title?`, `content`, `parent?` | World-Builder, App Controller |
+| `save_to_binder` | Write content into a binder path/category | `category`, `title?`, `content`, `parent?`, `kind?` (`lore` \| `sheet` \| `canon` \| `scene` \| `research`) | World-Builder, App Controller |
 | `search_binder` | Semantic / keyword search over the project index | `query`, `limit?`, `scope?` | Deep Continuity, Integrity, World-Builder |
+| `append_canon_entry` | Add a falsifiable fact to the Canon folder | `statement`, `source_doc_id`, `category?`, `source_span?` | Deep Continuity, World-Builder |
+| `check_against_canon` | Compare text to canon; return contradictions | `text`, `doc_id?` | Deep Continuity |
+| `log_propagation_debt` | Record a lore/continuity gap without inventing a fix | `trigger`, `affected_doc_ids[]`, `status?: pending` | Deep Continuity, World-Builder |
 
 ---
 
@@ -41,8 +57,9 @@ Implementations live on the **tool gateway** (`127.0.0.1:8765`) and/or thin Type
 | Tool | Description | Key parameters | Used by |
 | :--- | :--- | :--- | :--- |
 | `highlight_text_in_editor` | Highlight a range in the open document | `start_index`, `end_index`, `color?` | Deep Continuity, Integrity |
-| `draft_scene` | Generate prose into a scene (or return text for insert) | `context?`, `style?`, `target_doc_id?`, `length?` | World-Builder |
+| `draft_scene` | Generate prose into a scene (or return text for insert). Loads the [context pack](WRITING-LOOP.md#drafting-context-pack). Replacing more than a sentence requires a [revision brief](WRITING-LOOP.md#revision-brief). | `target_doc_id?`, `brief?` (keep / change / voice_rules / kind / target_word_count), `context?`, `style?`, `length?` | World-Builder |
 | `replace_range` | Replace a text span in the editor | `start_index`, `end_index`, `text` | App Controller, Continuity (fixes) |
+| `rewrite_range` | Rewrite a span or whole scene from a revision brief; must preserve `brief.keep` | `target_doc_id`, `start_index?`, `end_index?`, `brief` | World-Builder, Integrity (apply cuts) |
 
 ---
 
@@ -51,6 +68,7 @@ Implementations live on the **tool gateway** (`127.0.0.1:8765`) and/or thin Type
 | Tool | Description | Key parameters | Used by |
 | :--- | :--- | :--- | :--- |
 | `extract_entities` | Extract characters, times, locations, objects from text | `text` | Deep Continuity |
+| `check_foreshadowing_ledger` | List plants without payoffs (and payoffs without plants) from outline metadata | `scope?` | Deep Continuity |
 
 ---
 
@@ -61,8 +79,12 @@ Implementations live on the **tool gateway** (`127.0.0.1:8765`) and/or thin Type
 | `check_internal_similarity` | Compare text to local vectors (self-plagiarism / prior drafts) | `text`, `threshold?`, `scope?` | Integrity |
 | `search_web` | Opt-in web phrase search via SearXNG + Trafilatura | `queries` (string[]), `top_k?` | Integrity |
 | `run_ai_detection` | Local Binoculars / DeBERTa scores | `text` | Integrity |
+| `run_slop_scan` | Mechanical anti-slop rubric (no LLM): banned words, fiction tells, telling, rhythm | `text`, `doc_id?` | Integrity |
+| `propose_cuts` | Local judge: classified FAT / REDUNDANT / OVER-EXPLAIN / … quotes plus `tightest_passage` | `text`, `doc_id?`, `target_cut_words?` | Integrity |
 
 `search_web` requires user confirmation (human-in-the-loop). It must not upload the full manuscript—only provided query phrases / short excerpts.
+
+`propose_cuts` and applying `rewrite_range` from those cuts require confirm. Never auto-apply. JSON shapes: [WRITING-LOOP.md](WRITING-LOOP.md).
 
 ---
 
@@ -79,9 +101,9 @@ Implementations live on the **tool gateway** (`127.0.0.1:8765`) and/or thin Type
 | Agent | Primary tools |
 | :--- | :--- |
 | App Controller | `create_folder`, `create_chapter`, `create_character_sheet`, `save_to_binder`, `replace_range` |
-| Deep Continuity | `extract_entities`, `search_binder`, `highlight_text_in_editor` |
-| Integrity | `check_internal_similarity`, `search_web`, `run_ai_detection`, `highlight_text_in_editor` |
-| World-Builder | `generate_lore`, `save_to_binder`, `draft_scene`, optionally `create_folder` / `create_chapter` |
+| Deep Continuity | `extract_entities`, `search_binder`, `check_against_canon`, `append_canon_entry`, `check_foreshadowing_ledger`, `log_propagation_debt`, `highlight_text_in_editor` |
+| Integrity | `check_internal_similarity`, `search_web`, `run_ai_detection`, `run_slop_scan`, `propose_cuts`, `highlight_text_in_editor` |
+| World-Builder | `generate_lore`, `save_to_binder`, `draft_scene`, `rewrite_range`, optionally `create_folder` / `create_chapter` / `append_canon_entry` |
 
 ---
 

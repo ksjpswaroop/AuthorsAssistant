@@ -2,7 +2,7 @@
 
 Purpose: define the four hermes-agent–powered co-author roles that mutate the binder, editor, and integrity reports—not chat-only assistants.
 
-Shared runtime, voice/style learning, skill growth, and guardrails are at the end. Tool schemas: [TOOLS.md](TOOLS.md). Runtime: [HERMES-RUNTIME.md](HERMES-RUNTIME.md). Architecture: [ARCHITECTURE.md](ARCHITECTURE.md).
+Shared runtime, voice/style learning, skill growth, and guardrails are at the end. Tool schemas: [TOOLS.md](TOOLS.md). Runtime: [HERMES-RUNTIME.md](HERMES-RUNTIME.md). Architecture: [ARCHITECTURE.md](ARCHITECTURE.md). Canon, slop, and revision briefs: [WRITING-LOOP.md](WRITING-LOOP.md).
 
 ---
 
@@ -32,22 +32,25 @@ Shared runtime, voice/style learning, skill growth, and guardrails are at the en
 
 ## 2. Deep Continuity
 
-**Role:** Reason over RAG chunks to catch continuity errors a single retrieve-and-stuff LLM call would miss—the ultimate Scrivener-style “knows the whole book” feature.
+**Role:** Reason over RAG chunks **and the project canon** to catch continuity errors a single retrieve-and-stuff LLM call would miss—the ultimate Scrivener-style “knows the whole book” feature.
 
-**hermes-agent:** Profile with retrieval + highlight skills; uses project memory of cast and timeline facts.
+**hermes-agent:** Profile with retrieval + canon + highlight skills; uses project memory of cast and timeline facts.
 
 **User trigger:** Highlight a scene and ask, e.g. *“Check if the timeline and character locations in this scene make sense based on the rest of the book.”*
 
 **Plan steps (example):**
 
 1. `extract_entities(text=highlighted_scene)` → characters, times, locations
-2. `search_binder(query="Character X location")` (and related queries) against local Qdrant
-3. Reason over retrieved chunks (e.g. Chapter 4: injured left leg vs current scene: “sprinted away on his injured leg”)
-4. Emit a structured plot-hole report
+2. `check_against_canon(text=highlighted_scene)` — falsifiable facts (ages, handedness, places, dates)
+3. `search_binder(query="Character X location")` (and related queries) against local Qdrant
+4. `check_foreshadowing_ledger` for plants without payoffs
+5. Reason over retrieved chunks (e.g. Chapter 4: injured left leg vs current scene: “sprinted away on his injured leg”)
+6. If the scene establishes a new hard fact, `append_canon_entry`; if it reveals a lore gap, `log_propagation_debt` instead of inventing a fix
+7. Emit a structured plot-hole report
 
-**Tools used:** `extract_entities`, `search_binder`, `highlight_text_in_editor` (to mark offending spans)
+**Tools used:** `extract_entities`, `check_against_canon`, `search_binder`, `check_foreshadowing_ledger`, `append_canon_entry`, `log_propagation_debt`, `highlight_text_in_editor`
 
-**Structured output:** JSON report of issues: claim, conflicting evidence (binder path + excerpt), severity, suggested fix
+**Structured output:** JSON report of issues: claim, conflicting evidence (binder path + excerpt **or canon statement**), severity, suggested fix
 
 **UI effect:** Turnitin-style inline comments on the highlighted scene; optional highlights in the editor
 
@@ -63,14 +66,16 @@ Shared runtime, voice/style learning, skill growth, and guardrails are at the en
 
 **Plan steps (example):**
 
-1. `check_internal_similarity(chapter_text)` — flag self-plagiarism / repeated drafts
-2. If suspicious, `search_web(queries=[key_phrases])` via SearXNG + Trafilatura (**opt-in / confirm**)
-3. `run_ai_detection(text)` via Binoculars / DeBERTa locally
-4. Synthesize a human-readable report plus chart-ready JSON
+1. `run_slop_scan(text)` — mechanical guardrails (no LLM): banned words, fiction tells, telling, rhythm
+2. `check_internal_similarity(chapter_text)` — flag self-plagiarism / repeated drafts
+3. If suspicious, `search_web(queries=[key_phrases])` via SearXNG + Trafilatura (**opt-in / confirm**)
+4. `run_ai_detection(text)` via Binoculars / DeBERTa locally
+5. Optionally `propose_cuts` — classified fat with a KEEP (`tightest_passage`); do not treat a 1–10 “quality” score as the plan
+6. Synthesize a human-readable report plus chart-ready JSON
 
-**Tools used:** `check_internal_similarity`, `search_web`, `run_ai_detection`, `highlight_text_in_editor`
+**Tools used:** `run_slop_scan`, `check_internal_similarity`, `search_web`, `run_ai_detection`, `propose_cuts`, `highlight_text_in_editor`
 
-**Structured output:** Integrity packet JSON—scores, match sources, AI-detection spans, prose explanation (*“Paragraph 3 has a 92% match with … and unusually low perplexity.”*)
+**Structured output:** Integrity packet JSON—slop penalty + spans, similarity scores, match sources, AI-detection spans, optional cut list, prose explanation (*“Paragraph 3 has a 92% match with … and unusually low perplexity.”*)
 
 **UI effect:** Report panel with charts; inline flags; exportable integrity packet
 
@@ -80,7 +85,7 @@ Shared runtime, voice/style learning, skill growth, and guardrails are at the en
 
 **Role:** Keep lore out of the chat box and **in the Scrivener-style project**—then draft from that context, matching the author’s voice when a style profile exists.
 
-**hermes-agent:** Profile with lore + draft skills; injects style profile into `draft_scene`.
+**hermes-agent:** Profile with lore + draft skills; injects style profile **and a revision brief** into `draft_scene` / `rewrite_range`.
 
 **User trigger:** e.g. *“I need to write a scene where they travel through a desert. Generate the lore for this desert, add it to the world-building binder, and draft the scene.”*
 
@@ -88,12 +93,13 @@ Shared runtime, voice/style learning, skill growth, and guardrails are at the en
 
 1. `generate_lore(prompt="desert environment")`
 2. `save_to_binder(category="Worldbuilding", content=generated_lore)`
-3. `draft_scene(context=generated_lore, style="gritty")` — prefer **author voice profile** when present
-4. Place prose in the editor (and optionally create a new scene file)
+3. New hard facts → `append_canon_entry`; gaps → `log_propagation_debt`
+4. Snapshot, then `draft_scene` with the [context pack](WRITING-LOOP.md#drafting-context-pack) and a [brief](WRITING-LOOP.md#revision-brief) (`keep` / `change` / `voice_rules`). Prefer **author voice profile** (Part 2) plus guardrails (Part 1).
+5. Place prose in the editor (and optionally create a new scene file). Inspector offers Keep / Discard against the snapshot.
 
-**Tools used:** `generate_lore`, `save_to_binder`, `draft_scene`, optionally `create_folder` / `create_chapter`
+**Tools used:** `generate_lore`, `save_to_binder`, `draft_scene`, `rewrite_range`, `append_canon_entry`, optionally `create_folder` / `create_chapter`
 
-**Structured output:** Lore document metadata + scene draft status
+**Structured output:** Lore document metadata + scene draft status + brief id
 
 **UI effect:** New binder items under Worldbuilding; draft text in the center editor—not only a chat reply
 
@@ -118,10 +124,11 @@ Shared runtime, voice/style learning, skill growth, and guardrails are at the en
 
 ### Voice and style
 
-- Learn from accepted manuscript prose (local samples only)
-- Store traits in the project style profile
+- **Part 1 — Guardrails:** built-in anti-slop (mechanical rubric). Same for every book.
+- **Part 2 — Identity:** learn from **accepted** manuscript prose (local samples only); store tone, rhythm, dialogue habits, exemplars and anti-exemplars
 - Surface **style match** in the inspector on generations
-- “Rewrite in my voice” uses the profile—no cloud fine-tune required
+- “Rewrite in my voice” uses Part 2 and still runs Part 1—no cloud fine-tune required
+- Rewrites that replace more than a sentence require a brief with a KEEP list so good sentences survive
 
 ### Skill growth (self-evolution)
 
@@ -132,7 +139,7 @@ Shared runtime, voice/style learning, skill growth, and guardrails are at the en
 ### Guardrails
 
 - Confirm before **delete**, **compile**, or **web search**
-- Optional **snapshot** (LibGit2) before bulk binder writes
+- Optional **snapshot** (LibGit2) before bulk binder writes; inspector Keep / Discard — never unattended reset
 - hermes-agent / skill policy caps runaway tool loops
 - Human-in-the-loop interrupts on high-impact tools
 - No unconstrained shell over the whole filesystem

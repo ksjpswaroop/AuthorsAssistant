@@ -42,18 +42,18 @@ Integrity is part of the writing loop, not a last-minute upload.
 
 - Similarity report with color-coded matches and source context
 - AI-writing detection at paragraph and document level
-- Rubric / feedback scores (pacing, show-don’t-tell, dialogue tags, custom criteria)
-- Exportable **integrity packet**: similarity + AI detection + citation/rubric notes
+- Rubric / feedback scores (pacing, show-don’t-tell, dialogue tags, **mechanical slop**, custom criteria)
+- Exportable **integrity packet**: similarity + AI detection + slop spans + citation/rubric notes
 
 Scores alone are not enough. The Integrity agent synthesizes *why* a section was flagged (e.g. match to a web source plus low perplexity) so the UI can show charts and inline comments. See [AGENTS.md](AGENTS.md).
 
 ## AI writing UX
 
-- Book-wide RAG: chapter 20 can “remember” character rules from chapter 1
-- Scene continuation (`Ctrl+Space`), rewrite, tone/style shifter
-- Devil’s advocate critique before “submit chapter”
-- Integrity-aware generation: flag or rewrite passages that would fail a check
-- **Rewrite in my voice** using a local style profile learned from accepted prose
+- Book-wide RAG **plus a canon of hard facts**: chapter 20 can remember character rules from chapter 1 without relying on similarity alone
+- Scene continuation (`Ctrl+Space`), rewrite, tone/style shifter — rewrites that replace more than a sentence use a **KEEP / CHANGE brief** so good sentences survive
+- Devil’s advocate critique before “submit chapter” (Phase 3); later a multi-persona panel as Integrity/Continuity signal, not an autonomous rewrite loop
+- Integrity-aware generation: flag or rewrite passages that would fail a check, including **mechanical slop** (banned LLM diction, fiction tells)
+- **Rewrite in my voice** using a local style profile (Part 2) learned from accepted prose; guardrails (Part 1) always apply
 
 Single-shot tools land in Phase 3; multi-step **hermes-agent** orchestration lands in Phase 5 ([ROADMAP.md](ROADMAP.md), [HERMES-RUNTIME.md](HERMES-RUNTIME.md)).
 
@@ -62,17 +62,17 @@ Single-shot tools land in Phase 3; multi-step **hermes-agent** orchestration lan
 - **Command bar** for App Controller intents (hermes-agent profile)
 - **Inspector agent log** showing profile, plan steps, skills used, and style match (local traces only)
 - Agents **write into** the binder and editor; chat is a transcript of work done, not the only deliverable
-- **Voice & skills:** style profile from accepted prose; proposed skills after repeated workflows (user confirms)
-- Guardrails: confirm before delete, compile, or web search; optional snapshot before bulk writes
+- **Voice & skills:** style profile from accepted prose (Part 2) plus built-in guardrails (Part 1); proposed skills after repeated workflows (user confirms)
+- Guardrails: confirm before delete, compile, or web search; optional snapshot before bulk writes with inspector **Keep / Discard**
 
 ## Privacy as a product requirement
 
 | Rule | Requirement |
 | :--- | :--- |
 | Default offline | Drafting, RAG, hermes-agent, snapshots work with no network |
-| No cloud manuscript | Text does not leave the machine unless the user explicitly opts into web similarity |
-| Local models + runtime | Hermes 3 / draft models via Ollama; hermes-agent on loopback; no cloud portal by default |
+| No cloud manuscript | Local by default. Text leaves only two ways, both off by default and both naming what goes: a remote model turned on for that session, or a phrase the author ticks for a web check. See the golden rule in [ARCHITECTURE.md](ARCHITECTURE.md#golden-rule). |
+| Local models + runtime | Any tool-calling model Ollama serves; the agent loop runs in-process against Ollama's own endpoint, with no second daemon to install |
 | Local traces & style | Agent plans, memory, style profile, and skills stay on disk with the project |
 | Opt-in web | SearXNG + Trafilatura only for highlighted / selected phrases, never a full-book upload |
 
-Architecture details: [ARCHITECTURE.md](ARCHITECTURE.md).
+Architecture details: [ARCHITECTURE.md](ARCHITECTURE.md). Writing loop: [WRITING-LOOP.md](WRITING-LOOP.md).

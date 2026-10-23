@@ -55,12 +55,13 @@
       "icons/icon.ico"
     ],
     "category": "Productivity",
-    "shortDescription": "Local-first AI co-author for long-form books",
-    "longDescription": "AegisDraft is a local-first writing studio for long-form work: a Scrivener-class binder, corkboard and outliner over Markdown files you own, with integrity checks and local AI that never send your manuscript anywhere.",
-    "copyright": "\u00a9 2026 AegisDraft",
+    "shortDescription": "A book studio that stays local",
+    "longDescription": "A local-first writing studio for long-form work: a Scrivener-class binder, corkboard and outliner over Markdown files you own. Your manuscript stays a folder of readable files on your own machine.",
+    "copyright": "© 2026 AegisDraft",
     "macOS": {
       "minimumSystemVersion": "13.0",
-      "entitlements": "entitlements.plist"
+      "entitlements": "entitlements.plist",
+      "infoPlist": "Info.plist"
     }
   }
 }

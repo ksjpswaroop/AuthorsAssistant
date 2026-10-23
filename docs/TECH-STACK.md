@@ -21,7 +21,7 @@ Purpose: list the open-source stack for AegisDraft with **why** each piece is ch
 | Embeddings | **nomic-embed-text** (Ollama) | Local embeddings |
 | AI detection | **Binoculars** / **DeBERTa-v3** (Hugging Face) | Local AI-writing indicators |
 | Web similarity | **SearXNG** + **Trafilatura** + SentenceTransformers | Opt-in external phrase matching |
-| Metadata DB | **SQLite** | Binder, sheets, settings, rubrics, style profile refs |
+| Metadata DB | **SQLite** | Binder, sheets, canon refs, settings, rubrics, style profile refs |
 | Manuscript files | **Markdown** / HTML | Human-readable text if the app fails |
 | Versioning | **LibGit2** | Background snapshots |
 | Tool gateway | **FastAPI** on `:8765` + **Tauri IPC** | hermes skills → binder/editor/integrity mutations |
@@ -48,6 +48,7 @@ Phase 1 package lock-in and install list: [phases/01-core-editor.md](phases/01-c
 - **Skills** wrap [TOOLS.md](TOOLS.md) endpoints on the FastAPI tool gateway (`:8765`); confirm interrupts for delete, compile, and web search.
 - **LlamaIndex** owns indexing and retrieval; agents call `search_binder` rather than reinventing RAG.
 - **Style profile + evolving skills** live on disk and deepen with use (voice matching, project-local skill packs).
+- **Canon** is binder Markdown (`kind: canon`); agents append facts rather than hoping RAG remembers them. See [WRITING-LOOP.md](WRITING-LOOP.md).
 
 ## Integrity and web
 
