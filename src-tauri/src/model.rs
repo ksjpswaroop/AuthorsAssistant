@@ -490,3 +490,24 @@ pub struct ClusterProposal {
     pub score: f32,
 }
 
+// ---------------------------------------------------------------------------
+// Phase 5: agent tooling
+// ---------------------------------------------------------------------------
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ToolResult {
+    pub tool: String,
+    pub ok: bool,
+    pub value: serde_json::Value,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AgentStatus {
+    pub reachable: bool,
+    pub host: String,
+    /// Tool names the gateway exposes, whether or not a runtime is listening.
+    pub tools: Vec<String>,
+    pub message: Option<String>,
+}

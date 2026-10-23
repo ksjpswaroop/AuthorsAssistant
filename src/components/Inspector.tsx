@@ -5,9 +5,9 @@ import { Button, Callout, Chip, Dot, ProgressBar, SectionLabel, SelectLook, Tabs
 import { Icon, type IconName } from './Icon'
 import { Snapshots } from './Snapshots'
 import { KeywordEditor } from './KeywordEditor'
-import { relativeTime, words } from '../lib/format'
+import { relativeTime, tildePath, words } from '../lib/format'
 import { useAsync } from '../lib/useAsync'
-import { ai, generationModels, lineage, type Origin } from '../lib/phases'
+import { ai, agentLoop, generationModels, lineage, type Origin } from '../lib/phases'
 import { api, isTauri } from '../lib/api'
 
 const LABEL_CYCLE: LabelName[] = ['None', 'Plot', 'Character', 'Setup']
@@ -458,6 +458,105 @@ function NotesTab() {
  * `traces/` — real runs, real tool calls, real results. An agent whose
  * reasoning is invisible is not more trustworthy for being local.
  */
+function AgentTab() {
+  const path = useApp((s) => s.project?.path)
+  const runs = useAsync(() => agentLoop.traces(path!, 20), [path], isTauri && !!path)
+  const [open, setOpen] = useState<number | null>(0)
+
+  return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+        <SectionLabel>AGENT LOG</SectionLabel>
+        <div style={{ flexGrow: 1 }} />
+        <Chip fg={color.ink3} bg={color.lineSoft}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+            <Dot tone={(runs.data?.length ?? 0) > 0 ? color.green : color.disabled} size={6} />
+            {runs.data?.length ?? 0} runs
+          </span>
+        </Chip>
+      </div>
+
+      {(runs.data?.length ?? 0) === 0 ? (
+        <>
+          <Callout tone="quiet" icon="sparkle">
+            No agent has run in this project yet. Open the command bar (
+            <span style={{ fontFamily: font.mono }}>⌘K</span>), pick a role, and ask for something.
+            The model calls the same tools the menus do, one step at a time, and anything
+            destructive stops to ask you first.
+          </Callout>
+          {path && (
+            <div style={{ marginTop: 16, fontSize: 12, lineHeight: 1.6, color: color.ink4 }}>
+              Runs are recorded under{' '}
+              <span style={{ color: color.ink2 }}>{tildePath(path)}/traces</span> — readable JSON,
+              yours, and they outlive the app.
+            </div>
+          )}
+        </>
+      ) : (
+        runs.data!.map((run, i) => {
+          const on = open === i
+          const failed = run.hops.filter((h) => !h.ok).length
+          return (
+            <div
+              key={run.startedAt + run.profile}
+              style={{
+                border: `1px solid ${color.lineSoft}`,
+                borderRadius: radius.md,
+                marginBottom: 5,
+                overflow: 'hidden',
+              }}
+            >
+              <button
+                onClick={() => setOpen(on ? null : i)}
+                style={{ display: 'block', width: '100%', textAlign: 'left', padding: '9px 11px', cursor: 'pointer' }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ fontSize: 12.5, fontWeight: 600, flexGrow: 1, minWidth: 0 }}>
+                    {run.prompt.slice(0, 60)}
+                    {run.prompt.length > 60 ? '…' : ''}
+                  </span>
+                  <span style={{ fontSize: 11, color: color.ink4 }}>{relativeTime(run.startedAt)}</span>
+                </div>
+                <div style={{ fontSize: 11.5, color: color.ink4, marginTop: 3 }}>
+                  {run.profile} · {run.model} · {run.hops.length}{' '}
+                  {run.hops.length === 1 ? 'step' : 'steps'}
+                  {failed > 0 && ` · ${failed} failed`}
+                  {run.outcome.kind === 'needsApproval' && ' · waiting on you'}
+                  {run.outcome.kind === 'exhausted' && ' · cut off'}
+                </div>
+              </button>
+              {on && (
+                <div style={{ padding: '0 11px 10px 11px' }}>
+                  {run.hops.map((h, j) => (
+                    <div key={j} style={{ fontSize: 11.5, lineHeight: 1.6, color: color.ink3 }}>
+                      <span style={{ fontFamily: font.mono, color: h.ok ? color.ink2 : color.orangeInk }}>
+                        {h.tool}
+                      </span>{' '}
+                      {JSON.stringify(h.args).slice(0, 120)}
+                    </div>
+                  ))}
+                  {run.outcome.kind === 'finished' && (
+                    <div style={{ fontSize: 12, color: color.inkProse, marginTop: 7, lineHeight: 1.55 }}>
+                      {run.outcome.answer}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )
+        })
+      )}
+    </div>
+  )
+}
+
+/**
+ * Phase 3: how far the open document sits from the author's own measured voice.
+ *
+ * Every number here is arithmetic over the author's files — no model is asked
+ * whether the prose "sounds like them", because no model can answer that. The
+ * one model-written part is the voice description, and it is labelled as such.
+ */
 function VoiceTab() {
   const path = useApp((s) => s.project?.path)
   const doc = useApp((s) => s.docs.find((d) => d.id === s.selectedId))
@@ -820,6 +919,7 @@ export function Inspector() {
           { id: 'notes', label: 'Notes' },
           { id: 'voice', label: 'Voice' },
           { id: 'lineage', label: 'Lineage' },
+          { id: 'agent', label: 'Agent' },
         ]}
       />
       <div style={{ flexGrow: 1, overflowY: 'auto', padding: '16px 16px 24px 16px' }}>
@@ -833,8 +933,10 @@ export function Inspector() {
           <NotesTab />
         ) : tab === 'voice' ? (
           <VoiceTab />
-        ) : (
+        ) : tab === 'lineage' ? (
           <LineageTab />
+        ) : (
+          <AgentTab />
         )}
       </div>
     </div>
