@@ -303,6 +303,146 @@ mod tests {
         assert_eq!(get(&curly), 100);
         assert_eq!(get(&rubric("No one spoke for a long while.")), 0);
     }
+
+    #[test]
+    fn a_clean_passage_scores_no_slop() {
+        let text = "Mara set the cup down. The rim was still warm.\n\n\
+                    She counted the coins twice, then once more, because the first count had been hope.";
+        let report = run_slop_scan(text);
+        assert!(report.word_count > 10);
+        assert!(report.spans.is_empty(), "clean prose was flagged: {:?}", report.spans);
+        assert_eq!(report.counts.tier1_banned, 0);
+        assert_eq!(report.counts.tier2_clusters, 0);
+        assert_eq!(report.counts.fiction_tells, 0);
+        assert_eq!(report.counts.telling, 0);
+        assert_eq!(report.slop_penalty, 0.0);
+    }
+
+    #[test]
+    fn tier1_words_are_spans_and_one_tier2_word_is_not_a_cluster() {
+        let text = "They delve into the tapestry of the realm. The plan was robust.";
+        let report = run_slop_scan(text);
+        assert_eq!(report.counts.tier1_banned, 2, "delve and tapestry");
+        assert_eq!(report.counts.tier2_clusters, 0, "one suspicious word is not a cluster");
+        let delve = report
+            .spans
+            .iter()
+            .find(|s| s.category == "tier1_banned" && s.label == "delve")
+            .expect("delve span");
+        assert_eq!(&text[delve.start_index..delve.end_index], "delve");
+        assert_eq!(delve.excerpt, "delve");
+    }
+
+    #[test]
+    fn a_word_inside_another_word_is_not_tier1() {
+        let report = run_slop_scan("The undelved soil stayed put.");
+        assert_eq!(report.counts.tier1_banned, 0);
+        assert!(report.spans.is_empty());
+    }
+
+    #[test]
+    fn leverage_is_flagged_even_as_a_noun_because_there_is_no_parser() {
+        // The rubric names the verb. Without a parser the noun is the same
+        // letters, and a silent miss would be a worse lie than a highlight.
+        let report = run_slop_scan("The financial leverage was ordinary.");
+        assert_eq!(report.counts.tier1_banned, 1);
+        assert_eq!(report.spans[0].label, "leverage");
+    }
+
+    #[test]
+    fn tier2_needs_three_distinct_words_in_one_paragraph() {
+        let repeated = run_slop_scan("A robust robust robust plan.");
+        assert_eq!(repeated.counts.tier2_clusters, 0);
+
+        let spread = run_slop_scan("A robust plan.\n\nA comprehensive plan.\n\nA seamless plan.");
+        assert_eq!(spread.counts.tier2_clusters, 0, "three paragraphs are not one cluster");
+
+        let clustered = run_slop_scan("A robust, comprehensive, seamless plan.");
+        assert_eq!(clustered.counts.tier2_clusters, 1);
+        assert_eq!(
+            clustered.spans.iter().filter(|s| s.category == "tier2_cluster").count(),
+            3
+        );
+    }
+
+    #[test]
+    fn fiction_tells_and_telling_are_not_banned_words() {
+        let text = "She couldn't help but feel a sense of dread. She felt sad.";
+        let report = run_slop_scan(text);
+        assert!(report.counts.fiction_tells >= 2, "{:?}", report.spans);
+        assert!(report.counts.telling >= 1, "{:?}", report.spans);
+        assert_eq!(report.counts.tier1_banned, 0);
+        let sense = report.spans.iter().find(|s| s.label == "a sense of").unwrap();
+        assert_eq!(&text[sense.start_index..sense.end_index], "a sense of");
+    }
+
+    #[test]
+    fn filler_and_structural_tics_are_counted_apart() {
+        let text = "It's worth noting that the door was open.\n\n\
+                    I'm not saying it was locked. I'm saying it was ajar. \
+                    Those are different things.";
+        let report = run_slop_scan(text);
+        assert!(report.counts.tier3_filler >= 1, "{:?}", report.spans);
+        assert!(report.counts.structural_tics >= 2, "{:?}", report.spans);
+    }
+
+    #[test]
+    fn flat_sentences_and_em_dash_density_raise_the_penalty() {
+        let flat = "She ran fast. He ran fast. They ran fast. Dogs ran fast. Cats ran fast.";
+        let rhythm = run_slop_scan(flat);
+        assert!(rhythm.counts.sentence_length_cv < 0.3);
+        assert!(rhythm.slop_penalty >= 1.0);
+
+        let dashes = "One — two — three — four — five — six — seven — eight — \
+                      nine — ten — eleven — twelve — thirteen — fourteen — fifteen — sixteen more words now.";
+        let dense = run_slop_scan(dashes);
+        assert!(dense.counts.em_dash_per_1k > 15.0, "{}", dense.counts.em_dash_per_1k);
+        assert!(dense.slop_penalty >= 1.0);
+    }
+
+    #[test]
+    fn transition_openers_are_a_ratio() {
+        let text = "Furthermore the gate held.\n\nMoreover the gate held.\n\n\
+                    Additionally the gate held.\n\nThe gate held.";
+        let report = run_slop_scan(text);
+        assert!(report.counts.transition_opener_ratio > 0.3);
+        assert!(report.counts.tier3_filler >= 3, "those three openers are filler too");
+        assert!(report.slop_penalty >= 1.0);
+    }
+
+    #[test]
+    fn the_penalty_stays_between_zero_and_ten() {
+        let junk = "delve utilize leverage facilitate elucidate embark endeavor encompass \
+                    multifaceted tapestry paradigm synergy holistic catalyze juxtapose myriad \
+                    plethora testament to. "
+            .repeat(30);
+        let report = run_slop_scan(&junk);
+        assert!(report.slop_penalty > 0.0);
+        assert!(report.slop_penalty <= 10.0);
+        assert_eq!(report.slop_penalty, (report.slop_penalty * 10.0).round() / 10.0);
+    }
+
+    #[test]
+    fn empty_text_is_a_clean_report() {
+        let report = run_slop_scan("");
+        assert_eq!(report.word_count, 0);
+        assert_eq!(report.slop_penalty, 0.0);
+        assert!(report.spans.is_empty());
+        assert_eq!(report.counts.em_dash_per_1k, 0.0);
+        assert_eq!(report.counts.sentence_length_cv, 0.0);
+        assert_eq!(report.counts.transition_opener_ratio, 0.0);
+    }
+
+    #[test]
+    fn unicode_prose_still_locates_the_span() {
+        let text = "She felt sad — déjà vu, and nothing else.";
+        let report = run_slop_scan(text);
+        assert!(report.counts.telling >= 1);
+        let span = report.spans.iter().find(|s| s.category == "telling").unwrap();
+        let excerpt = &text[span.start_index..span.end_index];
+        assert!(excerpt.to_lowercase().contains("felt"), "{excerpt}");
+        assert!(excerpt.to_lowercase().contains("sad"), "{excerpt}");
+    }
 }
 
 // ---------------------------------------------------------------------------
