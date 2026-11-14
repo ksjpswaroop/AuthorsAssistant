@@ -29,6 +29,7 @@ See [docs/HERMES-RUNTIME.md](docs/HERMES-RUNTIME.md), [docs/AGENTS.md](docs/AGEN
 
 | Doc | Purpose |
 | :--- | :--- |
+| [docs/guide/](docs/guide/) | **User guide, demo script and investor pitch — with screenshots of the running app** |
 | [docs/PRODUCT.md](docs/PRODUCT.md) | Positioning, personas, UX, privacy as a requirement |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Local-first system design and agent loop |
 | [docs/TECH-STACK.md](docs/TECH-STACK.md) | Open-source stack and locked decisions |
